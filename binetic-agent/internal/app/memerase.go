@@ -9,15 +9,15 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/gnovm"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
-	"github.com/charmbracelet/binetic_agent/internal/session"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/gnovm"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/session"
 )
 
 // memErased takes what mem erased (a Redact or a Forget, by the agent or
-// by /mem) out of binetic-agent's own copies of mem's text in the project's
+// by /mem) out of gnosh's own copies of mem's text in the project's
 // sessions, as MEMPLAN §5 says:
 //   - a session's /goal binding: a goal renamed by the erasure is bound
 //     under its new name (a forgotten one then clears at the turn's end),

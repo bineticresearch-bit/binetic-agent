@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Metering proxy for the binetic-agent harness bench (bench/README.md).
+"""Metering proxy for the gnosh harness bench (bench/README.md).
 
 One proxy per run, between a harness and the model server (llama-server on
 llama-server or vLLM, say). It:
@@ -50,10 +50,10 @@ FORWARD = {
 }
 MODELS_PATHS = {"/models", "/v1/models"}
 # The summary (compaction) prompts, as each harness sends them as the newest
-# user message: binetic_agent "Provide a detailed summary of our conversation
-# above.", binetic-agent summary.md "... create a detailed summary of the
+# user message: crush "Provide a detailed summary of our conversation
+# above.", gnosh summary.md "... create a detailed summary of the
 # conversation so far", Codex "... CONTEXT CHECKPOINT COMPACTION ... handoff
-# summary for another LLM". Matching "summar" alone is wrong: binetic-agent's
+# summary for another LLM". Matching "summar" alone is wrong: gnosh's
 # "Continue the conversation from where it left off" turn and its close
 # checks mention summaries too.
 SUMMARY_RE = re.compile(r"detailed summary of (our|the) conversation|CONTEXT CHECKPOINT COMPACTION|handoff summary for another LLM", re.I)
@@ -116,7 +116,7 @@ def describe_request(body):
         chars = len(json.dumps(items, ensure_ascii=False)) + len(text_of(body.get("instructions")))
     tools = body.get("tools") or []
     # A summary request is one whose newest user message asks for a summary
-    # or a compaction (binetic-agent and binetic_agent send summary.md as the user prompt
+    # or a compaction (gnosh and crush send summary.md as the user prompt
     # under the agent's own system prompt; Codex sends its compaction
     # prompt). The system prompts of all three mention summaries, so the
     # system message alone says nothing.

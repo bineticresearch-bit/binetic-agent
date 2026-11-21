@@ -5,8 +5,8 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/tooldefs"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/tooldefs"
 	"github.com/spf13/cobra"
 )
 
@@ -21,10 +21,10 @@ func addToolFlags(cmd *cobra.Command) {
 	cmd.Flags().StringArray("disallowedTools", nil, "Same as --disallowed-tools, by Claude Code's name for it")
 }
 
-// toolFlags returns the tools cmd's tool flags name, in Binetic Agent's names, and
+// toolFlags returns the tools cmd's tool flags name, in Gnosh's names, and
 // the patterns of the Bash(pattern) rules: the allow rules
 // --allowed-tools gives and the deny rules --disallowed-tools gives. A
-// name that is not a tool, or a rule binetic-agent cannot apply, is an error, so
+// name that is not a tool, or a rule gnosh cannot apply, is an error, so
 // a typo cannot leave a tool or a command on that was meant to be off. A
 // command without the flags names none.
 func toolFlags(cmd *cobra.Command) (allowed, allowRules, disallowed, denyRules []string, err error) {
@@ -131,11 +131,11 @@ func ruleWords(value string) []string {
 	return words
 }
 
-// toolFlagName is the built-in tool word names: Binetic Agent's name for it in
+// toolFlagName is the built-in tool word names: Gnosh's name for it in
 // any case, or Claude Code's, or, where mcpOK, an MCP tool's name.
 func toolFlagName(word string, mcpOK bool) (string, error) {
 	if strings.ContainsAny(word, "()") {
-		return "", fmt.Errorf("binetic-agent takes whole tools here, not a rule like %q; its Bash(...) rules are the ones it applies", word)
+		return "", fmt.Errorf("gnosh takes whole tools here, not a rule like %q; its Bash(...) rules are the ones it applies", word)
 	}
 	if tool := tooldefs.FromClaudeCode(word); tool != "" {
 		return tool, nil

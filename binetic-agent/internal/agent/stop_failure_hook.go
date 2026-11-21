@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/hooks"
-	"github.com/charmbracelet/binetic_agent/internal/message"
+	"github.com/charmbracelet/crush/internal/hooks"
+	"github.com/charmbracelet/crush/internal/message"
 )
 
 // stopFailureKind is the kind of API error a turn ended on, in the names

@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	binetic_agentlog "github.com/charmbracelet/binetic_agent/internal/log"
+	crushlog "github.com/charmbracelet/crush/internal/log"
 	"github.com/pressly/goose/v3"
 )
 
@@ -50,7 +50,7 @@ func init() {
 // lock is acquired when the entry is created, again in a restored data
 // directory, and released when the last reference is dropped, which lets
 // the same process open the same data directory concurrently while still
-// blocking a second binetic_agent process from racing the storage.
+// blocking a second crush process from racing the storage.
 type connEntry struct {
 	db       *sql.DB
 	refCount int
@@ -89,14 +89,14 @@ type connectOptions struct {
 // WithDataDirLock toggles acquisition of the per-data-directory lock
 // for this Connect call. The lock is off by default so local-mode
 // invocations do not regress today's behavior; the server's
-// workspace-bootstrap path opts in. BINETIC_AGENT_SKIP_DATADIR_LOCK still
+// workspace-bootstrap path opts in. GNOSH_SKIP_DATADIR_LOCK still
 // bypasses acquisition even when this option is set.
 func WithDataDirLock(enable bool) ConnectOption {
 	return func(o *connectOptions) { o.lockDataDir = enable }
 }
 
 // WithRestore toggles the check that writes the database back to its path
-// when its file is removed while open, as by a model deleting .binetic-agent/. A
+// when its file is removed while open, as by a model deleting .gnosh/. A
 // user's removal is undone too: erasing the data directory takes
 // releasing the database first. It is off by default. As with the lock,
 // the Connect that opens the database decides.
@@ -136,11 +136,11 @@ func Connect(ctx context.Context, dataDir string, opts ...ConnectOption) (*sql.D
 
 	// Take the per-data-directory lock before opening the database so
 	// we fail fast and with a clear error rather than racing another
-	// binetic_agent process on the same SQLite file. The lock is released when
+	// crush process on the same SQLite file. The lock is released when
 	// the matching Release call drops the refcount to zero. Ensuring
 	// the data directory exists is required because the lock file
 	// lives inside it. Locking is opt-in via WithDataDirLock so that
-	// local-mode invocations do not refuse a second binetic_agent against the
+	// local-mode invocations do not refuse a second crush against the
 	// same data dir until client/server becomes the default.
 	if err := os.MkdirAll(dataDir, 0o700); err != nil {
 		return nil, fmt.Errorf("failed to create data directory %q: %w", dataDir, err)
@@ -281,7 +281,7 @@ func (e *connEntry) restore(ctx context.Context) {
 		slog.Warn("Failed to read the restored database", "path", e.path, "error", err)
 	}
 
-	if err := binetic_agentlog.ReopenFile(); err != nil {
+	if err := crushlog.ReopenFile(); err != nil {
 		slog.Warn("Failed to reopen the removed log file", "error", err)
 	}
 	slog.Warn("Data directory was removed while in use; restored the database", "path", e.path)
@@ -289,7 +289,7 @@ func (e *connEntry) restore(ctx context.Context) {
 
 // restoreFile writes the open database back to its path. When the pool
 // holds a lock, it returns the restored directory's, taken before the
-// copy: a binetic-agent that opens the directory meanwhile finds it locked, and
+// copy: a gnosh that opens the directory meanwhile finds it locked, and
 // one that locked it first keeps it.
 func (e *connEntry) restoreFile(ctx context.Context) (*dataDirLock, error) {
 	// The pool's one connection: while it is held, no write can land in
@@ -441,16 +441,16 @@ func initGoose() error {
 	return gooseInitErr
 }
 
-// FileName returns the database file in dataDir: binetic-agent.db, or the klash.db
-// or binetic_agent.db from before the renames where only that one exists, so that an
+// FileName returns the database file in dataDir: gnosh.db, or the klash.db
+// or crush.db from before the renames where only that one exists, so that an
 // existing data directory keeps its sessions.
 func FileName(dataDir string) string {
-	for _, name := range []string{"binetic-agent.db", "klash.db", "binetic_agent.db"} {
+	for _, name := range []string{"gnosh.db", "klash.db", "crush.db"} {
 		if _, err := os.Stat(filepath.Join(dataDir, name)); err == nil {
 			return filepath.Join(dataDir, name)
 		}
 	}
-	return filepath.Join(dataDir, "binetic-agent.db")
+	return filepath.Join(dataDir, "gnosh.db")
 }
 
 // WriteGitIgnore writes the .gitignore that keeps git off everything in

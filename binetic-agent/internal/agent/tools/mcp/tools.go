@@ -10,8 +10,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/csync"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/csync"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -64,7 +64,7 @@ func RunTool(ctx context.Context, cfg *config.ConfigStore, name, toolName string
 }
 
 // toolResultFromCall folds the content blocks of server's MCP reply into
-// the one result Binetic Agent carries, with at most one image, and its text cut to
+// the one result Crush carries, with at most one image, and its text cut to
 // what it may bring into the conversation (capOutput). An embedded resource
 // and a resource link come in Claude Code's words, and binary content is
 // saved to a file under dataDir: a binary resource, audio, and every image

@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/ui/util"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/ui/util"
+	"github.com/charmbracelet/crush/internal/version"
 )
 
 // branchedMsg is a branch made of session from, to go on in; named when

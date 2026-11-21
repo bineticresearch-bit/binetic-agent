@@ -3,8 +3,8 @@ package dialog
 import (
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/question"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/question"
+	"github.com/charmbracelet/crush/internal/ui/styles"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/stretchr/testify/require"
 )

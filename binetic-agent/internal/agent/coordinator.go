@@ -22,30 +22,30 @@ import (
 
 	"charm.land/catwalk/pkg/catwalk"
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/hyper"
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/agent/prompt"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools/mcp"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/discover"
-	"github.com/charmbracelet/binetic_agent/internal/event"
-	"github.com/charmbracelet/binetic_agent/internal/filetracker"
-	"github.com/charmbracelet/binetic_agent/internal/gnovm"
-	gnovmtools "github.com/charmbracelet/binetic_agent/internal/gnovm/tools"
-	"github.com/charmbracelet/binetic_agent/internal/history"
-	"github.com/charmbracelet/binetic_agent/internal/hooks"
-	"github.com/charmbracelet/binetic_agent/internal/log"
-	"github.com/charmbracelet/binetic_agent/internal/lsp"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
-	"github.com/charmbracelet/binetic_agent/internal/oauth/copilot"
-	openaioauth "github.com/charmbracelet/binetic_agent/internal/oauth/openai"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
-	"github.com/charmbracelet/binetic_agent/internal/question"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/skills"
+	"github.com/charmbracelet/crush/internal/agent/hyper"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/agent/prompt"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/agent/tools/mcp"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/discover"
+	"github.com/charmbracelet/crush/internal/event"
+	"github.com/charmbracelet/crush/internal/filetracker"
+	"github.com/charmbracelet/crush/internal/gnovm"
+	gnovmtools "github.com/charmbracelet/crush/internal/gnovm/tools"
+	"github.com/charmbracelet/crush/internal/history"
+	"github.com/charmbracelet/crush/internal/hooks"
+	"github.com/charmbracelet/crush/internal/log"
+	"github.com/charmbracelet/crush/internal/lsp"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/oauth"
+	"github.com/charmbracelet/crush/internal/oauth/copilot"
+	openaioauth "github.com/charmbracelet/crush/internal/oauth/openai"
+	"github.com/charmbracelet/crush/internal/permission"
+	"github.com/charmbracelet/crush/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/question"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/skills"
 	"golang.org/x/sync/errgroup"
 
 	"charm.land/fantasy/providers/anthropic"
@@ -153,7 +153,7 @@ type Coordinator interface {
 	UpdateModels(ctx context.Context) error
 	// ToolInfos builds the coder agent's tools and returns what the model is
 	// told about each one (name, description, parameters): the part of every
-	// request that is not the prompt template. Behind `binetic_agent prompt tools`.
+	// request that is not the prompt template. Behind `crush prompt tools`.
 	ToolInfos(ctx context.Context) ([]fantasy.ToolInfo, error)
 	// ToolNames names the tools the main agent offers the model now:
 	// the coder's or, in plan mode, the plan agent's, MCP tools included.
@@ -293,7 +293,7 @@ type CoordinatorOptions struct {
 	// GnoVMs is the App's hold on the GnoVM machines (internal/gnovm),
 	// or nil for none.
 	GnoVMs *gnovm.Lazy
-	// MemErased takes what a session's mem call erased out of binetic-agent's own
+	// MemErased takes what a session's mem call erased out of gnosh's own
 	// copies of mem's text (app.memErased); nil leaves them.
 	MemErased func(ctx context.Context, sessionID string, e gnovm.MemErasure)
 	// MemRules tells the user of the rules a session's mem call set,
@@ -459,7 +459,7 @@ func (c *coordinator) memSummarized(isSubAgent bool) func(sessionID string) {
 // subdirectory's CLAUDE.md once it reads, writes or edits a file there.
 // A file over onDemandContextLimit characters is given cut, with a note
 // to read the rest with the view tool. Started at the root of Jae's gno
-// checkout, Binetic Agent never read misc/gnoe2e's own AGENTS.md. A call with no
+// checkout, Gnosh never read misc/gnoe2e's own AGENTS.md. A call with no
 // session gives nothing: what is given is recorded per session. A
 // relative filePath, as lsp_replace_symbol passes on as the model wrote
 // it, is taken from the working directory.
@@ -608,7 +608,7 @@ func onDemandContextFile(f prompt.ContextFile) string {
 
 // permissionMode is a session's permission mode as Claude Code names it
 // to hooks, for any agent but the plan agent: bypassPermissions when its
-// permission requests are all granted (yolo, or a binetic-agent run's session and
+// permission requests are all granted (yolo, or a gnosh run's session and
 // its sub-agents'), acceptEdits or dontAsk under that --permission-mode,
 // else default.
 func (c *coordinator) permissionMode(sessionID string) string {
@@ -722,7 +722,7 @@ func (c *coordinator) run(ctx context.Context, accept *AcceptedRun, sessionID st
 	// Coalesce per-attempt RunComplete payloads so only the final
 	// outcome reaches subscribers. Without this, the first attempt's
 	// failed RunComplete (unauthorized) would race ahead of the
-	// retry's success, and `binetic_agent run` would exit on the stale error
+	// retry's success, and `crush run` would exit on the stale error
 	// before ever seeing the retry result. Each attempt's
 	// SessionAgentCall.OnComplete hook overwrites latest; we publish
 	// exactly once after retries resolve, via PublishMustDeliver, so
@@ -1292,8 +1292,8 @@ func (c *coordinator) buildTools(ctx context.Context, agent config.Agent, isSubA
 			workingDir: c.cfg.WorkingDir(),
 			named:      c.named,
 		},
-		wrap(tools.NewBinetic AgentInfoTool(c.cfg, c.lspManager, c.allSkills, c.activeSkills, c.skillTracker)),
-		wrap(tools.NewBinetic AgentLogsTool(logFile)),
+		wrap(tools.NewGnoshInfoTool(c.cfg, c.lspManager, c.allSkills, c.activeSkills, c.skillTracker)),
+		wrap(tools.NewGnoshLogsTool(logFile)),
 		wrap(tools.NewJobOutputTool(c.cfg.WorkingDir(), c.cfg.Config().Options.DataDirectory)),
 		wrap(tools.NewJobKillTool(c.cfg.WorkingDir())),
 		wrap(tools.NewDownloadTool(c.permissions, c.cfg.WorkingDir(), nil)),
@@ -1791,7 +1791,7 @@ func (c *coordinator) buildProvider(providerCfg config.ProviderConfig, model con
 		if token != nil {
 			baseURL = openaioauth.CodexBaseURL
 			apiKey = token.AccessToken
-			headers["originator"] = "binetic_agent"
+			headers["originator"] = "crush"
 			if token.AccountID != "" {
 				headers["chatgpt-account-id"] = token.AccountID
 			}
@@ -1815,7 +1815,7 @@ func (c *coordinator) buildProvider(providerCfg config.ProviderConfig, model con
 		switch providerCfg.ID {
 		case hyper.Name:
 			baseURL = hyper.BaseURL() + "/v1"
-			headers["x-binetic_agent-id"] = event.GetID()
+			headers["x-crush-id"] = event.GetID()
 		case string(catwalk.InferenceProviderZAI):
 			if providerCfg.ExtraBody == nil {
 				providerCfg.ExtraBody = map[string]any{}
@@ -1857,7 +1857,7 @@ func (c *coordinator) Cancel(sessionID string) {
 	c.currentAgent().Cancel(sessionID)
 }
 
-// CancelAll stops every turn, as binetic-agent shuts down; from then on a
+// CancelAll stops every turn, as gnosh shuts down; from then on a
 // background job that ends starts no turn.
 func (c *coordinator) CancelAll() {
 	if c.jobs != nil {
@@ -1868,8 +1868,8 @@ func (c *coordinator) CancelAll() {
 
 // backgroundWatcher is what the bash tool tells of a command that
 // becomes a background job: the job watcher, for the main agent of an
-// interactive binetic-agent, which goes on after a turn ends. A sub-agent's turn
-// is over by the time its job ends, and `binetic-agent run` exits with its turn.
+// interactive gnosh, which goes on after a turn ends. A sub-agent's turn
+// is over by the time its job ends, and `gnosh run` exits with its turn.
 func (c *coordinator) backgroundWatcher(isSubAgent bool) tools.BackgroundWatcher {
 	if isSubAgent || !c.interactive || c.jobs == nil {
 		return nil
@@ -2315,7 +2315,7 @@ func (c *coordinator) runSubAgent(ctx context.Context, params subAgentParams) (f
 	// A sub-agent works on its parent's behalf, so when the parent's
 	// session is auto-approved, as a non-interactive run's is, the
 	// sub-agent's is too. Otherwise its first permission request waits
-	// for an answer nobody is there to give: in a binetic-agent run on the AI box
+	// for an answer nobody is there to give: in a gnosh run on the AI box
 	// a sub-agent hung that way, reading a file in the Go module cache.
 	if c.permissions != nil && c.permissions.IsSessionAutoApproved(params.SessionID) {
 		c.permissions.AutoApproveSession(session.ID)

@@ -25,7 +25,7 @@ func (f userToolFake) SetProviderOptions(fantasy.ProviderOptions) {}
 
 func TestApplyUserTools(t *testing.T) {
 	dir := t.TempDir()
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", filepath.Join(dir, "binetic-agent.json"))
+	t.Setenv("CRUSH_GLOBAL_CONFIG", filepath.Join(dir, "crush.json"))
 	tools := []fantasy.AgentTool{userToolFake{"bash", "built-in bash"}, userToolFake{"question", "built-in question"}, userToolFake{"view", "built-in view"}}
 
 	got := applyUserTools(tools)
@@ -65,15 +65,15 @@ func TestApplyUserTools(t *testing.T) {
 // taken; once edited, the user's text is used, without the export's mark.
 func TestApplyUserTools_UneditedExportFollowsTheBuiltIn(t *testing.T) {
 	dir := t.TempDir()
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", filepath.Join(dir, "binetic-agent.json"))
+	t.Setenv("CRUSH_GLOBAL_CONFIG", filepath.Join(dir, "crush.json"))
 	require.NoError(t, os.MkdirAll(UserToolsDir(), 0o755))
 	path := filepath.Join(UserToolsDir(), "bash.md")
-	exported := ExportedDescriptionFile("Assisted-by: Binetic Agent:gpt-oss-120b")
+	exported := ExportedDescriptionFile("Assisted-by: Crush:gpt-oss-120b")
 	require.NoError(t, os.WriteFile(path, []byte(exported), 0o644))
 
-	tools := []fantasy.AgentTool{userToolFake{"bash", "Assisted-by: Binetic Agent:qwen3.8-27b"}}
+	tools := []fantasy.AgentTool{userToolFake{"bash", "Assisted-by: Crush:qwen3.8-27b"}}
 	got := applyUserTools(tools)
-	require.Equal(t, "Assisted-by: Binetic Agent:qwen3.8-27b", got[0].Info().Description,
+	require.Equal(t, "Assisted-by: Crush:qwen3.8-27b", got[0].Info().Description,
 		"an unedited export must follow the built-in, not freeze it")
 	_, used := UserToolDescription("bash")
 	require.False(t, used)
@@ -81,27 +81,27 @@ func TestApplyUserTools_UneditedExportFollowsTheBuiltIn(t *testing.T) {
 	edited := strings.Replace(exported, "gpt-oss-120b", "my own words", 1)
 	require.NoError(t, os.WriteFile(path, []byte(edited), 0o644))
 	got = applyUserTools(tools)
-	require.Equal(t, "Assisted-by: Binetic Agent:my own words", got[0].Info().Description,
+	require.Equal(t, "Assisted-by: Crush:my own words", got[0].Info().Description,
 		"an edited export is used, without its mark")
 	_, used = UserToolDescription("bash")
 	require.True(t, used)
 }
 
 // disabled.txt entries and exported descriptions written for a tool's name
-// from before the rename to Binetic Agent keep applying to it.
+// from before the rename to Gnosh keep applying to it.
 func TestApplyUserToolsTakesLegacyToolNames(t *testing.T) {
 	dir := t.TempDir()
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", filepath.Join(dir, "binetic-agent.json"))
+	t.Setenv("CRUSH_GLOBAL_CONFIG", filepath.Join(dir, "crush.json"))
 	require.NoError(t, os.MkdirAll(UserToolsDir(), 0o755))
-	require.NoError(t, os.WriteFile(DisabledToolsFile(), []byte("binetic_agent_logs\n"), 0o644))
-	require.NoError(t, os.WriteFile(filepath.Join(UserToolsDir(), "binetic_agent_info.md"), []byte("What Binetic Agent is running with.\n"), 0o644))
+	require.NoError(t, os.WriteFile(DisabledToolsFile(), []byte("crush_logs\n"), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(UserToolsDir(), "crush_info.md"), []byte("What Gnosh is running with.\n"), 0o644))
 
-	got := applyUserTools([]fantasy.AgentTool{userToolFake{"binetic-agent_logs", "built-in logs"}, userToolFake{"binetic-agent_info", "built-in info"}})
-	require.Len(t, got, 1, "binetic_agent_logs in disabled.txt leaves binetic-agent_logs out")
-	require.Equal(t, "binetic-agent_info", got[0].Info().Name)
-	require.Equal(t, "What Binetic Agent is running with.", got[0].Info().Description)
+	got := applyUserTools([]fantasy.AgentTool{userToolFake{"gnosh_logs", "built-in logs"}, userToolFake{"gnosh_info", "built-in info"}})
+	require.Len(t, got, 1, "crush_logs in disabled.txt leaves gnosh_logs out")
+	require.Equal(t, "gnosh_info", got[0].Info().Name)
+	require.Equal(t, "What Gnosh is running with.", got[0].Info().Description)
 
-	path, used := UserToolDescription("binetic-agent_info")
+	path, used := UserToolDescription("gnosh_info")
 	require.True(t, used)
-	require.Equal(t, filepath.Join(UserToolsDir(), "binetic_agent_info.md"), path)
+	require.Equal(t, filepath.Join(UserToolsDir(), "crush_info.md"), path)
 }

@@ -70,7 +70,7 @@ func relay(cmd *exec.Cmd, in, out *os.File, setClipboard func(text []byte)) (int
 	// A resize between the size taken above and the line before.
 	_ = pty.InheritSize(in, ptmx)
 
-	// Keys go to cmd for as long as binetic-agent runs; this goroutine ends with it.
+	// Keys go to cmd for as long as gnosh runs; this goroutine ends with it.
 	go func() { _, _ = io.Copy(ptmx, in) }()
 
 	pending := make(chan []byte, copyQueue)
@@ -137,7 +137,7 @@ func relay(cmd *exec.Cmd, in, out *os.File, setClipboard func(text []byte)) (int
 		}
 	default:
 		// The output is still being read, and so pending stays open; the
-		// copy goroutine ends with binetic-agent.
+		// copy goroutine ends with gnosh.
 	}
 	return status, err
 }

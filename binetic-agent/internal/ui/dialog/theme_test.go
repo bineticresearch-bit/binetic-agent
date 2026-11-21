@@ -3,7 +3,7 @@ package dialog
 import (
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/ui/list"
+	"github.com/charmbracelet/crush/internal/ui/list"
 	"github.com/stretchr/testify/require"
 )
 

@@ -5,13 +5,13 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/stretchr/testify/require"
 )
 
-// TestShellConfigDotBinetic AgentrcTakesPrecedence verifies that a project-local
-// .binetic-agentrc overrides binetic-agentrc in the same directory on conflicting settings.
-func TestShellConfigDotBinetic AgentrcTakesPrecedence(t *testing.T) {
+// TestShellConfigDotCrushrcTakesPrecedence verifies that a project-local
+// .crushrc overrides crushrc in the same directory on conflicting settings.
+func TestShellConfigDotCrushrcTakesPrecedence(t *testing.T) {
 	isolated := t.TempDir()
 	t.Setenv("HOME", isolated)
 	t.Setenv("XDG_CONFIG_HOME", filepath.Join(isolated, ".config"))
@@ -20,16 +20,16 @@ func TestShellConfigDotBinetic AgentrcTakesPrecedence(t *testing.T) {
 	workDir := t.TempDir()
 	dataDir := t.TempDir()
 	require.NoError(t, os.WriteFile(
-		filepath.Join(workDir, "binetic-agentrc"),
+		filepath.Join(workDir, "crushrc"),
 		[]byte("option notifications bell\n"), 0o644,
 	))
 	require.NoError(t, os.WriteFile(
-		filepath.Join(workDir, ".binetic-agentrc"),
+		filepath.Join(workDir, ".crushrc"),
 		[]byte("option notifications osc\n"), 0o644,
 	))
 
 	store, err := config.Load(workDir, dataDir, false, config.TrustFolderForSession())
 	require.NoError(t, err)
 	require.Equal(t, "osc", store.Config().Options.Notifications,
-		".binetic-agentrc should win over binetic-agentrc")
+		".crushrc should win over crushrc")
 }

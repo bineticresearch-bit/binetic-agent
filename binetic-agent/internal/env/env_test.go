@@ -142,34 +142,34 @@ func TestMapEnv_EnvFormat(t *testing.T) {
 	require.True(t, found["spaces"], "Should handle values with spaces")
 }
 
-// While Binetic Agent is renamed Binetic Agent, a BINETIC_AGENT_ setting falls back to the BINETIC_AGENT_
+// While Crush is renamed Gnosh, a GNOSH_ setting falls back to the CRUSH_
 // one it replaces, and wins when both are set.
 func TestLookupEnvFallsBackToTheNameBeforeTheRename(t *testing.T) {
 	t.Run("only the old name", func(t *testing.T) {
-		t.Setenv("BINETIC_AGENT_ENV_TEST_SETTING", "old")
-		v, ok := LookupEnv("BINETIC_AGENT_ENV_TEST_SETTING")
+		t.Setenv("CRUSH_ENV_TEST_SETTING", "old")
+		v, ok := LookupEnv("GNOSH_ENV_TEST_SETTING")
 		require.True(t, ok)
 		require.Equal(t, "old", v)
-		require.Equal(t, "old", Getenv("BINETIC_AGENT_ENV_TEST_SETTING"))
+		require.Equal(t, "old", Getenv("GNOSH_ENV_TEST_SETTING"))
 	})
 	t.Run("both names, the new one wins", func(t *testing.T) {
-		t.Setenv("BINETIC_AGENT_ENV_TEST_SETTING", "old")
-		t.Setenv("BINETIC_AGENT_ENV_TEST_SETTING", "new")
-		require.Equal(t, "new", Getenv("BINETIC_AGENT_ENV_TEST_SETTING"))
+		t.Setenv("CRUSH_ENV_TEST_SETTING", "old")
+		t.Setenv("GNOSH_ENV_TEST_SETTING", "new")
+		require.Equal(t, "new", Getenv("GNOSH_ENV_TEST_SETTING"))
 	})
 	t.Run("the new name set empty still wins", func(t *testing.T) {
-		t.Setenv("BINETIC_AGENT_ENV_TEST_SETTING", "1")
-		t.Setenv("BINETIC_AGENT_ENV_TEST_SETTING", "")
-		v, ok := LookupEnv("BINETIC_AGENT_ENV_TEST_SETTING")
+		t.Setenv("CRUSH_ENV_TEST_SETTING", "1")
+		t.Setenv("GNOSH_ENV_TEST_SETTING", "")
+		v, ok := LookupEnv("GNOSH_ENV_TEST_SETTING")
 		require.True(t, ok)
 		require.Empty(t, v)
 	})
 	t.Run("neither name", func(t *testing.T) {
-		_, ok := LookupEnv("BINETIC_AGENT_ENV_TEST_UNSET")
+		_, ok := LookupEnv("GNOSH_ENV_TEST_UNSET")
 		require.False(t, ok)
 	})
 	t.Run("other names have no fallback", func(t *testing.T) {
-		t.Setenv("BINETIC_AGENT_ENV_TEST_OTHER", "x")
+		t.Setenv("CRUSH_ENV_TEST_OTHER", "x")
 		_, ok := LookupEnv("ENV_TEST_OTHER")
 		require.False(t, ok)
 		t.Setenv("ENV_TEST_PLAIN", "plain")
@@ -191,14 +191,14 @@ func TestLookupBool(t *testing.T) {
 		{name: "false spelled out", value: new("false"), want: false, set: true},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Setenv("BINETIC_AGENT_LOOKUP_BOOL_TEST", "")
-			os.Unsetenv("BINETIC_AGENT_LOOKUP_BOOL_TEST")
-			t.Setenv("BINETIC_AGENT_LOOKUP_BOOL_TEST", "")
-			os.Unsetenv("BINETIC_AGENT_LOOKUP_BOOL_TEST")
+			t.Setenv("CRUSH_LOOKUP_BOOL_TEST", "")
+			os.Unsetenv("CRUSH_LOOKUP_BOOL_TEST")
+			t.Setenv("GNOSH_LOOKUP_BOOL_TEST", "")
+			os.Unsetenv("GNOSH_LOOKUP_BOOL_TEST")
 			if tt.value != nil {
-				t.Setenv("BINETIC_AGENT_LOOKUP_BOOL_TEST", *tt.value)
+				t.Setenv("GNOSH_LOOKUP_BOOL_TEST", *tt.value)
 			}
-			got, set := LookupBool("BINETIC_AGENT_LOOKUP_BOOL_TEST")
+			got, set := LookupBool("GNOSH_LOOKUP_BOOL_TEST")
 			if got != tt.want || set != tt.set {
 				t.Fatalf("LookupBool = (%v, %v), want (%v, %v)", got, set, tt.want, tt.set)
 			}
@@ -206,14 +206,14 @@ func TestLookupBool(t *testing.T) {
 	}
 }
 
-// TestLookupBoolFallsBackToBinetic Agent keeps a setup that still exports the old
-// BINETIC_AGENT_ name working, as LookupEnv does.
-func TestLookupBoolFallsBackToBinetic Agent(t *testing.T) {
-	t.Setenv("BINETIC_AGENT_LOOKUP_BOOL_FALLBACK", "")
-	os.Unsetenv("BINETIC_AGENT_LOOKUP_BOOL_FALLBACK")
-	t.Setenv("BINETIC_AGENT_LOOKUP_BOOL_FALLBACK", "1")
-	got, set := LookupBool("BINETIC_AGENT_LOOKUP_BOOL_FALLBACK")
+// TestLookupBoolFallsBackToCrush keeps a setup that still exports the old
+// CRUSH_ name working, as LookupEnv does.
+func TestLookupBoolFallsBackToCrush(t *testing.T) {
+	t.Setenv("GNOSH_LOOKUP_BOOL_FALLBACK", "")
+	os.Unsetenv("GNOSH_LOOKUP_BOOL_FALLBACK")
+	t.Setenv("CRUSH_LOOKUP_BOOL_FALLBACK", "1")
+	got, set := LookupBool("GNOSH_LOOKUP_BOOL_FALLBACK")
 	if !got || !set {
-		t.Fatalf("LookupBool = (%v, %v), want (true, true) from the BINETIC_AGENT_ name", got, set)
+		t.Fatalf("LookupBool = (%v, %v), want (true, true) from the CRUSH_ name", got, set)
 	}
 }

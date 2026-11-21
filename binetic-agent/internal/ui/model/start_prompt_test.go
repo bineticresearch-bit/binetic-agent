@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/workspace"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/workspace"
 	"github.com/stretchr/testify/require"
 )
 
@@ -22,7 +22,7 @@ type startWorkspace struct {
 func (startWorkspace) AgentReadyErr() error { return errors.New("not ready") }
 
 func (startWorkspace) Config() *config.Config {
-	return &config.Config{Options: &config.Options{TUI: &config.TUIOptions{ActiveTheme: "binetic-agent-cosmos"}}}
+	return &config.Config{Options: &config.Options{TUI: &config.TUIOptions{ActiveTheme: "gnosh-cosmos"}}}
 }
 
 func (startWorkspace) WorkingDir() string { return "/project" }

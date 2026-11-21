@@ -14,9 +14,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/csync"
-	"github.com/charmbracelet/binetic_agent/internal/lock"
-	"github.com/charmbracelet/binetic_agent/internal/proto"
+	"github.com/charmbracelet/crush/internal/csync"
+	"github.com/charmbracelet/crush/internal/lock"
+	"github.com/charmbracelet/crush/internal/proto"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
@@ -431,14 +431,14 @@ func TestCreateWorkspace_ReleasesTheDatabaseWhenTheAppFails(t *testing.T) {
 	cwd := t.TempDir()
 	dataDir := t.TempDir()
 	// A google provider with no API key: the coder agent cannot be built.
-	binetic_agentJSON := `{
+	crushJSON := `{
   "options": {"disable_default_providers": true, "disable_provider_auto_update": true},
   "providers": {"gem": {"type": "google", "base_url": "http://127.0.0.1:9",
     "models": [{"id": "m1", "name": "m1", "context_window": 100000}]}},
   "models": {"large": {"provider": "gem", "model": "m1"},
              "small": {"provider": "gem", "model": "m1"}}
 }`
-	require.NoError(t, os.WriteFile(filepath.Join(cwd, "binetic-agent.json"), []byte(binetic_agentJSON), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(cwd, "crush.json"), []byte(crushJSON), 0o644))
 
 	b := New(context.Background(), nil, func() {})
 	t.Cleanup(func() { drainBackend(t, b) })
@@ -447,7 +447,7 @@ func TestCreateWorkspace_ReleasesTheDatabaseWhenTheAppFails(t *testing.T) {
 	_, _, err := b.CreateWorkspace(args)
 	require.ErrorContains(t, err, "failed to create app workspace")
 
-	release, err := lock.TryFile(filepath.Join(dataDir, "binetic-agent.lock"))
+	release, err := lock.TryFile(filepath.Join(dataDir, "gnosh.lock"))
 	require.NoError(t, err, "the data directory is still locked")
 	release()
 }
@@ -1466,7 +1466,7 @@ func TestServer_CreateCancelsPendingIdleShutdown(t *testing.T) {
 	t.Setenv("XDG_CACHE_HOME", t.TempDir())
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
 	t.Setenv("XDG_DATA_HOME", t.TempDir())
-	t.Setenv("BINETIC_AGENT_DISABLE_PROVIDER_AUTO_UPDATE", "1")
+	t.Setenv("CRUSH_DISABLE_PROVIDER_AUTO_UPDATE", "1")
 
 	b, shutdownCount := newTestBackend(t)
 	b.SetIdleShutdownDelay(10 * time.Second) // long enough not to fire mid-test

@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"charm.land/glamour/v2"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/ui/styles"
 )
 
 // buildThinkingBlock generates a realistic long thinking block with

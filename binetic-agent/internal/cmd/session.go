@@ -16,15 +16,15 @@ import (
 
 	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/colorprofile"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/db"
-	"github.com/charmbracelet/binetic_agent/internal/event"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/ui/chat"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/db"
+	"github.com/charmbracelet/crush/internal/event"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/ui/chat"
+	"github.com/charmbracelet/crush/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/version"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/charmbracelet/x/exp/charmtone"
 	"github.com/charmbracelet/x/term"
@@ -106,7 +106,7 @@ type sessionServices struct {
 }
 
 // sessionSetup loads the config and opens the project's sessions for a
-// command that calls no model (binetic-agent session, binetic-agent mem): the config's
+// command that calls no model (gnosh session, gnosh mem): the config's
 // files only, so it works with no provider configured.
 func sessionSetup(cmd *cobra.Command) (context.Context, *sessionServices, func(), error) {
 	dataDir, _ := cmd.Flags().GetString("data-dir")

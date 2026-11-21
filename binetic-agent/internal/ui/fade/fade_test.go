@@ -61,7 +61,7 @@ func same(a, b color.Color) bool {
 }
 
 // A short run over many stops still shows the whole fade, every cell in a
-// color of its own. lipgloss.Blend1D drew BINETIC_AGENT's five letters over the
+// color of its own. lipgloss.Blend1D drew GNOSH's five letters over the
 // nebula green, purple, purple, pink, pink, and never reached gold.
 func TestRampSpreadsTheFadeEvenly(t *testing.T) {
 	nebula := []color.Color{green, &Via{Color: gold, Through: []color.Color{purple, pink}}}

@@ -6,16 +6,16 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/gnovm"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/gnovm"
+	"github.com/charmbracelet/crush/internal/pubsub"
 )
 
 // errNoGnoVMs is the answer about mem before the GnoVM machines are set up.
 var errNoGnoVMs = errors.New("mem is not set up: the agent is not ready")
 
-// GnoVMDir is where binetic-agent keeps its GnoVM machines and every project's mem,
+// GnoVMDir is where gnosh keeps its GnoVM machines and every project's mem,
 // beside its global data.
 func GnoVMDir() string {
 	return filepath.Join(filepath.Dir(config.GlobalConfigData()), "gnovm")

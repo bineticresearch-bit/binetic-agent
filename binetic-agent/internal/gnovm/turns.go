@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -18,7 +18,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/lock"
+	"github.com/charmbracelet/crush/internal/lock"
 )
 
 // turns are this process's holds on sessions' turn locks (turnLockPath),
@@ -38,7 +38,7 @@ type turnHold struct {
 // HoldTurn holds session's turn lock for one run of it, so other sessions
 // see it working (PARALLEL.md); the release it returns lets go of it when
 // the session's last run in this process ends. The lock is waited for, with
-// ctx: probes hold it for a moment, and a session open in two binetic-agent
+// ctx: probes hold it for a moment, and a session open in two gnosh
 // processes waits for the other's turn (it says so in the log). A hold that
 // cannot be had is a no-op: the session is then not seen working.
 func (l *Lazy) HoldTurn(ctx context.Context, session string) func() {
@@ -59,13 +59,13 @@ func holdTurn(ctx context.Context, dir, session string) func() {
 	}
 	release, err := lock.TryFile(path)
 	if errors.Is(err, lock.ErrContended) {
-		// A peer's probe holds it for a moment; another binetic-agent process
+		// A peer's probe holds it for a moment; another gnosh process
 		// with the session open holds it while busy there.
 		slog.Debug("Waiting for this session's turn lock", "session_id", session)
 		start := time.Now()
 		release, err = lock.File(ctx, path)
 		if d := time.Since(start); err == nil && d > time.Second {
-			slog.Info("Waited for this session's turn lock, which another binetic-agent process held", "session_id", session, "waited", d.Round(time.Second))
+			slog.Info("Waited for this session's turn lock, which another gnosh process held", "session_id", session, "waited", d.Round(time.Second))
 		}
 	}
 	if err != nil {

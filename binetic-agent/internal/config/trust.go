@@ -20,30 +20,30 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/charmbracelet/binetic_agent/internal/db"
-	"github.com/charmbracelet/binetic_agent/internal/filepathext"
-	"github.com/charmbracelet/binetic_agent/internal/fsext"
-	"github.com/charmbracelet/binetic_agent/internal/gitutil"
-	"github.com/charmbracelet/binetic_agent/internal/home"
-	"github.com/charmbracelet/binetic_agent/internal/lock"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/db"
+	"github.com/charmbracelet/crush/internal/filepathext"
+	"github.com/charmbracelet/crush/internal/fsext"
+	"github.com/charmbracelet/crush/internal/gitutil"
+	"github.com/charmbracelet/crush/internal/home"
+	"github.com/charmbracelet/crush/internal/lock"
+	"github.com/charmbracelet/crush/internal/version"
 )
 
-// A folder's own settings, its project settings, are the binetic-agentrc and
-// binetic-agent.json files (and their klash and binetic_agent names) found from the working
-// directory up to the repository root, and the binetic-agent.json binetic-agent keeps in the
-// project's data directory, .binetic-agent/. A binetic-agentrc is a Bash script that runs as
-// the config loads, and a binetic-agent.json can start programs (hooks, MCP and LSP
+// A folder's own settings, its project settings, are the gnoshrc and
+// gnosh.json files (and their klash and crush names) found from the working
+// directory up to the repository root, and the gnosh.json gnosh keeps in the
+// project's data directory, .gnosh/. A gnoshrc is a Bash script that runs as
+// the config loads, and a gnosh.json can start programs (hooks, MCP and LSP
 // servers), let tools run without asking and send the API key somewhere else
 // (a provider's base_url). Used as they are, a repository cloned from a
 // stranger would run the stranger's code with the user's permissions the
-// moment binetic-agent started in it.
+// moment gnosh started in it.
 //
-// So until the user trusts a folder, binetic-agent runs none of its shell configs
+// So until the user trusts a folder, gnosh runs none of its shell configs
 // and uses, of its JSON ones, only the settings that take something away
 // from the agent (untrustedKept). The rest are held back, and listed
-// (ProjectSettings) for the question the TUI asks, the line binetic-agent run prints
-// and binetic-agent doctor. So is a project skills folder (.agents/skills and the
+// (ProjectSettings) for the question the TUI asks, the line gnosh run prints
+// and gnosh doctor. So is a project skills folder (.agents/skills and the
 // like) that is a symlink out of the project: the agent reads a skill's
 // files without asking, so one linked to the home directory would let it
 // read the user's keys without a word. Trust is recorded per folder in the global data
@@ -54,8 +54,8 @@ import (
 // only, never recorded, as in Claude Code's workspace trust.
 
 // untrustedKept are the settings of an untrusted folder's JSON configs that
-// binetic-agent still uses, by JSON path. Each only takes something away from the
-// agent, so a stranger's repository can make binetic-agent do less in it, never
+// gnosh still uses, by JSON path. Each only takes something away from the
+// agent, so a stranger's repository can make gnosh do less in it, never
 // more.
 var untrustedKept = []string{
 	"permissions.deny",
@@ -105,12 +105,12 @@ type ProjectSettings struct {
 	Home bool
 	// InRepo is set when Folder is a git repository's main checkout.
 	InRepo bool
-	// Dir is the directory binetic-agent started in, which the file names are
+	// Dir is the directory gnosh started in, which the file names are
 	// shown from.
 	Dir string
 	// Files are the project's config files that hold something back.
 	Files []string
-	// Scripts are its shell configs (binetic-agentrc), which run as Bash.
+	// Scripts are its shell configs (gnoshrc), which run as Bash.
 	Scripts []string
 	// Hooks are its hook commands, as "Event: command".
 	Hooks []string
@@ -139,7 +139,7 @@ type ProjectSettings struct {
 	// GitPrograms are the programs the git repository's own config (or a
 	// post-index-change hook) has git run when it only reads the
 	// repository, as gitutil.Programs lists them: until the folder is
-	// trusted, binetic-agent shows no git status and a git command of the
+	// trusted, gnosh shows no git status and a git command of the
 	// agent's asks.
 	GitPrograms []string
 	// Other are the other settings it holds, by key.
@@ -164,14 +164,14 @@ func (p *ProjectSettings) GitRuns() []string {
 }
 
 // Lines says what the settings would do, a line each, for the trust
-// question and binetic-agent trust.
+// question and gnosh trust.
 func (p *ProjectSettings) Lines() []string {
 	if p == nil {
 		return nil
 	}
 	var lines []string
 	for _, s := range p.Scripts {
-		lines = append(lines, "run "+p.name(s)+", a shell script, as binetic-agent starts")
+		lines = append(lines, "run "+p.name(s)+", a shell script, as gnosh starts")
 	}
 	for _, h := range p.Hooks {
 		lines = append(lines, "run the hook "+h)
@@ -210,7 +210,7 @@ func (p *ProjectSettings) Lines() []string {
 }
 
 // Brief says what the settings would do in one short line, for the note
-// binetic-agent run prints.
+// gnosh run prints.
 func (p *ProjectSettings) Brief() string {
 	if p == nil {
 		return ""
@@ -267,7 +267,7 @@ func gitKeys(programs []string) []string {
 // Dangers says how the settings could hurt the user if whoever wrote them
 // meant harm, in plain words: a sentence for each kind of harm they could
 // do, and none for a kind they hold nothing of, for the trust question and
-// binetic-agent trust. Settings that only change how binetic-agent works (a model, a
+// gnosh trust. Settings that only change how gnosh works (a model, a
 // timeout, the look) add none.
 func (p *ProjectSettings) Dangers() []string {
 	if p == nil {
@@ -334,7 +334,7 @@ func (p *ProjectSettings) otherOf(options []string) []string {
 
 // runsAsYou names what of the settings would run as a program on the
 // user's computer, for Dangers: its shell configs, hooks and servers, and
-// a command hidden in a value, for binetic-agent expands a provider's key, address
+// a command hidden in a value, for gnosh expands a provider's key, address
 // and headers, an environment variable and an online MCP server's address
 // and headers through the shell as it reads them, $(...) and all. "" when
 // nothing would.
@@ -343,7 +343,7 @@ func (p *ProjectSettings) runsAsYou() string {
 	switch len(p.Scripts) {
 	case 0:
 	case 1:
-		programs = append(programs, "binetic-agentrc")
+		programs = append(programs, "gnoshrc")
 	default:
 		programs = append(programs, "shell configs")
 	}
@@ -388,7 +388,7 @@ func joinAnd(items []string) string {
 	return strings.Join(items[:len(items)-1], ", ") + " and " + items[len(items)-1]
 }
 
-// name is path as the user knows it: from the directory binetic-agent started in
+// name is path as the user knows it: from the directory gnosh started in
 // when it is at or under it, and otherwise in full; made safe to show.
 func (p *ProjectSettings) name(path string) string {
 	if p.Dir != "" {
@@ -595,7 +595,7 @@ func isHomeDir(dir string) bool {
 	return h != "" && canonicalDir(h) == dir
 }
 
-// TrustFolderOf returns the folder trust is recorded for when binetic-agent starts
+// TrustFolderOf returns the folder trust is recorded for when gnosh starts
 // in dir: the git repository's main checkout, so that a linked worktree
 // shares its main checkout's trust (a submodule, a repository of its own,
 // has its own), or outside a repository dir itself. inRepo says which.
@@ -679,7 +679,7 @@ func readTrust() (trustRecord, error) {
 	}
 	var r trustRecord
 	if err := json.Unmarshal(data, &r); err != nil {
-		return trustRecord{}, fmt.Errorf("%s is not the JSON binetic-agent writes there: %w", path, err)
+		return trustRecord{}, fmt.Errorf("%s is not the JSON gnosh writes there: %w", path, err)
 	}
 	return r, nil
 }
@@ -715,7 +715,7 @@ func updateTrust(change func(folders map[string]string)) error {
 // folderTrusted reports whether folder, as TrustFolderOf returns it, is
 // recorded as trusted. Outside a repository a trusted folder above it
 // counts too, as in Claude Code. The home directory never does: it is
-// trusted for a session only. A trust file binetic-agent cannot read trusts
+// trusted for a session only. A trust file gnosh cannot read trusts
 // nothing.
 func folderTrusted(folder string, inRepo bool) bool {
 	if folder == "" || isHomeDir(folder) {
@@ -744,13 +744,13 @@ func folderTrusted(folder string, inRepo bool) bool {
 	}
 }
 
-// FolderTrusted reports whether binetic-agent started in dir would use its project
+// FolderTrusted reports whether gnosh started in dir would use its project
 // settings without asking: whether its folder is recorded as trusted.
 func FolderTrusted(dir string) bool {
 	return folderTrusted(TrustFolderOf(dir))
 }
 
-// TrustFolder records the folder of a binetic-agent started in dir (see
+// TrustFolder records the folder of a gnosh started in dir (see
 // TrustFolderOf) as trusted, and returns it. The home directory is refused
 // with ErrHomeTrust.
 func TrustFolder(dir string) (string, error) {
@@ -789,7 +789,7 @@ func TrustFile() string {
 }
 
 // TrustCommand is the command that trusts folder, for a message that tells
-// the user how: binetic-agent trust and the folder, short (~/...) where a shell
+// the user how: gnosh trust and the folder, short (~/...) where a shell
 // takes it as it is and quoted in full where it would not.
 func TrustCommand(folder string) string {
 	return Shown(version.Command + " trust " + shellPath(folder))
@@ -880,7 +880,7 @@ func (g *projectGate) holds(path string) bool {
 }
 
 // holdDatabase notes, where the folder is not trusted and dataDir, the
-// data directory, is in the project (as .binetic-agent/ is), that the sessions
+// data directory, is in the project (as .gnosh/ is), that the sessions
 // database there is the project's: a downloaded repository can carry one
 // that turns on MCP servers of the user's that the user's config turns
 // off, which startup would start. The servers it names are listed; and
@@ -905,14 +905,14 @@ func (g *projectGate) holdDatabase(dataDir string) {
 
 // holdsWorkspace reports whether path, the workspace config in the data
 // directory, is the project's own and held back: it is when the data
-// directory is in the project, as .binetic-agent/ is.
+// directory is in the project, as .gnosh/ is.
 func (g *projectGate) holdsWorkspace(path string) bool {
 	return g != nil && !g.trusted && g.inProject(filepath.Dir(path))
 }
 
 // inProject reports whether dir, which need not exist, is in the project:
 // under its top directory with the symlinks of dir's parents resolved, or
-// with dir's own resolved as well. A .binetic-agent that is a symlink out of the
+// with dir's own resolved as well. A .gnosh that is a symlink out of the
 // project is still the project's, as a repository can carry the link.
 func (g *projectGate) inProject(dir string) bool {
 	if g.top == "" {
@@ -977,7 +977,7 @@ func isWithin(dir, path string) bool {
 	return err == nil && rel != ".." && !strings.HasPrefix(rel, ".."+string(filepath.Separator)) && !filepath.IsAbs(rel)
 }
 
-// ScanProject reads what the project settings of a binetic-agent started in
+// ScanProject reads what the project settings of a gnosh started in
 // workingDir, with the data directory dataDir ("" for the project's own),
 // would do, running none of them, and whether its folder is trusted. The
 // TUI asks its question from it before the config loads.

@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -36,22 +36,22 @@ import (
 // in the peers demonstration, with the same loop: Next; work; Pop and Next
 // in one input. It only runs when asked, since it starts many processes:
 //
-//	BINETIC_AGENT_PEERS_SWARM=10,100 BINETIC_AGENT_PEER_WORK=1s \
+//	GNOSH_PEERS_SWARM=10,100 GNOSH_PEER_WORK=1s \
 //	    go test ./internal/gnovm/ -run TestPeersSwarmControl -v
 //
-// BINETIC_AGENT_PEERS_SWARM_TREE=GxL sets the tree (default 10x100: 1,011 todos).
+// GNOSH_PEERS_SWARM_TREE=GxL sets the tree (default 10x100: 1,011 todos).
 func TestPeersSwarmControl(t *testing.T) {
 	if os.Getenv(peerEnv) == "1" {
 		t.Skip("a peer process runs TestPeerChild only")
 	}
-	spec := os.Getenv("BINETIC_AGENT_PEERS_SWARM")
+	spec := os.Getenv("GNOSH_PEERS_SWARM")
 	if spec == "" {
-		t.Skip("set BINETIC_AGENT_PEERS_SWARM (peer counts, e.g. 10,100) and BINETIC_AGENT_PEER_WORK (e.g. 1s)")
+		t.Skip("set GNOSH_PEERS_SWARM (peer counts, e.g. 10,100) and GNOSH_PEER_WORK (e.g. 1s)")
 	}
 	groups, leaves := 10, 100
-	if tr := os.Getenv("BINETIC_AGENT_PEERS_SWARM_TREE"); tr != "" {
+	if tr := os.Getenv("GNOSH_PEERS_SWARM_TREE"); tr != "" {
 		g, l, ok := strings.Cut(tr, "x")
-		require.True(t, ok, "BINETIC_AGENT_PEERS_SWARM_TREE is GxL")
+		require.True(t, ok, "GNOSH_PEERS_SWARM_TREE is GxL")
 		var err error
 		groups, err = strconv.Atoi(g)
 		require.NoError(t, err)
@@ -121,8 +121,8 @@ func swarmControlRun(t *testing.T, n, groups, leaves int) peersOutcome {
 		log := filepath.Join(dir, fmt.Sprintf("peer-%d.log", i))
 		logs = append(logs, log)
 		cmd := exec.CommandContext(t.Context(), os.Args[0], "-test.run=^TestPeerChild$", "-test.timeout=30m")
-		cmd.Env = append(os.Environ(), peerEnv+"=1", "BINETIC_AGENT_PEER_DIR="+dir, "BINETIC_AGENT_PEER_PROJECT="+project,
-			fmt.Sprintf("BINETIC_AGENT_PEER_SESSION=peer%d", i+1), "BINETIC_AGENT_PEER_ROLE=root", "BINETIC_AGENT_PEER_ROOT="+root, "BINETIC_AGENT_PEER_LOG="+log)
+		cmd.Env = append(os.Environ(), peerEnv+"=1", "GNOSH_PEER_DIR="+dir, "GNOSH_PEER_PROJECT="+project,
+			fmt.Sprintf("GNOSH_PEER_SESSION=peer%d", i+1), "GNOSH_PEER_ROLE=root", "GNOSH_PEER_ROOT="+root, "GNOSH_PEER_LOG="+log)
 		out := &strings.Builder{}
 		cmd.Stdout, cmd.Stderr = out, out
 		require.NoError(t, cmd.Start())

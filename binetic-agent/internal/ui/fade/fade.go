@@ -56,7 +56,7 @@ func Stops(stops ...color.Color) []color.Color {
 // Ramp exists because Blend1D gives each stretch a whole number of the
 // colors, each stretch starting and ending on its stops, so a short fade
 // over many stops shows little but the stops: over green, purple, hot pink
-// and gold, the five letters of BINETIC_AGENT came out green, purple, purple, pink,
+// and gold, the five letters of GNOSH came out green, purple, purple, pink,
 // pink, and gold not at all.
 func Ramp(n int, stops ...color.Color) []color.Color {
 	stops = slices.DeleteFunc(Stops(stops...), func(c color.Color) bool { return c == nil })

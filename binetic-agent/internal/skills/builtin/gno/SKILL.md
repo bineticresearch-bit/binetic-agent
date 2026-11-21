@@ -150,7 +150,7 @@ reference. The docs are also at https://docs.gno.land.
 
 Before writing or reviewing a realm that holds assets, has an admin, or
 takes callbacks or interfaces, view
-`binetic-agent://skills/gno/references/security-review.md`.
+`gnosh://skills/gno/references/security-review.md`.
 
 ## Audit before it ships
 
@@ -158,8 +158,8 @@ A plan that writes or changes Gno code has an audit todo, made with the
 plan, right after the todo that writes the code and before its tests, any
 deploy and any "done":
 `mem.Todo(task, …, "audit the Gno code rule by rule against gno-interrealm-v2.md and gno-security-guide.md")`.
-In it, view `binetic-agent://skills/gno/references/gno-interrealm-v2.md` and
-`binetic-agent://skills/gno/references/gno-security-guide.md` (the interrealm
+In it, view `gnosh://skills/gno/references/gno-interrealm-v2.md` and
+`gnosh://skills/gno/references/gno-security-guide.md` (the interrealm
 specification and the security guide, from the gno repository), check
 every exported function against each of their rules and the checklist in
 `security-review.md`, fix what breaks one, and close the todo with each
@@ -334,22 +334,22 @@ one payment.
   cover the price and the fee.
 - Selling something takes gnolang/x402 (https://github.com/gnolang/x402),
   which has the seller's gno scheme for x402's middleware and the
-  facilitator, beside the Go client binetic-agent pays with.
+  facilitator, beside the Go client gnosh pays with.
 
 ## More
 
-- `binetic-agent://skills/gno/references/security-review.md`: the review checklist
+- `gnosh://skills/gno/references/security-review.md`: the review checklist
   and the cases behind it.
-- `binetic-agent://skills/gno/references/gno-interrealm-v2.md` and
-  `binetic-agent://skills/gno/references/gno-security-guide.md`: the interrealm
+- `gnosh://skills/gno/references/gno-interrealm-v2.md` and
+  `gnosh://skills/gno/references/gno-security-guide.md`: the interrealm
   specification and the security guide the audit checks against.
-- `binetic-agent://skills/gno/references/toolchain.md`: gno, gnokey and gnodev
+- `gnosh://skills/gno/references/toolchain.md`: gno, gnokey and gnodev
   flags, query paths, the airgapped signing flow.
-- `binetic-agent://skills/gno/references/cost.md`: what a realm costs, the
+- `gnosh://skills/gno/references/cost.md`: what a realm costs, the
   container comparison in full, the refund asymmetry, deploy gas.
-- `binetic-agent://skills/gno/references/testing.md`: why a gno test passes
+- `gnosh://skills/gno/references/testing.md`: why a gno test passes
   and proves nothing, and the shapes that fix it.
-- `binetic-agent://skills/gno/references/go-differences.md`: what compiles in
+- `gnosh://skills/gno/references/go-differences.md`: what compiles in
   your head and fails in CI.
 - `$GNOROOT/docs/resources/`: `effective-gno.md`, `gno-interrealm-v2.md`,
   `gno-security-guide.md`, `gno-testing.md`, `gnodev.md`,

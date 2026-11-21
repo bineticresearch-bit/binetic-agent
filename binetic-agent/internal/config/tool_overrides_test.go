@@ -14,11 +14,11 @@ import (
 // keeps them.
 func TestToolOverridesSurviveAReload(t *testing.T) {
 	dir := t.TempDir()
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", dir)
-	t.Setenv("BINETIC_AGENT_GLOBAL_DATA", dir)
+	t.Setenv("CRUSH_GLOBAL_CONFIG", dir)
+	t.Setenv("CRUSH_GLOBAL_DATA", dir)
 	resetProviderState()
 	t.Cleanup(resetProviderState)
-	require.NoError(t, os.WriteFile(filepath.Join(dir, "binetic-agent.json"), []byte(twoProviderConfig("openai", "gpt-4")), 0o600))
+	require.NoError(t, os.WriteFile(filepath.Join(dir, "crush.json"), []byte(twoProviderConfig("openai", "gpt-4")), 0o600))
 
 	store, err := Load(dir, dir, false)
 	require.NoError(t, err)
@@ -49,8 +49,8 @@ func TestToolOverridesSurviveAReload(t *testing.T) {
 func TestMCPOverridesSurviveAReload(t *testing.T) {
 	for _, strict := range []bool{false, true} {
 		dir := t.TempDir()
-		t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", dir)
-		t.Setenv("BINETIC_AGENT_GLOBAL_DATA", dir)
+		t.Setenv("CRUSH_GLOBAL_CONFIG", dir)
+		t.Setenv("CRUSH_GLOBAL_DATA", dir)
 		resetProviderState()
 		t.Cleanup(resetProviderState)
 		var doc map[string]any
@@ -61,7 +61,7 @@ func TestMCPOverridesSurviveAReload(t *testing.T) {
 		}
 		data, err := json.Marshal(doc)
 		require.NoError(t, err)
-		require.NoError(t, os.WriteFile(filepath.Join(dir, "binetic-agent.json"), data, 0o600))
+		require.NoError(t, os.WriteFile(filepath.Join(dir, "crush.json"), data, 0o600))
 
 		store, err := Load(dir, dir, false)
 		require.NoError(t, err)

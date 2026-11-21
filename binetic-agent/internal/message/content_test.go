@@ -225,7 +225,7 @@ func TestToolCallSummary(t *testing.T) {
 		},
 		{
 			name: "empty input",
-			call: ToolCall{ID: "c7", Name: "binetic-agent_info"},
+			call: ToolCall{ID: "c7", Name: "gnosh_info"},
 			want: "",
 		},
 		{

@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools/mcp"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/agent/tools/mcp"
+	"github.com/charmbracelet/crush/internal/ui/common"
 )
 
 func TestMCPList_ChannelBadge(t *testing.T) {

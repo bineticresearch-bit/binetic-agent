@@ -35,7 +35,7 @@ type queryParams struct {
 // Tools that may run at once, as sourcegraph, web_fetch and agentic_fetch
 // may, finish on goroutines of their own, and the turn takes each result
 // there. Two sourcegraph calls finishing together killed the AI box's
-// binetic-agent on 2026-11-10: the turn noted the tools that had finished in a map
+// gnosh on 2026-11-10: the turn noted the tools that had finished in a map
 // without a lock, and Go stops a program that writes a map from two
 // goroutines at once ("fatal error: concurrent map writes"). Here five
 // calls finish at the same moment; under -race, as CI runs the suite, an

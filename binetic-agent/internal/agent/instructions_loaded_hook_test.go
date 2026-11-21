@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"charm.land/catwalk/pkg/catwalk"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/hooks"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/hooks"
 	"github.com/stretchr/testify/require"
 )
 
@@ -179,7 +179,7 @@ func TestInstructionsLoadedCompactReason(t *testing.T) {
 	wd := env.workingDir
 	require.NoError(t, os.WriteFile(filepath.Join(wd, "AGENTS.md"), []byte("project rules"), 0o644))
 	cfg := &config.Config{
-		Hooks:   map[string][]config.HookConfig{hooks.EventInstructionsLoaded: instructionsLoadedHooks("", `echo "$BINETIC_AGENT_INSTRUCTIONS_LOAD_REASON" >> `+out)},
+		Hooks:   map[string][]config.HookConfig{hooks.EventInstructionsLoaded: instructionsLoadedHooks("", `echo "$GNOSH_INSTRUCTIONS_LOAD_REASON" >> `+out)},
 		Options: &config.Options{ContextPaths: []string{"AGENTS.md"}},
 	}
 	require.NoError(t, cfg.ValidateHooks())
@@ -478,14 +478,14 @@ func TestInstructionsLoadedSlowHookDoesNotBlock(t *testing.T) {
 }
 
 // TestInstructionsLoadedEnvVar checks that the hook's environment has
-// BINETIC_AGENT_INSTRUCTIONS_LOAD_REASON set to the load reason.
+// GNOSH_INSTRUCTIONS_LOAD_REASON set to the load reason.
 func TestInstructionsLoadedEnvVar(t *testing.T) {
 	t.Parallel()
 
 	dir := t.TempDir()
 	outPath := filepath.Join(dir, "reason")
 	a, wd := instructionsLoadedAgent(t,
-		instructionsLoadedHooks("", `echo "$BINETIC_AGENT_INSTRUCTIONS_LOAD_REASON" > `+outPath)...)
+		instructionsLoadedHooks("", `echo "$GNOSH_INSTRUCTIONS_LOAD_REASON" > `+outPath)...)
 
 	files := sessionInstructionsFiles(a.cfg)
 	require.NotEmpty(t, files)
@@ -498,7 +498,7 @@ func TestInstructionsLoadedEnvVar(t *testing.T) {
 	data, err := os.ReadFile(outPath)
 	require.NoError(t, err)
 	require.Equal(t, hooks.InstructionsLoadedSessionStart+"\n", string(data),
-		"BINETIC_AGENT_INSTRUCTIONS_LOAD_REASON must be set to the load reason")
+		"GNOSH_INSTRUCTIONS_LOAD_REASON must be set to the load reason")
 }
 
 // TestInstructionsLoadedLocalMemoryType checks that a CLAUDE.local.md
@@ -548,7 +548,7 @@ func TestInstructionsLoadedUserMemoryType(t *testing.T) {
 	wd := env.workingDir
 
 	// Write a global context file.
-	globalFile := filepath.Join(globalDir, "BINETIC_AGENT.md")
+	globalFile := filepath.Join(globalDir, "GNOSH.md")
 	require.NoError(t, os.WriteFile(globalFile, []byte("global rules"), 0o644))
 
 	cfg := &config.Config{
@@ -647,7 +647,7 @@ func TestInstructionsLoadedGlobalLocalFile(t *testing.T) {
 	wd := env.workingDir
 
 	// A global context file with a .local.md name.
-	globalFile := filepath.Join(globalDir, "BINETIC_AGENT.local.md")
+	globalFile := filepath.Join(globalDir, "GNOSH.local.md")
 	require.NoError(t, os.WriteFile(globalFile, []byte("global local rules"), 0o644))
 
 	cfg := &config.Config{

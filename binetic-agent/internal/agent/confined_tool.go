@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/filepathext"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/filepathext"
 )
 
 // confinedTool runs a file tool only on what lies inside dir: view's

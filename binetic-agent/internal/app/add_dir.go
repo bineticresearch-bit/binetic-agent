@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/home"
+	"github.com/charmbracelet/crush/internal/home"
 )
 
 // AddDir adds a working directory for the session, as Claude Code's

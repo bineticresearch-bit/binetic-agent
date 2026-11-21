@@ -6,10 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/ui/styles"
 	uv "github.com/charmbracelet/ultraviolet"
 )
 
@@ -40,7 +40,7 @@ func compactHeader(t *testing.T, h *header, width int) (name, lines []*uv.Cell) 
 	for _, c := range name {
 		spelled.WriteString(c.Content)
 	}
-	if spelled.String() != "BINETIC_AGENT" || len(lines) < minHeaderDiags {
+	if spelled.String() != "GNOSH" || len(lines) < minHeaderDiags {
 		t.Fatalf("the header reads %q", text.String())
 	}
 	return name, lines
@@ -54,14 +54,14 @@ func hexOf(c color.Color) string {
 	return fmt.Sprintf("#%02x%02x%02x", r>>8, g>>8, b>>8)
 }
 
-// The compact header in Binetic Agent's theme. Jae, 2026-11-09: "the color of the
-// letters BINETIC_AGENT should blend better; and there's no fade in the ////////
+// The compact header in Gnosh's theme. Jae, 2026-11-09: "the color of the
+// letters GNOSH should blend better; and there's no fade in the ////////
 // at all, even though clearly it is possible." With 24-bit color the name
 // is bold and its five letters are five colors of the nebula, green first
 // and gold last; its diagonal lines fade from hot pink beside the name to
 // purple, at any width.
 func TestCompactHeaderFades(t *testing.T) {
-	s := styles.Binetic AgentCosmos()
+	s := styles.GnoshCosmos()
 	com := &common.Common{Workspace: &testWorkspace{cfg: &config.Config{}}, Styles: &s, TrueColor: true}
 	h := newHeader(com)
 
@@ -70,17 +70,17 @@ func TestCompactHeaderFades(t *testing.T) {
 		colors := map[string]bool{}
 		for i, c := range name {
 			if c.Style.Attrs&uv.AttrBold == 0 {
-				t.Errorf("width %d: letter %d of BINETIC_AGENT is not bold", width, i)
+				t.Errorf("width %d: letter %d of GNOSH is not bold", width, i)
 			}
 			colors[hexOf(c.Style.Fg)] = true
 		}
 		if len(colors) != 5 {
-			t.Errorf("width %d: BINETIC_AGENT's five letters show %d colors, want five", width, len(colors))
+			t.Errorf("width %d: GNOSH's five letters show %d colors, want five", width, len(colors))
 		}
-		if got, want := hexOf(name[0].Style.Fg), hexOf(styles.Binetic AgentGreen); got != want {
+		if got, want := hexOf(name[0].Style.Fg), hexOf(styles.GnoshGreen); got != want {
 			t.Errorf("width %d: G is %s, want green %s", width, got, want)
 		}
-		if got, want := hexOf(name[4].Style.Fg), hexOf(styles.Binetic AgentGold); got != want {
+		if got, want := hexOf(name[4].Style.Fg), hexOf(styles.GnoshGold); got != want {
 			t.Errorf("width %d: H is %s, want gold %s", width, got, want)
 		}
 
@@ -105,7 +105,7 @@ func TestCompactHeaderFades(t *testing.T) {
 	h.refresh()
 	name, lines := compactHeader(t, h, 100)
 	for i, c := range name {
-		isGreen := hexOf(c.Style.Fg) == hexOf(styles.Binetic AgentGreen)
+		isGreen := hexOf(c.Style.Fg) == hexOf(styles.GnoshGreen)
 		if i < 3 != isGreen {
 			t.Errorf("without 24-bit color, letter %d is %s", i, hexOf(c.Style.Fg))
 		}

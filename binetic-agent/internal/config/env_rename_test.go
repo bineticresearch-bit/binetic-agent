@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// Path settings read from the environment answer to their BINETIC_AGENT_ names and
-// to the KLASH_ and BINETIC_AGENT_ names from before the renames, the newer name
+// Path settings read from the environment answer to their GNOSH_ names and
+// to the KLASH_ and CRUSH_ names from before the renames, the newer name
 // winning.
 func TestPathSettingsAnswerToEveryName(t *testing.T) {
 	inDir := func(d string) string { return filepath.Join(d, appName+".json") }
@@ -27,44 +27,44 @@ func TestPathSettingsAnswerToEveryName(t *testing.T) {
 	} {
 		t.Run(tc.setting, func(t *testing.T) {
 			oldest, old, newer := t.TempDir(), t.TempDir(), t.TempDir()
-			t.Setenv("BINETIC_AGENT_"+tc.setting, oldest)
+			t.Setenv("CRUSH_"+tc.setting, oldest)
 			require.Equal(t, tc.want(oldest), tc.got(), "the first name still works")
 			t.Setenv("KLASH_"+tc.setting, old)
 			require.Equal(t, tc.want(old), tc.got(), "the name before this one wins over it")
-			t.Setenv("BINETIC_AGENT_"+tc.setting, newer)
+			t.Setenv("GNOSH_"+tc.setting, newer)
 			require.Equal(t, tc.want(newer), tc.got(), "the new name wins")
 		})
 	}
 }
 
 // A prefixed variable stands in for the plain one while providers are
-// configured; BINETIC_AGENT_ wins over KLASH_, KLASH_ over BINETIC_AGENT_, and the plain
+// configured; GNOSH_ wins over KLASH_, KLASH_ over CRUSH_, and the plain
 // value comes back after.
-func TestPushPopBinetic AgentEnvPrefersBinetic Agent(t *testing.T) {
+func TestPushPopCrushEnvPrefersGnosh(t *testing.T) {
 	t.Setenv("PUSHPOP_TEST_KEY", "plain")
-	t.Setenv("BINETIC_AGENT_PUSHPOP_TEST_KEY", "old")
-	restore := PushPopBinetic AgentEnv()
+	t.Setenv("CRUSH_PUSHPOP_TEST_KEY", "old")
+	restore := PushPopCrushEnv()
 	require.Equal(t, "old", os.Getenv("PUSHPOP_TEST_KEY"))
 	restore()
 	require.Equal(t, "plain", os.Getenv("PUSHPOP_TEST_KEY"))
 
 	t.Setenv("KLASH_PUSHPOP_TEST_KEY", "older")
-	restore = PushPopBinetic AgentEnv()
-	require.Equal(t, "older", os.Getenv("PUSHPOP_TEST_KEY"), "KLASH_ wins over BINETIC_AGENT_")
+	restore = PushPopCrushEnv()
+	require.Equal(t, "older", os.Getenv("PUSHPOP_TEST_KEY"), "KLASH_ wins over CRUSH_")
 	restore()
 
-	t.Setenv("BINETIC_AGENT_PUSHPOP_TEST_KEY", "new")
-	restore = PushPopBinetic AgentEnv()
-	require.Equal(t, "new", os.Getenv("PUSHPOP_TEST_KEY"), "BINETIC_AGENT_ wins over BINETIC_AGENT_")
+	t.Setenv("GNOSH_PUSHPOP_TEST_KEY", "new")
+	restore = PushPopCrushEnv()
+	require.Equal(t, "new", os.Getenv("PUSHPOP_TEST_KEY"), "GNOSH_ wins over CRUSH_")
 	restore()
 	require.Equal(t, "plain", os.Getenv("PUSHPOP_TEST_KEY"))
 }
 
-// Directories and config files take the name Binetic Agent, but where only one from
-// before the renames exists, klash's or binetic_agent's, that one is used, so an
+// Directories and config files take the name Gnosh, but where only one from
+// before the renames exists, klash's or crush's, that one is used, so an
 // existing setup and its sessions keep working without being moved. Once
 // the new one exists, it wins.
-func TestPathsPreferBinetic AgentAndFallBackToOlderNames(t *testing.T) {
+func TestPathsPreferGnoshAndFallBackToOlderNames(t *testing.T) {
 	mkdir := func(t *testing.T, parts ...string) string {
 		t.Helper()
 		p := filepath.Join(parts...)
@@ -81,69 +81,69 @@ func TestPathsPreferBinetic AgentAndFallBackToOlderNames(t *testing.T) {
 	t.Run("global config", func(t *testing.T) {
 		xdg := t.TempDir()
 		t.Setenv("XDG_CONFIG_HOME", xdg)
-		t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", "") // set by TestMain for isolation
-		require.Equal(t, filepath.Join(xdg, "binetic-agent", "binetic-agent.json"), GlobalConfig(), "a fresh setup gets the new name")
+		t.Setenv("CRUSH_GLOBAL_CONFIG", "") // set by TestMain for isolation
+		require.Equal(t, filepath.Join(xdg, "gnosh", "gnosh.json"), GlobalConfig(), "a fresh setup gets the new name")
 
-		mkdir(t, xdg, "binetic_agent")
-		require.Equal(t, filepath.Join(xdg, "binetic_agent", "binetic-agent.json"), GlobalConfig(), "an existing binetic_agent directory is used")
-		old := touch(t, xdg, "binetic_agent", "binetic-agent.json")
-		require.Equal(t, old, GlobalConfig(), "and the binetic-agent.json in it")
-		require.Equal(t, filepath.Join(xdg, "binetic_agent", "skills"), GlobalSkillsDirs()[0])
+		mkdir(t, xdg, "crush")
+		require.Equal(t, filepath.Join(xdg, "crush", "gnosh.json"), GlobalConfig(), "an existing crush directory is used")
+		old := touch(t, xdg, "crush", "crush.json")
+		require.Equal(t, old, GlobalConfig(), "and the crush.json in it")
+		require.Equal(t, filepath.Join(xdg, "crush", "skills"), GlobalSkillsDirs()[0])
 
-		// A binetic-agent directory made for something else must not hide the
-		// binetic_agent one's config, hooks and skills.
-		mkdir(t, xdg, "binetic-agent", "commands")
-		require.Equal(t, old, GlobalConfig(), "a binetic-agent directory without a config does not take over")
-		require.Equal(t, filepath.Join(xdg, "binetic_agent", "skills"), GlobalSkillsDirs()[0])
+		// A gnosh directory made for something else must not hide the
+		// crush one's config, hooks and skills.
+		mkdir(t, xdg, "gnosh", "commands")
+		require.Equal(t, old, GlobalConfig(), "a gnosh directory without a config does not take over")
+		require.Equal(t, filepath.Join(xdg, "crush", "skills"), GlobalSkillsDirs()[0])
 
-		newer := touch(t, xdg, "binetic-agent", "binetic-agent.json")
-		require.Equal(t, newer, GlobalConfig(), "once the binetic-agent directory holds a config, it wins")
-		require.Equal(t, filepath.Join(xdg, "binetic-agent", "skills"), GlobalSkillsDirs()[0])
+		newer := touch(t, xdg, "gnosh", "gnosh.json")
+		require.Equal(t, newer, GlobalConfig(), "once the gnosh directory holds a config, it wins")
+		require.Equal(t, filepath.Join(xdg, "gnosh", "skills"), GlobalSkillsDirs()[0])
 	})
 
 	t.Run("global config from the klash days", func(t *testing.T) {
 		xdg := t.TempDir()
 		t.Setenv("XDG_CONFIG_HOME", xdg)
-		t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", "") // set by TestMain for isolation
-		mkdir(t, xdg, "binetic_agent")
-		touch(t, xdg, "binetic_agent", "binetic-agent.json")
+		t.Setenv("CRUSH_GLOBAL_CONFIG", "") // set by TestMain for isolation
+		mkdir(t, xdg, "crush")
+		touch(t, xdg, "crush", "crush.json")
 		mkdir(t, xdg, "klash")
 		klash := touch(t, xdg, "klash", "klash.json")
-		require.Equal(t, klash, GlobalConfig(), "klash's config wins over binetic_agent's")
+		require.Equal(t, klash, GlobalConfig(), "klash's config wins over crush's")
 		require.Equal(t, filepath.Join(xdg, "klash", "skills"), GlobalSkillsDirs()[0])
 	})
 
 	t.Run("global config from a shell config alone", func(t *testing.T) {
 		xdg := t.TempDir()
 		t.Setenv("XDG_CONFIG_HOME", xdg)
-		t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", "") // set by TestMain for isolation
-		mkdir(t, xdg, "binetic_agent")
-		touch(t, xdg, "binetic_agent", "binetic-agentrc")
-		mkdir(t, xdg, "binetic-agent", "templates")
-		require.Equal(t, filepath.Join(xdg, "binetic_agent", "binetic-agent.json"), GlobalConfig(),
-			"a binetic_agent directory with only a binetic-agentrc is in use")
+		t.Setenv("CRUSH_GLOBAL_CONFIG", "") // set by TestMain for isolation
+		mkdir(t, xdg, "crush")
+		touch(t, xdg, "crush", "crushrc")
+		mkdir(t, xdg, "gnosh", "templates")
+		require.Equal(t, filepath.Join(xdg, "crush", "gnosh.json"), GlobalConfig(),
+			"a crush directory with only a crushrc is in use")
 	})
 
 	t.Run("global data", func(t *testing.T) {
 		xdg := t.TempDir()
 		t.Setenv("XDG_DATA_HOME", xdg)
-		t.Setenv("BINETIC_AGENT_GLOBAL_DATA", "") // set by TestMain for isolation
-		require.Equal(t, filepath.Join(xdg, "binetic-agent", "binetic-agent.json"), GlobalConfigData())
-		mkdir(t, xdg, "binetic_agent")
-		old := touch(t, xdg, "binetic_agent", "binetic-agent.json")
+		t.Setenv("CRUSH_GLOBAL_DATA", "") // set by TestMain for isolation
+		require.Equal(t, filepath.Join(xdg, "gnosh", "gnosh.json"), GlobalConfigData())
+		mkdir(t, xdg, "crush")
+		old := touch(t, xdg, "crush", "crush.json")
 		require.Equal(t, old, GlobalConfigData(), "an existing setup's data directory is used")
-		mkdir(t, xdg, "binetic-agent", "logs")
-		require.Equal(t, old, GlobalConfigData(), "its OAuth tokens are not hidden by a bare binetic-agent directory")
+		mkdir(t, xdg, "gnosh", "logs")
+		require.Equal(t, old, GlobalConfigData(), "its OAuth tokens are not hidden by a bare gnosh directory")
 	})
 
 	t.Run("cache", func(t *testing.T) {
 		xdg := t.TempDir()
 		t.Setenv("XDG_CACHE_HOME", xdg)
-		require.Equal(t, filepath.Join(xdg, "binetic-agent"), GlobalCacheDir())
-		old := mkdir(t, xdg, "binetic_agent")
+		require.Equal(t, filepath.Join(xdg, "gnosh"), GlobalCacheDir())
+		old := mkdir(t, xdg, "crush")
 		require.Equal(t, old, GlobalCacheDir())
 		klash := mkdir(t, xdg, "klash")
-		require.Equal(t, klash, GlobalCacheDir(), "klash's before binetic_agent's")
+		require.Equal(t, klash, GlobalCacheDir(), "klash's before crush's")
 	})
 
 	t.Run("project data directory", func(t *testing.T) {
@@ -152,12 +152,12 @@ func TestPathsPreferBinetic AgentAndFallBackToOlderNames(t *testing.T) {
 			exists []string
 			want   string
 		}{
-			{"fresh project", nil, ".binetic-agent"},
-			{"project from before the rename", []string{".binetic-agent"}, ".binetic-agent"},
-			{"both", []string{".binetic-agent", ".binetic-agent"}, ".binetic-agent"},
+			{"fresh project", nil, ".gnosh"},
+			{"project from before the rename", []string{".crush"}, ".crush"},
+			{"both", []string{".crush", ".gnosh"}, ".gnosh"},
 			{"project from the klash days", []string{".klash"}, ".klash"},
-			{"klash's and binetic_agent's", []string{".binetic-agent", ".klash"}, ".klash"},
-			{"all three", []string{".binetic-agent", ".klash", ".binetic-agent"}, ".binetic-agent"},
+			{"klash's and crush's", []string{".crush", ".klash"}, ".klash"},
+			{"all three", []string{".crush", ".klash", ".gnosh"}, ".gnosh"},
 		} {
 			t.Run(tc.name, func(t *testing.T) {
 				workingDir := t.TempDir()
@@ -175,26 +175,26 @@ func TestPathsPreferBinetic AgentAndFallBackToOlderNames(t *testing.T) {
 		t.Setenv("XDG_CONFIG_HOME", t.TempDir())
 		t.Setenv("XDG_DATA_HOME", t.TempDir())
 		cwd := t.TempDir()
-		old := touch(t, cwd, "binetic-agent.json")
-		newer := touch(t, cwd, "binetic-agent.json")
+		old := touch(t, cwd, "crush.json")
+		newer := touch(t, cwd, "gnosh.json")
 		paths := lookupConfigs(cwd)
-		require.Contains(t, paths, old, "a binetic-agent.json is still read")
+		require.Contains(t, paths, old, "a crush.json is still read")
 		require.Contains(t, paths, newer)
-		require.Greater(t, slices.Index(paths, newer), slices.Index(paths, old), "binetic-agent.json is merged later, so it wins")
+		require.Greater(t, slices.Index(paths, newer), slices.Index(paths, old), "gnosh.json is merged later, so it wins")
 	})
 }
 
-// A log directory's log is binetic-agent.log, or the klash.log or binetic_agent.log from
+// A log directory's log is gnosh.log, or the klash.log or crush.log from
 // before the renames where only that one exists.
 func TestLogFile(t *testing.T) {
 	t.Parallel()
 
 	dir := t.TempDir()
-	require.Equal(t, filepath.Join(dir, "binetic-agent.log"), LogFile(dir))
-	require.NoError(t, os.WriteFile(filepath.Join(dir, "binetic_agent.log"), nil, 0o644))
-	require.Equal(t, filepath.Join(dir, "binetic_agent.log"), LogFile(dir), "an existing log keeps growing")
+	require.Equal(t, filepath.Join(dir, "gnosh.log"), LogFile(dir))
+	require.NoError(t, os.WriteFile(filepath.Join(dir, "crush.log"), nil, 0o644))
+	require.Equal(t, filepath.Join(dir, "crush.log"), LogFile(dir), "an existing log keeps growing")
 	require.NoError(t, os.WriteFile(filepath.Join(dir, "klash.log"), nil, 0o644))
-	require.Equal(t, filepath.Join(dir, "klash.log"), LogFile(dir), "klash's before binetic_agent's")
-	require.NoError(t, os.WriteFile(filepath.Join(dir, "binetic-agent.log"), nil, 0o644))
-	require.Equal(t, filepath.Join(dir, "binetic-agent.log"), LogFile(dir))
+	require.Equal(t, filepath.Join(dir, "klash.log"), LogFile(dir), "klash's before crush's")
+	require.NoError(t, os.WriteFile(filepath.Join(dir, "gnosh.log"), nil, 0o644))
+	require.Equal(t, filepath.Join(dir, "gnosh.log"), LogFile(dir))
 }

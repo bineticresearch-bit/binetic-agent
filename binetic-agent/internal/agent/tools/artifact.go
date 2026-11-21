@@ -11,10 +11,10 @@ import (
 	"strings"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/filepathext"
-	"github.com/charmbracelet/binetic_agent/internal/fsext"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/filepathext"
+	"github.com/charmbracelet/crush/internal/fsext"
+	"github.com/charmbracelet/crush/internal/permission"
 	"mvdan.cc/sh/v3/syntax"
 )
 
@@ -61,7 +61,7 @@ type ArtifactResponseMetadata struct {
 }
 
 // ArtifactPublisher serves a recorded file so the user can open it from
-// another machine; artifacts.Server is the one Binetic Agent uses. Register
+// another machine; artifacts.Server is the one Gnosh uses. Register
 // returns the URL of a file of this machine, or "" when artifacts are
 // not served, and CacheDir is where a copy from another machine belongs.
 type ArtifactPublisher interface {

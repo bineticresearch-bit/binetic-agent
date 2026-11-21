@@ -15,7 +15,7 @@ import (
 	"charm.land/glamour/v2/ansi"
 	"charm.land/lipgloss/v2"
 	"github.com/alecthomas/chroma/v2"
-	"github.com/charmbracelet/binetic_agent/internal/ui/diffview"
+	"github.com/charmbracelet/crush/internal/ui/diffview"
 	uv "github.com/charmbracelet/ultraviolet"
 )
 
@@ -92,7 +92,7 @@ type Styles struct {
 	// basic 16-color SGR codes (red, green, blue, …) and leave the actual
 	// colors up to the terminal; without this palette they fall through
 	// to the user's terminal defaults, which are often illegible on
-	// Binetic Agent's background. Defining them here keeps output readable and
+	// Crush's background. Defining them here keeps output readable and
 	// on-brand regardless of terminal configuration.
 	ANSI [16]color.Color
 
@@ -108,9 +108,9 @@ type Styles struct {
 		GitBranch         lipgloss.Style // Style for the current git branch name
 		Separator         lipgloss.Style // Style for separator dots (•)
 		Wrapper           lipgloss.Style // Outer container for the entire header row
-		LogoGradCanvas    lipgloss.Style // Canvas for the compact "BINETIC_AGENT" gradient
-		LogoGradFromColor color.Color    // "BINETIC_AGENT" wordmark gradient start
-		LogoGradToColor   color.Color    // "BINETIC_AGENT" wordmark gradient end
+		LogoGradCanvas    lipgloss.Style // Canvas for the compact "CRUSH" gradient
+		LogoGradFromColor color.Color    // "CRUSH" wordmark gradient start
+		LogoGradToColor   color.Color    // "CRUSH" wordmark gradient end
 	}
 
 	CompactDetails struct {
@@ -231,8 +231,8 @@ type Styles struct {
 		SmallCharm         lipgloss.Style // maker's mark in SmallRender
 		SmallDiagonals     lipgloss.Style // Diagonal line fill in SmallRender
 		GradCanvas         lipgloss.Style // Blank canvas for gradient painting
-		SmallGradFromColor color.Color    // Small "Binetic Agent" wordmark gradient start
-		SmallGradToColor   color.Color    // Small "Binetic Agent" wordmark gradient end
+		SmallGradFromColor color.Color    // Small "Crush" wordmark gradient start
+		SmallGradToColor   color.Color    // Small "Crush" wordmark gradient end
 		// GnoColor, when set, is the one color of Gno, the name's first three
 		// letters, in every wordmark on a terminal without 24-bit color, where
 		// a fade over the whole name bands into stripes; the rest of the name

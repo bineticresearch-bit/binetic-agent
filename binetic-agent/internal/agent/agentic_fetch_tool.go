@@ -11,12 +11,12 @@ import (
 
 	"charm.land/fantasy"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/prompt"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/filetracker"
-	"github.com/charmbracelet/binetic_agent/internal/lsp"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
+	"github.com/charmbracelet/crush/internal/agent/prompt"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/filetracker"
+	"github.com/charmbracelet/crush/internal/lsp"
+	"github.com/charmbracelet/crush/internal/permission"
 )
 
 //go:embed templates/agentic_fetch.md
@@ -102,7 +102,7 @@ func (c *coordinator) agenticFetchTool(_ context.Context, client *http.Client) (
 				return tools.NewPermissionDeniedResponse(), nil
 			}
 
-			tmpDir, err := os.MkdirTemp(c.cfg.Config().Options.DataDirectory, "binetic_agent-fetch-*")
+			tmpDir, err := os.MkdirTemp(c.cfg.Config().Options.DataDirectory, "crush-fetch-*")
 			if err != nil {
 				return fantasy.NewTextErrorResponse(fmt.Sprintf("Failed to create temporary directory: %s", err)), nil
 			}

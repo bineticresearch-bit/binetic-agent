@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/charmbracelet/binetic_agent/internal/ui/util"
+	"github.com/charmbracelet/crush/internal/ui/util"
 )
 
 // addDir adds a working directory for the session, as Claude Code's

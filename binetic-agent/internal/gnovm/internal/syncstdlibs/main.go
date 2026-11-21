@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -9,12 +9,12 @@
 
 // Command syncstdlibs copies the Gno standard library sources from the
 // github.com/gnolang/gno version in go.mod into internal/gnovm/stdlibs, where
-// they are embedded: a deployed binetic-agent has no GNOROOT to load them from.
-// (klashlibs is not generated: it is binetic-agent's own, except klash/bptree/v0, a
+// they are embedded: a deployed gnosh has no GNOROOT to load them from.
+// (klashlibs is not generated: it is gnosh's own, except klash/bptree/v0, a
 // copy of gno's p/nt/bptree/v0 made by hand.)
 // Run it with `go generate ./internal/gnovm` after changing the gno version. The
 // copy's VERSION file must match go.mod, or TestEmbeddedStdlibsVersion fails,
-// since the embedded sources and the native bindings compiled into binetic-agent must
+// since the embedded sources and the native bindings compiled into gnosh must
 // come from the same gno.
 package main
 

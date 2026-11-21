@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -169,7 +169,7 @@ func (er memErasure) scrub(s string) string {
 //     and the entries that had one their statements.
 //
 // Kinds, fields, status words and who made what are left as they are. It
-// returns the entries, and what binetic-agent's own copies must lose too (see
+// returns the entries, and what gnosh's own copies must lose too (see
 // MemErasure): the goals renamed, old name to new, the texts erased, each
 // with what took its place, and the names forgotten.
 func erase(entries []memEntry, er memErasure) ([]memEntry, MemErasure) {

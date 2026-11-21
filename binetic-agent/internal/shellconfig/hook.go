@@ -8,7 +8,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/shell"
+	"github.com/charmbracelet/crush/internal/shell"
 )
 
 // handleHook implements the `hook` builtin.
@@ -48,8 +48,8 @@ func handleHook(ctx context.Context, args []string, stdin io.Reader, stdout, std
 //
 // Checking here matters because the loader rejects an unknown event
 // name outright: without this, `hook add pre_tool_use ...` would write a
-// binetic-agentrc that Binetic Agent then refuses to start with — a startup failure
-// caused by a command Binetic Agent itself offers. Better to fail on the line
+// crushrc that Crush then refuses to start with — a startup failure
+// caused by a command Crush itself offers. Better to fail on the line
 // that is wrong.
 var knownHookEvents = []string{"PreToolUse", "PostToolUse", "PostToolUseFailure", "UserPromptSubmit", "SessionStart", "Stop", "SubagentStart", "SubagentStop", "StopFailure", "PreCompact", "PostCompact", "SessionEnd", "InstructionsLoaded", "PermissionRequest", "Notification"}
 

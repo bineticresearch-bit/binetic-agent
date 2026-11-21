@@ -4,8 +4,8 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/version"
 )
 
 // orphanNote is the finish message stored on an assistant message that was

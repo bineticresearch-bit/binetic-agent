@@ -4,10 +4,10 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/permission"
+	"github.com/charmbracelet/crush/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/ui/styles"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/stretchr/testify/require"
 )

@@ -11,11 +11,11 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/ui/anim"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/ui/anim"
+	"github.com/charmbracelet/crush/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/ui/styles"
 	uv "github.com/charmbracelet/ultraviolet"
 	"github.com/charmbracelet/x/ansi"
 )
@@ -32,7 +32,7 @@ type SessionArtifact struct {
 	// CallID is the artifact tool call this came from, which its result
 	// carries the URL under.
 	CallID string
-	// URL is where Binetic Agent serves the artifact, so the user can open it
+	// URL is where Gnosh serves the artifact, so the user can open it
 	// from the machine they are sitting at. Empty when it is not served
 	// (artifact_server "off", or a session from before it was): then the
 	// sidebar shows the path, which only helps on this machine.
@@ -323,7 +323,7 @@ func (m *UI) artifactAt(x, y int) (SessionArtifact, bool) {
 
 // copyArtifactAt copies the artifact under a left click in the sidebar —
 // the URL it is served at, or its path when nothing serves it — so the
-// user can paste it into a browser on their own machine: Binetic Agent usually
+// user can paste it into a browser on their own machine: Gnosh usually
 // runs on another, where it cannot open anything for them. A pending
 // artifact has nothing to copy yet.
 func (m *UI) copyArtifactAt(msg tea.MouseClickMsg) tea.Cmd {

@@ -8,33 +8,33 @@ import (
 	"os/exec"
 	"runtime"
 
-	"github.com/charmbracelet/binetic_agent/internal/clipboard"
-	"github.com/charmbracelet/binetic_agent/internal/cliprelay"
+	"github.com/charmbracelet/crush/internal/clipboard"
+	"github.com/charmbracelet/crush/internal/cliprelay"
 	"github.com/spf13/cobra"
 )
 
-// sshCmd is binetic-agent ssh in binetic-agent --help. main runs binetic-agent ssh through SSH
-// before anything else binetic-agent does at start.
+// sshCmd is gnosh ssh in gnosh --help. main runs gnosh ssh through SSH
+// before anything else gnosh does at start.
 var sshCmd = &cobra.Command{
 	Use:   "ssh [ssh arguments]",
 	Short: "Run ssh, and bring what is copied on the far side to this computer's clipboard",
 	Long: `Run ssh with the arguments as given, and put the text a program on the far
-side copies, as binetic-agent does when you select text with the mouse, on this
+side copies, as gnosh does when you select text with the mouse, on this
 computer's clipboard.
 
 A program sets the clipboard of the terminal it is shown in with an escape
 code, OSC 52, and some terminals ignore it: Apple's Terminal does, so a copy
-made in binetic-agent over ssh never arrives there, though binetic-agent says it was made.
-binetic-agent ssh stands between the terminal and ssh, passes everything through
+made in gnosh over ssh never arrives there, though gnosh says it was made.
+gnosh ssh stands between the terminal and ssh, passes everything through
 untouched, and puts each copy on the clipboard itself. Inside tmux on the
 far side, "set -g set-clipboard on" in ~/.tmux.conf lets the copies out of
 tmux. A request to read this computer's clipboard is never answered.`,
 	Example: `
 # Instead of ssh devbox
-binetic-agent ssh devbox
+gnosh ssh devbox
 
 # In ~/.zshrc or ~/.bashrc, so that ssh typed in Apple's Terminal does this
-[[ $TERM_PROGRAM == Apple_Terminal ]] && ssh() { binetic-agent ssh "$@"; }
+[[ $TERM_PROGRAM == Apple_Terminal ]] && ssh() { gnosh ssh "$@"; }
   `,
 	DisableFlagParsing:    true,
 	DisableFlagsInUseLine: true,
@@ -48,7 +48,7 @@ func init() {
 	}
 }
 
-// SSH runs binetic-agent ssh with args, the words after "ssh", and returns its exit
+// SSH runs gnosh ssh with args, the words after "ssh", and returns its exit
 // status: ssh's, or 255, ssh's own for its failures, when ssh did not run.
 func SSH(args []string) int {
 	if len(args) == 1 && (args[0] == "-h" || args[0] == "--help") {
@@ -57,19 +57,19 @@ func SSH(args []string) int {
 	}
 	path, err := exec.LookPath("ssh")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "binetic-agent ssh:", err)
+		fmt.Fprintln(os.Stderr, "gnosh ssh:", err)
 		return 255
 	}
 	ssh := exec.CommandContext(context.Background(), path, args...)
 	status, err := cliprelay.Run(ssh, os.Stdin, os.Stdout, setClipboard)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "binetic-agent ssh:", err)
+		fmt.Fprintln(os.Stderr, "gnosh ssh:", err)
 		return 255
 	}
 	return status
 }
 
-// setClipboard puts text on this computer's clipboard the way binetic-agent's own
+// setClipboard puts text on this computer's clipboard the way gnosh's own
 // copies go there, and on macOS through pbcopy should that fail.
 func setClipboard(text []byte) {
 	if clipboard.WriteText(string(text)) == nil || runtime.GOOS != "darwin" {

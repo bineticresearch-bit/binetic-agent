@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent"
+	"github.com/charmbracelet/crush/internal/agent"
 )
 
 // errAgentNotReady is the answer about a goal before the agent is.

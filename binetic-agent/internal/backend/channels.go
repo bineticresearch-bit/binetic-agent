@@ -6,9 +6,9 @@ import (
 	"sort"
 	"sync"
 
-	mcptools "github.com/charmbracelet/binetic_agent/internal/agent/tools/mcp"
-	"github.com/charmbracelet/binetic_agent/internal/proto"
-	"github.com/charmbracelet/binetic_agent/internal/session"
+	mcptools "github.com/charmbracelet/crush/internal/agent/tools/mcp"
+	"github.com/charmbracelet/crush/internal/proto"
+	"github.com/charmbracelet/crush/internal/session"
 )
 
 // channelSessionStore is the slice of session.Service the channel router
@@ -26,7 +26,7 @@ type channelSessionStore interface {
 // frontends do not inject (see workspace.ClientWorkspace.RoutesChannelEvents),
 // so a push is processed once no matter how many clients are attached —
 // including zero, which keeps the "a pushed event is never dropped"
-// contract for a headless `binetic_agent serve`.
+// contract for a headless `crush serve`.
 //
 // Events are drained sequentially from the subscription, so pushes keep
 // their arrival order. Delivery to multiple workspaces within one event

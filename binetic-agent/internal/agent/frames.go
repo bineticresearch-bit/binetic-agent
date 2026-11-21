@@ -13,17 +13,17 @@ import (
 	"sync"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/filetracker"
-	"github.com/charmbracelet/binetic_agent/internal/gnovm"
-	gnovmtools "github.com/charmbracelet/binetic_agent/internal/gnovm/tools"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
-	"github.com/charmbracelet/binetic_agent/internal/session"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/filetracker"
+	"github.com/charmbracelet/crush/internal/gnovm"
+	gnovmtools "github.com/charmbracelet/crush/internal/gnovm/tools"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/session"
 )
 
-// frameStacks is what binetic-agent keeps of the sessions' frames in mem
+// frameStacks is what gnosh keeps of the sessions' frames in mem
 // (FRAMES.md): nothing of its own. A session's stack is derived from its
 // rows, the gnovm_run results whose metadata carries the frames a call to
 // mem pushed and popped, each stamped with the session that made it, so a
@@ -851,7 +851,7 @@ func poppedRows(msgs []message.Message, pushCallID, popCallID string) []message.
 // (turnRows). A turn begins with a prompt the user typed after the model's
 // answer (an assistant row with no tool call), after a summary, or at the
 // start, together with the user rows between that answer and the prompt; a
-// prompt binetic-agent folded into the turn, and its hidden continuations (a goal's
+// prompt gnosh folded into the turn, and its hidden continuations (a goal's
 // verdict, a Stop hook's, a loop's nudge), belong to the turn they continue.
 // 0 when no such prompt comes before the pop, -1 when the pop is not among
 // msgs.

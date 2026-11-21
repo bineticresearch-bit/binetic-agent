@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/lock"
+	"github.com/charmbracelet/crush/internal/lock"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/goleak"
 )
@@ -64,7 +64,7 @@ func TestRelease_NoopForUnknownDataDir(t *testing.T) {
 	require.NoError(t, Release("/nonexistent/path"), "releasing unknown data dir should not error")
 }
 
-// TestConnect_FailsWhenDataDirLocked simulates a second binetic_agent process by
+// TestConnect_FailsWhenDataDirLocked simulates a second crush process by
 // taking the data-dir lock directly via the OS primitive on a separate
 // file descriptor and then asserting that Connect surfaces a clean
 // ErrDataDirLocked instead of opening the database under contention.
@@ -170,7 +170,7 @@ func TestConnect_SkipLockEnvBypassesAcquisition(t *testing.T) {
 	require.NoError(t, err)
 	t.Cleanup(release)
 
-	t.Setenv("BINETIC_AGENT_SKIP_DATADIR_LOCK", "1")
+	t.Setenv("CRUSH_SKIP_DATADIR_LOCK", "1")
 
 	conn, err := Connect(context.Background(), dataDir, WithDataDirLock(true))
 	require.NoError(t, err, "skip-lock env should bypass contention")
@@ -217,12 +217,12 @@ func TestConnect_ServerPathFailsWhenDataDirLocked(t *testing.T) {
 	require.ErrorIs(t, err, ErrDataDirLocked)
 }
 
-// A data directory removed while binetic-agent runs (a project generator that
+// A data directory removed while gnosh runs (a project generator that
 // wants an empty folder) is written back from the open database, and
 // what is written after goes to the restored file.
 func TestConnect_RestoresRemovedDataDir(t *testing.T) {
 	warnings := captureWarnings(t)
-	dataDir := filepath.Join(t.TempDir(), ".binetic-agent")
+	dataDir := filepath.Join(t.TempDir(), ".gnosh")
 	t.Cleanup(ResetPool)
 	conn, err := Connect(t.Context(), dataDir, WithRestore(true), checkOften)
 	require.NoError(t, err)
@@ -237,7 +237,7 @@ func TestConnect_RestoresRemovedDataDir(t *testing.T) {
 	require.NoError(t, os.RemoveAll(dataDir))
 	createSession("after-removal")
 
-	dbPath := filepath.Join(dataDir, "binetic-agent.db")
+	dbPath := filepath.Join(dataDir, "gnosh.db")
 	require.Eventually(t, func() bool {
 		ids, err := sessionIDsIn(t.Context(), dbPath)
 		return err == nil && len(ids) == 2
@@ -263,14 +263,14 @@ func TestConnect_RestoresRemovedDataDir(t *testing.T) {
 // A data directory removed again after a restore, with no query in
 // between, is restored again.
 func TestConnect_RestoresADataDirRemovedTwice(t *testing.T) {
-	dataDir := filepath.Join(t.TempDir(), ".binetic-agent")
+	dataDir := filepath.Join(t.TempDir(), ".gnosh")
 	t.Cleanup(ResetPool)
 	conn, err := Connect(t.Context(), dataDir, WithRestore(true), checkOften)
 	require.NoError(t, err)
 	_, err = New(conn).CreateSession(t.Context(), CreateSessionParams{ID: "kept", Title: "kept"})
 	require.NoError(t, err)
 
-	dbPath := filepath.Join(dataDir, "binetic-agent.db")
+	dbPath := filepath.Join(dataDir, "gnosh.db")
 	want := []string{"kept"}
 	holds := func() bool {
 		ids, err := sessionIDsIn(t.Context(), dbPath)
@@ -279,7 +279,7 @@ func TestConnect_RestoresADataDirRemovedTwice(t *testing.T) {
 	for i := range 2 {
 		require.NoError(t, os.RemoveAll(dataDir))
 		require.Eventually(t, holds, 5*time.Second, 10*time.Millisecond, "removal %d is not restored", i+1)
-		// What binetic-agent writes next lands in the restored file. Once it is
+		// What gnosh writes next lands in the restored file. Once it is
 		// there the pool holds that file, as it held the removed one, and
 		// the next removal is restored from it. (A removal before the pool
 		// reopens the file finds nothing holding it: that gap is the
@@ -292,10 +292,10 @@ func TestConnect_RestoresADataDirRemovedTwice(t *testing.T) {
 	}
 }
 
-// A data directory removed since the last check, just before binetic-agent exits,
+// A data directory removed since the last check, just before gnosh exits,
 // is restored before the pool closes the removed file.
 func TestRelease_RestoresARemovalSinceTheLastCheck(t *testing.T) {
-	dataDir := filepath.Join(t.TempDir(), ".binetic-agent")
+	dataDir := filepath.Join(t.TempDir(), ".gnosh")
 	t.Cleanup(ResetPool)
 	conn, err := Connect(t.Context(), dataDir, WithRestore(true), checkRarely)
 	require.NoError(t, err)
@@ -304,7 +304,7 @@ func TestRelease_RestoresARemovalSinceTheLastCheck(t *testing.T) {
 	require.NoError(t, os.RemoveAll(dataDir))
 
 	require.NoError(t, Release(dataDir))
-	ids, err := sessionIDsIn(t.Context(), filepath.Join(dataDir, "binetic-agent.db"))
+	ids, err := sessionIDsIn(t.Context(), filepath.Join(dataDir, "gnosh.db"))
 	require.NoError(t, err)
 	require.Equal(t, []string{"kept"}, ids)
 }
@@ -313,17 +313,17 @@ func TestRelease_RestoresARemovalSinceTheLastCheck(t *testing.T) {
 // the lock named for its database.
 func TestConnect_LocksRestoredDataDir(t *testing.T) {
 	for name, db := range map[string]string{
-		"binetic-agent.db":                "",
-		"from before the renames": "binetic_agent.db",
+		"gnosh.db":                "",
+		"from before the renames": "crush.db",
 	} {
 		t.Run(name, func(t *testing.T) {
-			dataDir := filepath.Join(t.TempDir(), ".binetic-agent")
+			dataDir := filepath.Join(t.TempDir(), ".gnosh")
 			t.Cleanup(ResetPool)
-			lockName := "binetic-agent.lock"
+			lockName := "gnosh.lock"
 			if db != "" {
 				require.NoError(t, os.Mkdir(dataDir, 0o700))
 				require.NoError(t, os.WriteFile(filepath.Join(dataDir, db), nil, 0o600))
-				lockName = "binetic_agent.lock"
+				lockName = "crush.lock"
 			}
 			_, err := Connect(t.Context(), dataDir, WithDataDirLock(true), WithRestore(true), checkOften)
 			require.NoError(t, err)
@@ -342,25 +342,25 @@ func TestConnect_LocksRestoredDataDir(t *testing.T) {
 	}
 }
 
-// A removed data directory that another binetic-agent made again and locked is
+// A removed data directory that another gnosh made again and locked is
 // left to it: the open database is not copied into it.
 func TestConnect_LeavesARemovedDataDirAnotherLocked(t *testing.T) {
-	dataDir := filepath.Join(t.TempDir(), ".binetic-agent")
+	dataDir := filepath.Join(t.TempDir(), ".gnosh")
 	t.Cleanup(ResetPool)
 	_, err := Connect(t.Context(), dataDir, WithDataDirLock(true), WithRestore(true), checkRarely)
 	require.NoError(t, err)
 	require.NoError(t, os.RemoveAll(dataDir))
 
 	require.NoError(t, os.Mkdir(dataDir, 0o700))
-	release, err := lock.TryFile(filepath.Join(dataDir, "binetic-agent.lock"))
+	release, err := lock.TryFile(filepath.Join(dataDir, "gnosh.lock"))
 	require.NoError(t, err)
 	defer release()
 
 	require.NoError(t, Release(dataDir))
-	require.NoFileExists(t, filepath.Join(dataDir, "binetic-agent.db"))
+	require.NoFileExists(t, filepath.Join(dataDir, "gnosh.db"))
 }
 
-// Another file put at the database path while binetic-agent runs is never written
+// Another file put at the database path while gnosh runs is never written
 // over. An empty one, since VACUUM INTO itself refuses a file with
 // anything in it.
 func TestConnect_LeavesAnotherFileAtTheDatabasePath(t *testing.T) {
@@ -373,7 +373,7 @@ func TestConnect_LeavesAnotherFileAtTheDatabasePath(t *testing.T) {
 	require.NoError(t, err)
 
 	// Renamed over the database, so the path is never missing.
-	dbPath := filepath.Join(dataDir, "binetic-agent.db")
+	dbPath := filepath.Join(dataDir, "gnosh.db")
 	other := filepath.Join(dataDir, "other.db")
 	require.NoError(t, os.WriteFile(other, nil, 0o600))
 	require.NoError(t, os.Rename(other, dbPath))
@@ -394,7 +394,7 @@ func TestConnect_RestoreLeavesAFileThatAppearsAtThePath(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, os.RemoveAll(dataDir))
 	require.NoError(t, os.Mkdir(dataDir, 0o700))
-	dbPath := filepath.Join(dataDir, "binetic-agent.db")
+	dbPath := filepath.Join(dataDir, "gnosh.db")
 	require.NoError(t, os.WriteFile(dbPath, nil, 0o600))
 
 	// As a check that found the path free just before the file came.
@@ -409,7 +409,7 @@ func TestConnect_RestoreLeavesAFileThatAppearsAtThePath(t *testing.T) {
 	for _, entry := range entries {
 		names = append(names, entry.Name())
 	}
-	require.ElementsMatch(t, []string{".gitignore", "binetic-agent.db"}, names)
+	require.ElementsMatch(t, []string{".gitignore", "gnosh.db"}, names)
 }
 
 // Dropping an entry stops the check of its file with it.
@@ -445,12 +445,12 @@ func TestConnect_ChecksNoFileWithoutRestore(t *testing.T) {
 // A pool is found by its data directory, also once the directory was
 // removed with a database from before the renames in it, which FileName
 // can then no longer name: Connect joins the pool instead of opening a new
-// binetic-agent.db, and Release stops the pool's check.
+// gnosh.db, and Release stops the pool's check.
 func TestConnect_FindsARemovedDataDirByItsPath(t *testing.T) {
 	ignore := goleak.IgnoreCurrent()
 	dataDir := t.TempDir()
 	t.Cleanup(ResetPool)
-	require.NoError(t, os.WriteFile(filepath.Join(dataDir, "binetic_agent.db"), nil, 0o600))
+	require.NoError(t, os.WriteFile(filepath.Join(dataDir, "crush.db"), nil, 0o600))
 	conn, err := Connect(t.Context(), dataDir, WithRestore(true), checkRarely)
 	require.NoError(t, err)
 	require.NoError(t, os.RemoveAll(dataDir))
@@ -458,7 +458,7 @@ func TestConnect_FindsARemovedDataDirByItsPath(t *testing.T) {
 	again, err := Connect(t.Context(), dataDir, WithRestore(true), checkRarely)
 	require.NoError(t, err)
 	require.Same(t, conn, again, "a second pool on the removed directory")
-	require.NoFileExists(t, filepath.Join(dataDir, "binetic-agent.db"))
+	require.NoFileExists(t, filepath.Join(dataDir, "gnosh.db"))
 
 	require.NoError(t, Release(dataDir))
 	require.NoError(t, Release(dataDir))
@@ -469,7 +469,7 @@ func TestConnect_FindsARemovedDataDirByItsPath(t *testing.T) {
 // one was: a failed restore after another file stood at the path.
 func TestConnect_WarnsOfEachNewTrouble(t *testing.T) {
 	warnings := captureWarnings(t)
-	dataDir := filepath.Join(t.TempDir(), ".binetic-agent")
+	dataDir := filepath.Join(t.TempDir(), ".gnosh")
 	t.Cleanup(ResetPool)
 	_, err := Connect(t.Context(), dataDir, WithDataDirLock(true), WithRestore(true), checkRarely)
 	require.NoError(t, err)
@@ -477,14 +477,14 @@ func TestConnect_WarnsOfEachNewTrouble(t *testing.T) {
 
 	other := filepath.Join(dataDir, "other.db")
 	require.NoError(t, os.WriteFile(other, nil, 0o600))
-	require.NoError(t, os.Rename(other, filepath.Join(dataDir, "binetic-agent.db")))
+	require.NoError(t, os.Rename(other, filepath.Join(dataDir, "gnosh.db")))
 	entry.checkFile(t.Context())
 	entry.checkFile(t.Context())
 	require.Equal(t, 1, strings.Count(warnings(), "Another file is at the database path"), warnings())
 
 	require.NoError(t, os.RemoveAll(dataDir))
 	require.NoError(t, os.Mkdir(dataDir, 0o700))
-	release, err := lock.TryFile(filepath.Join(dataDir, "binetic-agent.lock"))
+	release, err := lock.TryFile(filepath.Join(dataDir, "gnosh.lock"))
 	require.NoError(t, err)
 	defer release()
 	entry.checkFile(t.Context())
@@ -547,9 +547,9 @@ func sessionIDsIn(ctx context.Context, dbPath string) ([]string, error) {
 	return ids, nil
 }
 
-// A new data directory gets binetic-agent.db and binetic-agent.lock; one that already
-// holds the binetic_agent.db from before the rename keeps it, and locks
-// binetic_agent.lock as an older process sharing it does, so the two cannot open
+// A new data directory gets gnosh.db and gnosh.lock; one that already
+// holds the crush.db from before the rename keeps it, and locks
+// crush.lock as an older process sharing it does, so the two cannot open
 // it at once.
 func TestDataFileNames(t *testing.T) {
 	t.Cleanup(ResetPool)
@@ -558,21 +558,21 @@ func TestDataFileNames(t *testing.T) {
 	conn, err := Connect(context.Background(), fresh)
 	require.NoError(t, err)
 	require.NoError(t, conn.PingContext(context.Background()))
-	require.FileExists(t, filepath.Join(fresh, "binetic-agent.db"))
-	require.NoFileExists(t, filepath.Join(fresh, "binetic_agent.db"))
-	require.Equal(t, filepath.Join(fresh, "binetic-agent.lock"), dataDirLockFile(fresh))
+	require.FileExists(t, filepath.Join(fresh, "gnosh.db"))
+	require.NoFileExists(t, filepath.Join(fresh, "crush.db"))
+	require.Equal(t, filepath.Join(fresh, "gnosh.lock"), dataDirLockFile(fresh))
 	require.NoError(t, Release(fresh))
 
 	// An existing database from before the rename is opened, not
-	// replaced by a new, empty binetic-agent.db beside it.
+	// replaced by a new, empty gnosh.db beside it.
 	old := t.TempDir()
-	require.NoError(t, os.Rename(filepath.Join(fresh, "binetic-agent.db"), filepath.Join(old, "binetic_agent.db")))
+	require.NoError(t, os.Rename(filepath.Join(fresh, "gnosh.db"), filepath.Join(old, "crush.db")))
 	conn, err = Connect(context.Background(), old)
 	require.NoError(t, err)
 	require.NoError(t, conn.PingContext(context.Background()))
-	require.NoFileExists(t, filepath.Join(old, "binetic-agent.db"))
-	require.Equal(t, filepath.Join(old, "binetic_agent.db"), FileName(old))
-	require.Equal(t, filepath.Join(old, "binetic_agent.lock"), dataDirLockFile(old))
+	require.NoFileExists(t, filepath.Join(old, "gnosh.db"))
+	require.Equal(t, filepath.Join(old, "crush.db"), FileName(old))
+	require.Equal(t, filepath.Join(old, "crush.lock"), dataDirLockFile(old))
 	require.NoError(t, Release(old))
 }
 
@@ -584,7 +584,7 @@ func TestWriteGitIgnore(t *testing.T) {
 		want     string
 	}{
 		"none yet":      {want: "*\n"},
-		"already there": {existing: "binetic-agent.db\n", want: "binetic-agent.db\n"},
+		"already there": {existing: "gnosh.db\n", want: "gnosh.db\n"},
 	}
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {

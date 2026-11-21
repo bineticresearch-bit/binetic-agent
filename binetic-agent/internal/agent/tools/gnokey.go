@@ -15,8 +15,8 @@ import (
 	"time"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
-	"github.com/charmbracelet/binetic_agent/internal/question"
+	"github.com/charmbracelet/crush/internal/permission"
+	"github.com/charmbracelet/crush/internal/question"
 	"mvdan.cc/sh/v3/shell"
 )
 

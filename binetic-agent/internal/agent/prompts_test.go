@@ -9,7 +9,7 @@ import (
 
 func TestLoadTemplateUsesTheUsersFile(t *testing.T) {
 	dir := t.TempDir()
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", filepath.Join(dir, "binetic-agent.json"))
+	t.Setenv("CRUSH_GLOBAL_CONFIG", filepath.Join(dir, "crush.json"))
 	if got := loadTemplate("coder.md.tpl", coderPromptTmpl); got != string(coderPromptTmpl) {
 		t.Fatal("without a user file the built-in template must be used")
 	}

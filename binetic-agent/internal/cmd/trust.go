@@ -10,48 +10,48 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/home"
-	ui "github.com/charmbracelet/binetic_agent/internal/ui/model"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/home"
+	ui "github.com/charmbracelet/crush/internal/ui/model"
+	"github.com/charmbracelet/crush/internal/version"
 	"github.com/charmbracelet/x/term"
 	"github.com/spf13/cobra"
 	"github.com/tidwall/gjson"
 )
 
-// trustCmd is binetic-agent trust: record that a folder's project settings may be
+// trustCmd is gnosh trust: record that a folder's project settings may be
 // used, list the trusted folders, or forget one.
 var trustCmd = &cobra.Command{
 	Use:   "trust [folder]",
-	Short: "Trust a folder's project settings (its binetic-agentrc and binetic-agent.json)",
-	Long: `Trust a folder, so that Binetic Agent uses its project settings when it starts
-there: the folder's binetic-agentrc, a shell script that runs as Binetic Agent starts, and in
-its binetic-agent.json the hooks, MCP and LSP servers, tools allowed without asking,
+	Short: "Trust a folder's project settings (its gnoshrc and gnosh.json)",
+	Long: `Trust a folder, so that Gnosh uses its project settings when it starts
+there: the folder's gnoshrc, a shell script that runs as Gnosh starts, and in
+its gnosh.json the hooks, MCP and LSP servers, tools allowed without asking,
 model providers, environment variables and the rest.
 
-Until a folder is trusted, Binetic Agent runs none of that, so a repository you cloned
-cannot run its code the moment you start Binetic Agent in it. The TUI asks first; binetic-agent
+Until a folder is trusted, Gnosh runs none of that, so a repository you cloned
+cannot run its code the moment you start Gnosh in it. The TUI asks first; gnosh
 run leaves the settings out and says so on stderr. Settings that only take
 something away from the agent (permissions.deny, options.disabled_tools and
-options.disabled_skills in a binetic-agent.json) apply either way.
+options.disabled_skills in a gnosh.json) apply either way.
 
 Trust is kept for the git repository the folder is in, and its worktrees share
 it; outside a repository, for the folder and the folders under it that are not
 repositories of their own. The home directory is trusted for one session at a
-time: Binetic Agent asks each time it starts there. binetic-agent run --trust-folder trusts a
+time: Gnosh asks each time it starts there. gnosh run --trust-folder trusts a
 folder for one run without recording it.`,
 	Example: `
 # Trust the current folder's project settings
-binetic-agent trust
+gnosh trust
 
 # Trust another folder
-binetic-agent trust ~/src/myproject
+gnosh trust ~/src/myproject
 
 # List the trusted folders
-binetic-agent trust --list
+gnosh trust --list
 
 # Stop trusting a folder
-binetic-agent trust --forget ~/src/myproject
+gnosh trust --forget ~/src/myproject
   `,
 	Args: cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -110,7 +110,7 @@ func init() {
 	trustCmd.MarkFlagsMutuallyExclusive("list", "forget")
 }
 
-// trustDir is the folder binetic-agent trust acts on: its argument, or the working
+// trustDir is the folder gnosh trust acts on: its argument, or the working
 // directory.
 func trustDir(cmd *cobra.Command, args []string) (string, error) {
 	if len(args) == 0 {
@@ -160,14 +160,14 @@ func forgetTrusted(out io.Writer, dir string) error {
 		fmt.Fprintf(out, "%s was not recorded as trusted.\n", config.ShowPath(folder))
 	}
 	if config.FolderTrusted(dir) {
-		fmt.Fprintln(out, "It is still trusted through a trusted folder above it; binetic-agent trust --list shows them.")
+		fmt.Fprintln(out, "It is still trusted through a trusted folder above it; gnosh trust --list shows them.")
 	}
 	return nil
 }
 
 // addTrustFolderFlag adds --trust-folder to cmd.
 func addTrustFolderFlag(cmd *cobra.Command) {
-	cmd.Flags().Bool("trust-folder", false, "Use this folder's project settings (its binetic-agentrc, hooks, MCP servers and the rest) for this session, as if trusted, without recording it; binetic-agent trust records it")
+	cmd.Flags().Bool("trust-folder", false, "Use this folder's project settings (its gnoshrc, hooks, MCP servers and the rest) for this session, as if trusted, without recording it; gnosh trust records it")
 }
 
 // trustFolderOptions are the config load options cmd's --trust-folder asks
@@ -185,7 +185,7 @@ func trustFolderFlag(cmd *cobra.Command) bool {
 	return on
 }
 
-// errTrustQuit is quitting at the folder trust question: binetic-agent exits as a
+// errTrustQuit is quitting at the folder trust question: gnosh exits as a
 // program stopped with ctrl+c does, without a word.
 var errTrustQuit = exitStatus(130)
 
@@ -254,7 +254,7 @@ func noteUntrusted(cmd *cobra.Command, held *config.ProjectSettings) {
 		config.ShowPath(held.Folder), held.Brief(), config.TrustCommand(held.Folder), once)
 }
 
-// scanUntrusted is what the project settings of a binetic-agent started as cmd
+// scanUntrusted is what the project settings of a gnosh started as cmd
 // holds back, read without loading them, for a command whose config loads
 // in a server: nil when the folder is trusted or --trust-folder is set.
 func scanUntrusted(cmd *cobra.Command) *config.ProjectSettings {

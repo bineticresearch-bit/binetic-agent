@@ -5,12 +5,12 @@ import (
 	"strings"
 
 	"charm.land/lipgloss/v2"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/fsext"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/fsext"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/version"
 	uv "github.com/charmbracelet/ultraviolet"
 	"github.com/charmbracelet/x/ansi"
 )
@@ -52,7 +52,7 @@ func (h *header) refresh() {
 	t := h.com.Styles
 	name := strings.ToUpper(version.Name)
 	if h.com.IsHyper() {
-		name = "HYPERBINETIC_AGENT"
+		name = "HYPERCRUSH"
 	}
 	wordmark := styles.ApplyBoldForegroundGrad(t.Header.LogoGradCanvas, name, t.Header.LogoGradFromColor, t.Header.LogoGradToColor)
 	if gno, from, to := t.Wordmark(h.com.TrueColor, t.Header.LogoGradFromColor, t.Header.LogoGradToColor); gno != nil && !h.com.IsHyper() {

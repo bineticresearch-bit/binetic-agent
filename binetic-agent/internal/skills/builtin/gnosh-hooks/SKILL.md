@@ -1,11 +1,11 @@
 ---
-name: binetic-agent-hooks
-description: Use when the user wants to add, write, debug, or configure a Binetic Agent hook — gating or blocking tool calls, approving or rewriting tool input before execution, running a formatter or linter after a tool call, injecting context into tool results, or troubleshooting hook behavior in binetic-agent.json.
+name: gnosh-hooks
+description: Use when the user wants to add, write, debug, or configure a Gnosh hook — gating or blocking tool calls, approving or rewriting tool input before execution, running a formatter or linter after a tool call, injecting context into tool results, or troubleshooting hook behavior in gnosh.json.
 ---
 
-# Binetic Agent Hooks
+# Gnosh Hooks
 
-Hooks are user-defined commands in `binetic-agent.json` that fire at specific points
+Hooks are user-defined commands in `gnosh.json` that fire at specific points
 during execution, giving deterministic control over tool behavior. They run
 **before** permission checks, on every tool call, a sub-agent's (task tool,
 agentic_fetch) too, as in Claude Code; a sub-agent's call carries `agent_id`
@@ -29,7 +29,7 @@ first prompt.
 `PreCompact` fires just before a session's conversation is summarized, manual
 or automatic, and `PostCompact` once it has been, with the summary. `SessionEnd` fires when a session ends: when the user starts a
 new one (`clear`), switches to another (`other`), or the process exits with
-the session open (`prompt_input_exit` for the TUI, `other` for `binetic-agent run`).
+the session open (`prompt_input_exit` for the TUI, `other` for `gnosh run`).
 `InstructionsLoaded` fires when a context file is loaded into the system
 prompt or given on demand: at session start for the files already in the
 prompt, again after a summary, for a subdirectory's files when a tool touches
@@ -38,7 +38,7 @@ Code, it has no decision control: its output is ignored, its exit code is
 ignored, and the turn does not wait for it. `PermissionRequest` fires when a
 permission dialog about a tool call is about to show, and its hook can allow
 or deny the call in the user's place, as in Claude Code. `Notification` runs
-when Binetic Agent sends a notification you should see, as in Claude Code: a tool-use
+when Gnosh sends a notification you should see, as in Claude Code: a tool-use
 permission prompt that has waited for you (`notification_type`
 `permission_prompt`, once it has waited about six seconds, each keystroke
 starting the wait again), or a turn that finished about a minute ago with no
@@ -49,7 +49,7 @@ and output are ignored, a hook that fails is logged, and the TUI does not
 wait for it.
 
 Event names are matched **exactly**. `pretooluse`, `pre_tool_use` and
-`PRE_TOOL_USE` are config errors, not spellings of `PreToolUse`: Binetic Agent refuses
+`PRE_TOOL_USE` are config errors, not spellings of `PreToolUse`: Gnosh refuses
 to start on an event name it doesn't fire, rather than accepting a hook that
 would look configured and silently never run.
 
@@ -89,7 +89,7 @@ and every configured hook for those events runs.
 ```
 
 Project-level hooks take precedence over global. A project's hooks run only
-once the user trusts its folder (the TUI asks; `binetic-agent trust [folder]` from the
+once the user trusts its folder (the TUI asks; `gnosh trust [folder]` from the
 command line). Matching hooks are deduped by `command`, run in parallel, and
 aggregated in **config order** (not finish order).
 
@@ -106,27 +106,27 @@ the input/output contract is identical regardless of language.
 
 | Variable                     | Description                              |
 | ---------------------------- | ---------------------------------------- |
-| `BINETIC_AGENT_EVENT`                | Event name (`PreToolUse`, `PostToolUse` or `Stop`) |
-| `BINETIC_AGENT_TOOL_NAME`            | Tool being called; empty on `Stop`       |
-| `BINETIC_AGENT_SESSION_ID`           | Current session ID                       |
-| `BINETIC_AGENT_CWD`                  | Working directory                        |
-| `BINETIC_AGENT_PROJECT_DIR`          | Project root directory                   |
+| `GNOSH_EVENT`                | Event name (`PreToolUse`, `PostToolUse` or `Stop`) |
+| `GNOSH_TOOL_NAME`            | Tool being called; empty on `Stop`       |
+| `GNOSH_SESSION_ID`           | Current session ID                       |
+| `GNOSH_CWD`                  | Working directory                        |
+| `GNOSH_PROJECT_DIR`          | Project root directory                   |
 | `CLAUDE_PROJECT_DIR`         | The same, Claude Code's name for it      |
-| `BINETIC_AGENT_TOOL_INPUT_COMMAND`   | For `bash` calls: the shell command      |
-| `BINETIC_AGENT_TOOL_INPUT_FILE_PATH` | For file tools: the target file path     |
-| `BINETIC_AGENT_TOOL_USE_ID`          | The tool call's ID, the same in its `PreToolUse` and `PostToolUse` hooks |
-| `BINETIC_AGENT_STOP_HOOK_ACTIVE`     | `Stop` and `SubagentStop` only: `1` if an earlier hook for the event is why the turn is still running |
-| `BINETIC_AGENT_AGENT_ID`             | `SubagentStop`, and a sub-agent's tool calls: its own session ID (`agent_id`) |
-| `BINETIC_AGENT_AGENT_TYPE`           | `SubagentStop`, and a sub-agent's tool calls: its type (`agent_type`), `task` or `agentic_fetch` |
-| `BINETIC_AGENT_PRE_COMPACT_TRIGGER`  | `PreCompact` only: `manual` or `auto`, as in the payload's `trigger` field |
-| `BINETIC_AGENT_POST_COMPACT_TRIGGER` | `PostCompact` only: `manual` or `auto`, as in the payload's `trigger` field |
-| `BINETIC_AGENT_STOP_FAILURE_ERROR`   | `StopFailure` only: the error's kind, as in the payload's `error` field |
-| `BINETIC_AGENT_SESSION_START_SOURCE` | `SessionStart` only: `startup`, `resume`, `clear` or `compact`, as in the payload's `source` field |
-| `BINETIC_AGENT_ENV_FILE`             | `SessionStart` only: the session's env file, also as `CLAUDE_ENV_FILE`; `export` lines added there (`>>`) run before each of the session's bash commands |
-| `BINETIC_AGENT_SESSION_END_REASON`   | `SessionEnd` only: `clear`, `other` or `prompt_input_exit`, as in the payload's `reason` field |
+| `GNOSH_TOOL_INPUT_COMMAND`   | For `bash` calls: the shell command      |
+| `GNOSH_TOOL_INPUT_FILE_PATH` | For file tools: the target file path     |
+| `GNOSH_TOOL_USE_ID`          | The tool call's ID, the same in its `PreToolUse` and `PostToolUse` hooks |
+| `GNOSH_STOP_HOOK_ACTIVE`     | `Stop` and `SubagentStop` only: `1` if an earlier hook for the event is why the turn is still running |
+| `GNOSH_AGENT_ID`             | `SubagentStop`, and a sub-agent's tool calls: its own session ID (`agent_id`) |
+| `GNOSH_AGENT_TYPE`           | `SubagentStop`, and a sub-agent's tool calls: its type (`agent_type`), `task` or `agentic_fetch` |
+| `GNOSH_PRE_COMPACT_TRIGGER`  | `PreCompact` only: `manual` or `auto`, as in the payload's `trigger` field |
+| `GNOSH_POST_COMPACT_TRIGGER` | `PostCompact` only: `manual` or `auto`, as in the payload's `trigger` field |
+| `GNOSH_STOP_FAILURE_ERROR`   | `StopFailure` only: the error's kind, as in the payload's `error` field |
+| `GNOSH_SESSION_START_SOURCE` | `SessionStart` only: `startup`, `resume`, `clear` or `compact`, as in the payload's `source` field |
+| `GNOSH_ENV_FILE`             | `SessionStart` only: the session's env file, also as `CLAUDE_ENV_FILE`; `export` lines added there (`>>`) run before each of the session's bash commands |
+| `GNOSH_SESSION_END_REASON`   | `SessionEnd` only: `clear`, `other` or `prompt_input_exit`, as in the payload's `reason` field |
 
-Each is also set under its `KLASH_` and `BINETIC_AGENT_` names (`KLASH_EVENT`,
-`BINETIC_AGENT_EVENT`, ...), the names before the renames; any of them works.
+Each is also set under its `KLASH_` and `CRUSH_` names (`KLASH_EVENT`,
+`CRUSH_EVENT`, ...), the names before the renames; any of them works.
 
 **JSON on stdin:**
 
@@ -145,7 +145,7 @@ Each is also set under its `KLASH_` and `BINETIC_AGENT_` names (`KLASH_EVENT`,
 
 `permission_mode` is on the tool events, `UserPromptSubmit`, `Stop` and
 `SubagentStop`, as in Claude Code: `plan` for the plan agent,
-`bypassPermissions` when every request is granted (yolo, or `binetic-agent run`),
+`bypassPermissions` when every request is granted (yolo, or `gnosh run`),
 `acceptEdits` under `--permission-mode acceptEdits`, else `default`.
 
 A `PostToolUse` payload also carries what the tool returned, as in Claude
@@ -172,7 +172,7 @@ policy violation).
 
 **Could not evaluate: fail closed.** A check that cannot check (its tool is
 missing, its input is not there) must exit 3 with the reason on stderr, never
-exit 0: "ffmpeg exited 0" once passed for "the audio is fine". Binetic Agent blocks on
+exit 0: "ffmpeg exited 0" once passed for "the audio is fine". Gnosh blocks on
 it as on exit 2, and says the hook could not check. A hook that could not run
 counts the same: never started, not found or not executable (126, 127), killed
 (129+), timed out, or JSON that cannot be read (an unknown `decision`). Claude
@@ -294,19 +294,19 @@ exits are ignored, and one that fails is logged. Top-level agent only.
 **On `PostCompact`** the input is `{"trigger": "manual"|"auto", "compact_summary": "..."}`
 beside the common fields: the summary the conversation was compacted to, once
 it is saved, as in Claude Code. Use it to log the summary or update something
-outside Binetic Agent. A `matcher` is tested against `trigger`. The hook has no say: a
+outside Gnosh. A `matcher` is tested against `trigger`. The hook has no say: a
 block, or a hook that fails or could not evaluate, is shown to the user as a
 warning. It fires only for the top-level agent, not sub-agents.
 
 **On `SessionEnd`** the input is `{"reason": "clear"|"other"|"prompt_input_exit"}`
 beside the common fields. `reason` names why the session ended: the user
-started a new one (`clear`), switched to another one or `binetic-agent run` exited
+started a new one (`clear`), switched to another one or `gnosh run` exited
 with it open (`other`), or the TUI exited with it open
 (`prompt_input_exit`). A `matcher` on a `SessionEnd` hook is tested against
 `reason`. As in Claude Code a hook cannot stop anything and what it prints is
 ignored: the exit goes ahead whatever the hook says. A hook that fails is
 logged, and the exit goes ahead without it. Its default timeout is 1.5
-seconds, or its own `timeout` up to a cap of 60 seconds, so exiting Binetic Agent is
+seconds, or its own `timeout` up to a cap of 60 seconds, so exiting Gnosh is
 not held up for long. It fires only for the top-level agent, not sub-agents,
 and a session ends once: switching away and then exiting does not end it
 again, and a session that was never open does not end at all.
@@ -320,17 +320,17 @@ files, `"Local"` for a `.local.md` file, `"Project"` for the rest, never
 `"Managed"`; `trigger_file_path` is set for a `nested_traversal` load, the
 file whose access brought the context file in; `parent_file_path` is set for
 an `include` load, the file that imported the one loaded. `globs` is never
-sent, as Binetic Agent has no `.claude/rules` files. A `matcher` is tested against
+sent, as Gnosh has no `.claude/rules` files. A `matcher` is tested against
 `load_reason`. As in Claude Code the hook has no decision control: its output
 is ignored, its exit code is ignored, and the turn does not wait for it. A
 hook that fails is logged. It fires only for the top-level agent, not
-sub-agents. `BINETIC_AGENT_INSTRUCTIONS_LOAD_REASON` holds the load reason.
+sub-agents. `GNOSH_INSTRUCTIONS_LOAD_REASON` holds the load reason.
 
 **On `PermissionRequest`** the input is `PreToolUse`'s (`tool_name`,
 `tool_input`), and the hook fires only when a permission dialog about the call
 is due. It answers in Claude Code's `{"hookSpecificOutput":
 {"hookEventName": "PermissionRequest", "decision": {"behavior": "allow"}}}`
-or `{"behavior": "deny", "message": "why", "interrupt": false}`; Binetic Agent's
+or `{"behavior": "deny", "message": "why", "interrupt": false}`; Gnosh's
 top-level `"decision": "allow"`/`"deny"` works too. An allow runs the call with
 no dialog; a deny refuses it with the message, and the model goes on unless
 `interrupt` is true. Exit 2 leaves the decision to the user, and so does a hook
@@ -355,7 +355,7 @@ Composed in **config order**:
 #!/usr/bin/env bash
 set -euo pipefail
 
-if echo "$BINETIC_AGENT_TOOL_INPUT_COMMAND" | grep -qE 'rm\s+-(rf|fr)\s+/'; then
+if echo "$GNOSH_TOOL_INPUT_COMMAND" | grep -qE 'rm\s+-(rf|fr)\s+/'; then
   echo "Refusing to run rm -rf against root" >&2
   exit 2
 fi
@@ -379,7 +379,7 @@ Emit only `context` — omit `decision` so the normal permission flow still runs
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ "$BINETIC_AGENT_TOOL_INPUT_FILE_PATH" == *.go ]]; then
+if [[ "$GNOSH_TOOL_INPUT_FILE_PATH" == *.go ]]; then
   echo '{"context": "Remember: run gofumpt after editing Go files."}'
 else
   echo '{}'
@@ -418,7 +418,7 @@ preserved.
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
-f="$BINETIC_AGENT_TOOL_INPUT_FILE_PATH"
+f="$GNOSH_TOOL_INPUT_FILE_PATH"
 [[ "$f" == *.go ]] || exit 0
 if ! out=$(gofumpt -w "$f" 2>&1); then
   echo "gofumpt failed on $f: $out" >&2
@@ -426,7 +426,7 @@ if ! out=$(gofumpt -w "$f" 2>&1); then
 fi
 ```
 
-When a hook changes the file the agent just wrote, Binetic Agent records a fresh
+When a hook changes the file the agent just wrote, Gnosh records a fresh
 read of it, so the agent's next edit isn't refused as "modified since it was
 read", and tells the agent the file changed.
 
@@ -455,9 +455,9 @@ There is no cap on how many times a Stop hook may block: if the work is not
 done, it is not done. Every 10th consecutive block, the agent is instead asked
 to judge whether there is a genuine reason to stop (impossible as asked,
 blocked on the user, a check that cannot pass here, no progress). If so it
-explains why and ends its reply with `<!-- BINETIC_AGENT_STOP -->` on its own line;
-Binetic Agent ends the turn and warns the user. Otherwise it keeps working. A hook
-that wants to object only once can check `BINETIC_AGENT_STOP_HOOK_ACTIVE` and exit 0.
+explains why and ends its reply with `<!-- GNOSH_STOP -->` on its own line;
+Gnosh ends the turn and warns the user. Otherwise it keeps working. A hook
+that wants to object only once can check `GNOSH_STOP_HOOK_ACTIVE` and exit 0.
 
 A Claude Code-style Stop hook that prints `{"decision": "block", "reason": "…"}`
 works the same as exit `2`. Decision values are matched exactly: `allow`,
@@ -476,13 +476,13 @@ value cannot be read, so the hook could not evaluate: it blocks.
    against `clear`/`other`/`prompt_input_exit`), `hooks.InstructionsLoaded`
    (matcher against `session_start`/`nested_traversal`/`include`/`compact`),
    or `hooks.PermissionRequest` (matcher against the tool name)
-   in `binetic-agent.json`. Spell the
+   in `gnosh.json`. Spell the
    event name exactly; anything else is a startup error.
 4. Decide intent: inject context (omit `decision`), auto-approve (`"allow"`),
    block (`exit 2`), or halt (`exit 49`). On `Stop` and `SubagentStop`,
    `exit 2` means "keep working" and `exit 49` means "end now". Wherever the
    check cannot run, `exit 3` with the reason, never `exit 0`.
-5. On `Stop` and `SubagentStop`, check `BINETIC_AGENT_STOP_HOOK_ACTIVE` so a hook
+5. On `Stop` and `SubagentStop`, check `GNOSH_STOP_HOOK_ACTIVE` so a hook
    that blocks can't loop.
 6. If rewriting input, remember `updated_input` is a shallow merge — only
    include the keys you want to change (`PreToolUse` only).
@@ -495,20 +495,20 @@ value cannot be read, so the hook could not evaluate: it blocks.
 - Use `echo "debug info" >&2` for logging without corrupting stdout JSON, and end
   such a hook with its verdict (`exit 0`), or its log reads as an error.
 - `matcher` follows Claude Code's rules: exact names separated by `|` or `,`
-  (`bash`, `Edit|Write`; Claude Code's names match Binetic Agent's tools), `*` or empty
+  (`bash`, `Edit|Write`; Claude Code's names match Gnosh's tools), `*` or empty
   for all, and anything else is an unanchored regex (`^mcp_github_`). A plain
   name is exact: `edit` does not match `multiedit`.
 
 ## Claude Code Compatibility
 
-Binetic Agent also accepts Claude Code's `hookSpecificOutput` envelope, and reads
+Gnosh also accepts Claude Code's `hookSpecificOutput` envelope, and reads
 matchers as Claude Code does, with Claude Code's tool names (`Bash`, `Read`,
-`Edit|Write`, `mcp__server__tool`) matching Binetic Agent's tools. It reads Claude
+`Edit|Write`, `mcp__server__tool`) matching Gnosh's tools. It reads Claude
 Code's groups (`{"matcher": …, "hooks": [{"type": "command", …}]}`) as well as
 its own flat entries (`{"matcher": …, "command": …}`), so a Claude Code hooks
 block can be pasted in as it is; only `command` hooks run, and a hook asking for
 more (`if`, `args`, `async`, another `type`), a matcher on an event that takes none, or a
 regex Go cannot read (lookahead) is a config error naming it.
-Divergences: Binetic Agent treats `updated_input` as shallow-merge, Claude Code
-replaces; and the payload's `tool_name` is Binetic Agent's name (`bash`), not Claude
+Divergences: Gnosh treats `updated_input` as shallow-merge, Claude Code
+replaces; and the payload's `tool_name` is Gnosh's name (`bash`), not Claude
 Code's (`Bash`).

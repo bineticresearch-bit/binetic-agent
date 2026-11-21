@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/diffdetect"
+	"github.com/charmbracelet/crush/internal/diffdetect"
 )
 
 func TestToolOutputDiffDetection(t *testing.T) {

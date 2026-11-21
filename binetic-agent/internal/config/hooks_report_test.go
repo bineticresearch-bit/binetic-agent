@@ -14,7 +14,7 @@ func TestHooksReport(t *testing.T) {
 	t.Parallel()
 
 	report := HooksReport(map[string][]HookConfig{
-		EventStop:             {{Command: "~/.config/binetic_agent/hooks/stop-check.sh", Timeout: 900}},
+		EventStop:             {{Command: "~/.config/crush/hooks/stop-check.sh", Timeout: 900}},
 		EventPreToolUse:       {{Matcher: "Bash", Command: "jq -r .tool_input.command | grep -q rm && exit 2"}},
 		EventUserPromptSubmit: {{Name: "context", Command: "date\necho hi"}},
 	})
@@ -23,7 +23,7 @@ func TestHooksReport(t *testing.T) {
 	require.Equal(t, []string{
 		`| PreToolUse | Bash | jq -r .tool_input.command \| grep -q rm && exit 2 | 600 s |`,
 		`| UserPromptSubmit | * | context: date echo hi | 30 s |`,
-		`| Stop | * | ~/.config/binetic_agent/hooks/stop-check.sh | 900 s |`,
+		`| Stop | * | ~/.config/crush/hooks/stop-check.sh | 900 s |`,
 	}, rows)
 
 	require.Contains(t, HooksReport(nil), "No hooks are configured.")

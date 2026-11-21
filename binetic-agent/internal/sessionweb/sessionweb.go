@@ -1,5 +1,5 @@
 // Package sessionweb serves a small local web page for looking at and editing
-// the messages of Binetic Agent's sessions: the chat history that is re-sent to the
+// the messages of Crush's sessions: the chat history that is re-sent to the
 // model on every turn. It exists so the history can be changed by clicking
 // and typing, and so what the model receives can be seen in one place.
 package sessionweb
@@ -18,14 +18,14 @@ import (
 
 	"charm.land/fantasy"
 
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/session"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/session"
 )
 
 //go:embed page.html
 var pageHTML embed.FS
 
-// Store is the slice of Binetic Agent's session and message services the page needs.
+// Store is the slice of Crush's session and message services the page needs.
 type Store interface {
 	ListSessions(ctx context.Context) ([]session.Session, error)
 	ListMessages(ctx context.Context, sessionID string) ([]message.Message, error)

@@ -22,7 +22,7 @@ func TestSetNonInteractive(t *testing.T) {
 	tests := []struct {
 		name                     string
 		nonInteractive           bool
-		binetic_agent                    string
+		crush                    string
 		wantNonInteractiveNested bool
 	}{
 		{
@@ -34,24 +34,24 @@ func TestSetNonInteractive(t *testing.T) {
 		},
 		{
 			name:  "interactive nested invocation",
-			binetic_agent: "1",
+			crush: "1",
 		},
 		{
 			name:                     "non-interactive nested invocation",
 			nonInteractive:           true,
-			binetic_agent:                    "1",
+			crush:                    "1",
 			wantNonInteractiveNested: true,
 		},
 		{
 			name:           "non-interactive invocation with unrecognized marker",
 			nonInteractive: true,
-			binetic_agent:          "0",
+			crush:          "0",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Setenv("BINETIC_AGENT", tt.binetic-agent)
+			t.Setenv("CRUSH", tt.crush)
 			SetNonInteractive(tt.nonInteractive)
 
 			if got := baseProps[nonInteractiveAttrName]; got != tt.nonInteractive {

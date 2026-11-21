@@ -78,7 +78,7 @@ func (n *swarmNode) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		failed := map[string]any{"ResponseBase": map[string]any{"Error": map[string]any{"@type": "/vm.VMError"}, "Log": "not a member"}, "GasUsed": "99"}
 		result = map[string]any{"height": "3", "results": map[string]any{"deliver_tx": []any{ok, failed}}}
 	}
-	out, _ := json.Marshal(map[string]any{"jsonrpc": "2.0", "id": "binetic-agent", "result": result})
+	out, _ := json.Marshal(map[string]any{"jsonrpc": "2.0", "id": "gnosh", "result": result})
 	_, _ = w.Write(out)
 }
 

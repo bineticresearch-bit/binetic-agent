@@ -3,8 +3,8 @@
 
 "area: ci":
   - "/^ci: /i"
-"area: binetic_agent run":
-  - "/binetic_agent run/i"
+"area: crush run":
+  - "/crush run/i"
   - "/headless/i"
   - "/non-interactive/i"
 "area: diff":

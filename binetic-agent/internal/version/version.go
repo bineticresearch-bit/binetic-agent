@@ -12,12 +12,12 @@ import (
 // separate from the names on disk (config and data directories, config
 // files, environment variables), which keep their established spellings so
 // existing setups go on working.
-const Name = "Binetic Agent"
+const Name = "Gnosh"
 
-// Command is the command users type to run it. The old "binetic_agent" command is
+// Command is the command users type to run it. The old "crush" command is
 // still installed alongside, so either works; this is the one shown in help
 // and in hints such as the resume line printed on exit.
-const Command = "binetic-agent"
+const Command = "gnosh"
 
 // Build-time parameters set via -ldflags.
 
@@ -31,7 +31,7 @@ var (
 	BuildID = ""
 )
 
-// A user may install binetic_agent using `go install github.com/charmbracelet/binetic_agent@latest`.
+// A user may install crush using `go install github.com/charmbracelet/crush@latest`.
 // without -ldflags, in which case the version above is unset. As a workaround
 // we use the embedded build version that *is* set when using `go install` (and
 // is only set for `go install` and not for `go build`).

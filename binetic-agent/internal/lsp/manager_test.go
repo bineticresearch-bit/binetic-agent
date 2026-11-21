@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/csync"
-	"github.com/charmbracelet/binetic_agent/internal/home"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/csync"
+	"github.com/charmbracelet/crush/internal/home"
 	powernapconfig "github.com/charmbracelet/x/powernap/pkg/config"
 	"github.com/stretchr/testify/require"
 )
@@ -121,12 +121,12 @@ func TestCanAutoStartCachesMissingCommand(t *testing.T) {
 
 // A server that fails to start must back off rather than be relaunched on
 // every file event. Configured servers used to skip the back-off entirely,
-// so working inside a repo whose binetic-agent.json configures gopls, on a machine
+// so working inside a repo whose crush.json configures gopls, on a machine
 // without gopls, retried and failed on nearly every step.
 func TestStartServerBacksOffAfterFailedStart(t *testing.T) {
 	t.Parallel()
 
-	const missing = "binetic-agent-test-no-such-lsp-binary"
+	const missing = "gnosh-test-no-such-lsp-binary"
 	base := time.Date(2026, 10, 22, 0, 0, 0, 0, time.UTC)
 	now := base
 	cfg := &config.Config{
@@ -180,9 +180,9 @@ func TestStartServerBacksOffWhenAutoStartedServerFails(t *testing.T) {
 		callback:    func(string, *Client) {},
 		now:         func() time.Time { return base },
 		// Claim it is installed, so the failure comes from the start itself.
-		lookPath: func(string) (string, error) { return "/usr/bin/binetic-agent-test-no-such-lsp-binary", nil },
+		lookPath: func(string) (string, error) { return "/usr/bin/gnosh-test-no-such-lsp-binary", nil },
 	}
-	server := &powernapconfig.ServerConfig{Command: "binetic-agent-test-no-such-lsp-binary", FileTypes: []string{"go"}}
+	server := &powernapconfig.ServerConfig{Command: "gnosh-test-no-such-lsp-binary", FileTypes: []string{"go"}}
 
 	m.startServer("fakels", "main.go", server)
 	require.True(t, m.recentlyUnavailable("fakels"),
@@ -195,7 +195,7 @@ func TestStartServerBacksOffWhenAutoStartedServerFails(t *testing.T) {
 func TestStartServerReportsAMissingConfiguredProgram(t *testing.T) {
 	t.Parallel()
 
-	const command = "binetic-agent-test-no-such-lsp-binary"
+	const command = "gnosh-test-no-such-lsp-binary"
 	base := time.Date(2026, 10, 22, 0, 0, 0, 0, time.UTC)
 	now := base
 	var installed bool

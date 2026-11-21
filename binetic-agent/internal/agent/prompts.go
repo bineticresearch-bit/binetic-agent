@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/prompt"
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/agent/prompt"
+	"github.com/charmbracelet/crush/internal/config"
 )
 
 //go:embed templates/coder.md.tpl
@@ -78,10 +78,10 @@ func InitializePrompt(cfg *config.ConfigStore) (string, error) {
 	return systemPrompt.Build(context.Background(), "", "", cfg)
 }
 
-// UserTemplateDir is where a user's own prompt templates live, beside binetic-agentrc:
-// ~/.config/binetic_agent/templates. A file named like a built-in template
+// UserTemplateDir is where a user's own prompt templates live, beside crushrc:
+// ~/.config/crush/templates. A file named like a built-in template
 // (coder.md.tpl, plan.md.tpl, task.md.tpl, initialize.md.tpl) replaces it.
-// `binetic_agent prompt export` writes the built-in one there to start from.
+// `crush prompt export` writes the built-in one there to start from.
 func UserTemplateDir() string {
 	return filepath.Join(filepath.Dir(config.GlobalConfig()), "templates")
 }
@@ -101,7 +101,7 @@ func BuiltinTemplate(name string) ([]byte, bool) {
 	return nil, false
 }
 
-// EffectiveTemplate returns the template Binetic Agent would use for that name: the
+// EffectiveTemplate returns the template Crush would use for that name: the
 // user's file when it exists and is not empty, else the built-in one.
 func EffectiveTemplate(name string) (text string, path string, user bool) {
 	builtin, _ := BuiltinTemplate(name)

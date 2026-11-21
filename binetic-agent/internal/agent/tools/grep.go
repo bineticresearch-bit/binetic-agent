@@ -21,11 +21,11 @@ import (
 	"time"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/csync"
-	"github.com/charmbracelet/binetic_agent/internal/filepathext"
-	"github.com/charmbracelet/binetic_agent/internal/fsext"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/csync"
+	"github.com/charmbracelet/crush/internal/filepathext"
+	"github.com/charmbracelet/crush/internal/fsext"
+	"github.com/charmbracelet/crush/internal/permission"
 	"github.com/charmbracelet/x/ansi"
 )
 
@@ -70,7 +70,7 @@ var (
 )
 
 // GrepParams are the grep tool's parameters, with Claude Code's Grep
-// names beside Binetic Agent's own: a model used to those passed glob, -i, -C or
+// names beside Gnosh's own: a model used to those passed glob, -i, -C or
 // output_mode, and they were dropped without a word.
 type GrepParams struct {
 	Pattern      string `json:"pattern" description:"The regex pattern to search for in file contents"`
@@ -460,7 +460,7 @@ func searchWithRipgrep(ctx context.Context, pattern, path string, opts grepOptio
 	}
 
 	// Only add ignore files if they exist
-	for _, ignoreFile := range []string{".gitignore", ".binetic-agentignore", ".klashignore", ".binetic-agentignore"} {
+	for _, ignoreFile := range []string{".gitignore", ".gnoshignore", ".klashignore", ".crushignore"} {
 		ignorePath := filepath.Join(path, ignoreFile)
 		if _, err := os.Stat(ignorePath); err == nil {
 			cmd.Args = append(cmd.Args, "--ignore-file", ignorePath)
@@ -575,7 +575,7 @@ func searchFilesWithRegex(pattern, rootPath string, opts grepOptions, limit int)
 		}
 	}
 
-	// Create walker with gitignore and binetic_agentignore support
+	// Create walker with gitignore and crushignore support
 	walker := fsext.NewFastGlobWalker(rootPath)
 
 	err = filepath.Walk(rootPath, func(path string, info os.FileInfo, err error) error {

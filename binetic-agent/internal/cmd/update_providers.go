@@ -5,7 +5,7 @@ import (
 	"log/slog"
 
 	"charm.land/lipgloss/v2"
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/charmbracelet/x/exp/charmtone"
 	"github.com/spf13/cobra"
 )
@@ -18,22 +18,22 @@ var updateProvidersCmd = &cobra.Command{
 	Long:  `Update provider information from a specified local path or remote URL.`,
 	Example: `
 # Update Catwalk providers remotely (default)
-binetic-agent update-providers
+gnosh update-providers
 
 # Update Catwalk providers from a custom URL
-binetic-agent update-providers https://example.com/providers.json
+gnosh update-providers https://example.com/providers.json
 
 # Update Catwalk providers from a local file
-binetic-agent update-providers /path/to/local-providers.json
+gnosh update-providers /path/to/local-providers.json
 
 # Update Catwalk providers from embedded version
-binetic-agent update-providers embedded
+gnosh update-providers embedded
 
 # Update Hyper provider information
-binetic-agent update-providers --source=hyper
+gnosh update-providers --source=hyper
 
 # Update Hyper from a custom URL
-binetic-agent update-providers --source=hyper https://hyper.example.com
+gnosh update-providers --source=hyper https://hyper.example.com
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// NOTE(@andreynering): We want to skip logging output do stdout here.

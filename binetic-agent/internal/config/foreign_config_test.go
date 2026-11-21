@@ -13,13 +13,13 @@ func TestCheckProjectConfigOwnersAcceptsYourOwn(t *testing.T) {
 	t.Parallel()
 
 	project := t.TempDir()
-	require.NoError(t, os.WriteFile(filepath.Join(project, "binetic-agent.json"), []byte(`{}`), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(project, "gnosh.json"), []byte(`{}`), 0o644))
 	require.NoError(t, checkProjectConfigOwners(project))
 }
 
 // A project config that someone other than the project directory's owner
-// owns is skipped by the lookup. On the AI box a binetic-agent.json written as
-// root into a directory of the binetic_agent user's was skipped that way, so its
+// owns is skipped by the lookup. On the AI box a gnosh.json written as
+// root into a directory of the crush user's was skipped that way, so its
 // disabled_tools did not apply and the run there had every tool. Loading
 // now fails, naming the file and the fix, and the same file given back to
 // its owner loads.
@@ -27,13 +27,13 @@ func TestLoadRefusesProjectConfigOwnedBySomeoneElse(t *testing.T) {
 	if os.Getuid() != 0 {
 		t.Skip("giving a file to another user needs root")
 	}
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", t.TempDir())
-	t.Setenv("BINETIC_AGENT_GLOBAL_DATA", t.TempDir())
+	t.Setenv("CRUSH_GLOBAL_CONFIG", t.TempDir())
+	t.Setenv("CRUSH_GLOBAL_DATA", t.TempDir())
 	resetProviderState()
 	t.Cleanup(resetProviderState)
 
 	project := t.TempDir()
-	path := filepath.Join(project, "binetic-agent.json")
+	path := filepath.Join(project, "gnosh.json")
 	require.NoError(t, os.WriteFile(path, []byte(`{"options":{"disabled_tools":["bash"]}}`), 0o644))
 	require.NoError(t, os.Chown(path, 65534, 65534))
 

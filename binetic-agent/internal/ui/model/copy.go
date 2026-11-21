@@ -12,10 +12,10 @@ import (
 	"unicode/utf8"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/charmbracelet/binetic_agent/internal/fsext"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
-	"github.com/charmbracelet/binetic_agent/internal/ui/dialog"
-	"github.com/charmbracelet/binetic_agent/internal/ui/util"
+	"github.com/charmbracelet/crush/internal/fsext"
+	"github.com/charmbracelet/crush/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/ui/dialog"
+	"github.com/charmbracelet/crush/internal/ui/util"
 )
 
 // copyLimit is how far back /copy reaches, as in Claude Code: the 20
@@ -26,7 +26,7 @@ const copyLimit = 20
 // does: the latest, or with n the Nth-latest. A response with code blocks
 // asks first, as Claude Code's does, whether to copy it whole or one of
 // its blocks. Like Claude Code it also writes the copy to a file in
-// binetic-agent's temp directory, for when the clipboard does not reach (over
+// gnosh's temp directory, for when the clipboard does not reach (over
 // ssh, say).
 func (m *UI) copyResponse(n string) tea.Cmd {
 	responses := m.chat.RecentResponses(copyLimit)
@@ -57,7 +57,7 @@ func (m *UI) copyResponse(n string) tea.Cmd {
 }
 
 // copyText copies text to the clipboard and writes it to fileName in
-// binetic-agent's temp directory.
+// gnosh's temp directory.
 func copyText(text, fileName string) tea.Cmd {
 	path, err := writeCopy(text, fileName)
 	return common.CopyToClipboard(text, copiedMessage(text, path, err))
@@ -173,12 +173,12 @@ func copiedMessage(text, path string, err error) string {
 	return msg + "; also written to " + path
 }
 
-// writeCopy writes text to fileName in binetic-agent's own directory under the
+// writeCopy writes text to fileName in gnosh's own directory under the
 // temp directory, one per user and private to them, as Claude Code keeps
 // its copy, and returns the file's path.
 func writeCopy(text, fileName string) (string, error) {
 	uid := os.Getuid()
-	name := "binetic-agent"
+	name := "gnosh"
 	if uid >= 0 {
 		name += "-" + strconv.Itoa(uid)
 	}

@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
-	"github.com/charmbracelet/binetic_agent/internal/question"
+	"github.com/charmbracelet/crush/internal/permission"
+	"github.com/charmbracelet/crush/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/question"
 	"github.com/stretchr/testify/require"
 )
 

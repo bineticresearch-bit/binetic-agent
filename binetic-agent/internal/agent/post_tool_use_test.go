@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/hooks"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/hooks"
 	"github.com/stretchr/testify/require"
 )
 
@@ -252,14 +252,14 @@ func TestPreAndPostToolUseHooksShareTheMetadata(t *testing.T) {
 }
 
 // A tool call's PreToolUse and PostToolUse hooks get the same
-// tool_use_id, in the payload and in BINETIC_AGENT_TOOL_USE_ID, as in Claude Code,
+// tool_use_id, in the payload and in GNOSH_TOOL_USE_ID, as in Claude Code,
 // so they can tell they saw the same call.
 func TestToolHooksShareTheToolUseID(t *testing.T) {
 	t.Parallel()
 
 	dir := t.TempDir()
 	record := func(name string) string {
-		return `printf '%s ' "$BINETIC_AGENT_TOOL_USE_ID" > ` + filepath.Join(dir, name+".env") + `; cat > ` + filepath.Join(dir, name+".json")
+		return `printf '%s ' "$GNOSH_TOOL_USE_ID" > ` + filepath.Join(dir, name+".env") + `; cat > ` + filepath.Join(dir, name+".json")
 	}
 	inner := &fakeTool{name: "bash", resp: fantasy.NewTextResponse("ok")}
 	tool := newHookedTool(inner, toolHooks{pre: newRunner(t, record("pre")), post: newPostRunner(t, record("post"))})

@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/hooks"
-	"github.com/charmbracelet/binetic_agent/internal/message"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/hooks"
+	"github.com/charmbracelet/crush/internal/message"
 	"github.com/stretchr/testify/require"
 )
 
@@ -229,7 +229,7 @@ func TestStopHookContinuation_PassesStopHookActive(t *testing.T) {
 	t.Parallel()
 
 	out := filepath.Join(t.TempDir(), "active.txt")
-	a := stopHookAgent(t, `printf '%s' "$BINETIC_AGENT_STOP_HOOK_ACTIVE" > `+out+`; exit 2`)
+	a := stopHookAgent(t, `printf '%s' "$CRUSH_STOP_HOOK_ACTIVE" > `+out+`; exit 2`)
 
 	_, blocked := a.stopHookContinuation(t.Context(), SessionAgentCall{SessionID: "s1"}, "done")
 	require.True(t, blocked)
@@ -299,7 +299,7 @@ func TestStopHookContinuation_BlockWithoutReason(t *testing.T) {
 	require.Contains(t, next.Prompt, "Stop hook")
 }
 
-// A hook Binetic Agent can't launch must not read as approval to stop.
+// A hook Crush can't launch must not read as approval to stop.
 func TestStopHookContinuation_NilConfigSkips(t *testing.T) {
 	t.Parallel()
 
@@ -323,9 +323,9 @@ func readFileForTest(t *testing.T, path string) string {
 func TestLegacyStopMarker(t *testing.T) {
 	t.Parallel()
 
-	require.Equal(t, "<!-- BINETIC_AGENT_STOP -->", StopMarker)
-	require.True(t, stopMarkerPresent("reason\n<!-- BINETIC_AGENT_STOP -->"))
-	require.Equal(t, "reason", StripStopMarker("reason\n<!-- BINETIC_AGENT_STOP -->"))
+	require.Equal(t, "<!-- GNOSH_STOP -->", StopMarker)
+	require.True(t, stopMarkerPresent("reason\n<!-- CRUSH_STOP -->"))
+	require.Equal(t, "reason", StripStopMarker("reason\n<!-- CRUSH_STOP -->"))
 	require.True(t, stopMarkerPresent("reason\n<!-- KLASH_STOP -->"))
 	require.Equal(t, "reason", StripStopMarker("reason\n<!-- KLASH_STOP -->"))
 	require.Equal(t, "reason", StripStopMarker("reason\n"+StopMarker))

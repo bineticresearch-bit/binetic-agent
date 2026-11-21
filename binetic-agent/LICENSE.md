@@ -1,12 +1,12 @@
-Binetic Agent's primary licence is the GNO Network General Public License, version 6,
+Gnosh's primary licence is the GNO Network General Public License, version 6,
 with the Additional Terms (Strong Attribution) below. It is the licence under
 which the Licensor offers everything in this repository that is the Licensor's
 to offer.
 
 What that does not reach, and why, is set out in full under "Known licence
-interactions" below. In short: binetic-agent is a fork of Charm's
-[Binetic Agent](https://github.com/charmbracelet/binetic_agent), and the files derived from
-Binetic Agent remain under Charmbracelet, Inc.'s Functional Source License
+interactions" below. In short: gnosh is a fork of Charm's
+[Crush](https://github.com/charmbracelet/crush), and the files derived from
+Crush remain under Charmbracelet, Inc.'s Functional Source License
 (FSL-1.1-MIT), reproduced at the end of this file. The Licensor cannot change
 the licence of Charm's code, and does not purport to here. The two licences
 conflict in a combined binary; that is recorded below and is to be resolved,
@@ -56,7 +56,7 @@ exercise every power this clause gives the Licensor, on NewTendermint, LLC's
 behalf and subject to its direction; this stands in for whatever NewTendermint,
 LLC settles on, and a statement of theirs in the canonical copy replaces it.
 The "canonical copy" of this file is `LICENSE.md` on the `main` branch of
-<https://github.com/binetic-agent-ai/binetic-agent>, or at another location the Licensor names
+<https://github.com/gnosh-ai/gnosh>, or at another location the Licensor names
 in that copy. A "version" of the Covered Work is each commit or tag the
 Licensor publishes in the repository that holds the canonical copy, with every
 copy made from it. The "Designation" is the last section of this clause; it is
@@ -132,8 +132,8 @@ other terms.
 Dated 29 October 2026. It governs every version that carries it; a later
 Designation governs only versions first published after it (see Status).
 
-- Attribution URL: <https://binetic-agent.local>
-- Words: "built on binetic-agent"
+- Attribution URL: <https://gnosh.ai>
+- Words: "built on gnosh"
 
 
 # GNO NETWORK GENERAL PUBLIC LICENSE
@@ -785,29 +785,29 @@ specific requirements.
 
 Recorded plainly so they are not forgotten. Jae Kwon's instruction, 29 October
 2026: make the GNO Network GPL and the strong attribution clause above the
-primary licence of binetic-agent, with the attribution running to NewTendermint, LLC or
+primary licence of gnosh, with the attribution running to NewTendermint, LLC or
 standing in for whatever NewTendermint, LLC settles on; the details and
 conflicts will be worked out later.
 
-- **This licence reaches only what the Licensor owns.** binetic-agent is a fork of
-  Charm's Binetic Agent. The files derived from Binetic Agent are Charmbracelet, Inc.'s, under
+- **This licence reaches only what the Licensor owns.** gnosh is a fork of
+  Charm's Crush. The files derived from Crush are Charmbracelet, Inc.'s, under
   the Functional Source License (FSL-1.1-MIT), reproduced at the end of this
   file. Changing their licence is not the Licensor's to do, and nothing above
   purports to. What the terms above cover is the Licensor's own work in this
   repository: the code written for this fork.
-- **The binetic-agent binary is a combined work, and its licences conflict.** The FSL's
+- **The gnosh binary is a combined work, and its licences conflict.** The FSL's
   Competing Use clause restricts use. A binary that includes GNO Network GPL
   code must be conveyed under that License as a whole (sections 5(c) and 6)
   with no further restrictions (section 10), which the Competing Use clause is.
-  Since `internal/gnovm/` links the GnoVM into the binetic-agent binary and embeds the
+  Since `internal/gnovm/` links the GnoVM into the gnosh binary and embeds the
   Gno standard library in it, that conflict is live today, not hypothetical. No
-  binetic-agent binary should be released until it is settled. The ways out build on
+  gnosh binary should be released until it is settled. The ways out build on
   the ones recorded in `internal/gnovm/LICENSE.md`: a linking exception from
-  NewTendermint, LLC for the GnoVM and the other gno code binetic-agent links or
-  embeds, plus an additional permission from the Licensor for binetic-agent's own
+  NewTendermint, LLC for the GnoVM and the other gno code gnosh links or
+  embeds, plus an additional permission from the Licensor for gnosh's own
   code, from that subsystem's Licensor, Jae Kwon, for that subsystem, and, for
   code others contributed, from NewTendermint, LLC or that code's copyright
-  holder; waiting for each Binetic Agent version's FSL to become MIT two years after
+  holder; waiting for each Crush version's FSL to become MIT two years after
   Charm released it, since MIT code can be conveyed under this License; or
   splitting the GnoVM worker out into its own program so the FSL binary links
   none of it.
@@ -830,23 +830,23 @@ conflicts will be worked out later.
   own code; the contributor licences it mentions are NewTendermint, LLC's.
 - **Remote users.** Section 13 of the License asks that whoever modifies the
   Program, and lets people use the modified version remotely (for instance
-  through binetic-agent's server mode or its channels), offer them its Corresponding
-  Source. That binds binetic-agent's own remote interfaces: they should link to binetic-agent's
+  through gnosh's server mode or its channels), offer them its Corresponding
+  Source. That binds gnosh's own remote interfaces: they should link to gnosh's
   source.
-- **The GnoVM's own terms.** The GnoVM and the gno code binetic-agent embeds (the Gno
+- **The GnoVM's own terms.** The GnoVM and the gno code gnosh embeds (the Gno
   standard library and `internal/gnovm/klashlibs/klash/bptree/v0`) are under
   the GNO Network GPL v6 with NewTendermint, LLC's own Additional Terms
-  (Strong Attribution). Those terms apply independently of this file: binetic-agent's
+  (Strong Attribution). Those terms apply independently of this file: gnosh's
   interface must carry NewTendermint's attribution notice too.
 - **Authorship.** Much of this fork was written with AI assistance at Jae
   Kwon's direction. How much copyright that leaves for the clause above to rest
   on is a question for the legal review.
 
 
-# The licence of the files derived from Binetic Agent
+# The licence of the files derived from Crush
 
 The following covers the files in this repository that came from Charm's
-[Binetic Agent](https://github.com/charmbracelet/binetic_agent), and the upstream notice that
+[Crush](https://github.com/charmbracelet/crush), and the upstream notice that
 came with them. It is reproduced unchanged.
 
 

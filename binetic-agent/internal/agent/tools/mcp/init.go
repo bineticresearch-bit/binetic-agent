@@ -1,5 +1,5 @@
 // Package mcp provides functionality for managing Model Context Protocol (MCP)
-// clients within the Binetic Agent application.
+// clients within the Crush application.
 package mcp
 
 import (
@@ -16,14 +16,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/csync"
-	"github.com/charmbracelet/binetic_agent/internal/home"
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
-	mcpoauth "github.com/charmbracelet/binetic_agent/internal/oauth/mcp"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/csync"
+	"github.com/charmbracelet/crush/internal/home"
+	"github.com/charmbracelet/crush/internal/oauth"
+	mcpoauth "github.com/charmbracelet/crush/internal/oauth/mcp"
+	"github.com/charmbracelet/crush/internal/permission"
+	"github.com/charmbracelet/crush/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/version"
 	"github.com/modelcontextprotocol/go-sdk/auth"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -982,7 +982,7 @@ func updateState(name string, state State, err error, client *ClientSession, cou
 		// A session that has errored is dead to us: close it so the child
 		// process and its stdio pipes are released, and clear its registry
 		// entries so the agent stops advertising capabilities it can no
-		// longer call (without that, binetic-agent_info / the `/mcp` menu and the
+		// longer call (without that, gnosh_info / the `/mcp` menu and the
 		// tool list handed to the LLM diverge). Crucially, close exactly the
 		// session that errored (the client argument): if the registry
 		// already holds a DIFFERENT session — a newer, healthy one another
@@ -1091,9 +1091,9 @@ func createSession(ctx context.Context, cfg *config.ConfigStore, name string, m 
 	}
 	client := mcp.NewClient(
 		&mcp.Implementation{
-			Name:    "binetic_agent",
+			Name:    "crush",
 			Version: version.Version,
-			Title:   "Binetic Agent",
+			Title:   "Crush",
 		},
 		opts,
 	)
@@ -1136,7 +1136,7 @@ func createSession(ctx context.Context, cfg *config.ConfigStore, name string, m 
 	}, nil
 }
 
-// transportWrapper is implemented by every transport decorator binetic_agent layers
+// transportWrapper is implemented by every transport decorator crush layers
 // around a base transport, so diagnostics that need the innermost transport
 // can reach it without knowing which decorators are in play.
 type transportWrapper interface {

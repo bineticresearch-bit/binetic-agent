@@ -5,26 +5,26 @@ import (
 	"os"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/db"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/ui/list"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/db"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/ui/list"
+	"github.com/charmbracelet/crush/internal/ui/styles"
 )
 
 // BenchmarkResizeSession reproduces the resize re-render path over a real
-// session's messages. Point BINETIC_AGENT_BENCH_SESSION at a full session id and
-// BINETIC_AGENT_BENCH_DATADIR at the binetic_agent data dir (defaults to ./.binetic-agent).
+// session's messages. Point CRUSH_BENCH_SESSION at a full session id and
+// CRUSH_BENCH_DATADIR at the crush data dir (defaults to ./.crush).
 //
-//	BINETIC_AGENT_BENCH_SESSION=e6368d820207a406 go test ./internal/ui/chat/ \
+//	CRUSH_BENCH_SESSION=e6368d820207a406 go test ./internal/ui/chat/ \
 //	  -run x -bench BenchmarkResizeSession -benchtime 20x -cpuprofile /tmp/cpu.out
 func BenchmarkResizeSession(b *testing.B) {
-	sessionID := os.Getenv("BINETIC_AGENT_BENCH_SESSION")
+	sessionID := os.Getenv("CRUSH_BENCH_SESSION")
 	if sessionID == "" {
-		b.Skip("set BINETIC_AGENT_BENCH_SESSION to a full session id")
+		b.Skip("set CRUSH_BENCH_SESSION to a full session id")
 	}
-	dataDir := os.Getenv("BINETIC_AGENT_BENCH_DATADIR")
+	dataDir := os.Getenv("CRUSH_BENCH_DATADIR")
 	if dataDir == "" {
-		dataDir = ".binetic-agent"
+		dataDir = ".crush"
 	}
 
 	ctx := context.Background()

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
@@ -31,7 +31,7 @@ func noPingSession(t *testing.T) *ClientSession {
 	t.Cleanup(func() { _ = serverSession.Close() })
 
 	ctx, cancel := context.WithCancel(context.Background())
-	client := mcp.NewClient(&mcp.Implementation{Name: "binetic_agent-test"}, nil)
+	client := mcp.NewClient(&mcp.Implementation{Name: "crush-test"}, nil)
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
 	require.NoError(t, err)
 

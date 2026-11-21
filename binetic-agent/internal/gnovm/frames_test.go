@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -20,7 +20,7 @@ import (
 
 // framesStory is a memStory whose sessions have stacks of frames: the
 // natives answer each session's stack as its own pushes and pops left it,
-// as binetic-agent derives it from the session's rows.
+// as gnosh derives it from the session's rows.
 type framesStory struct {
 	*memStory
 	stacks map[string][]string
@@ -66,7 +66,7 @@ func (s *framesStory) run(who, bound, code string) {
 // testdata/gnomem/v2/frames.golden (GNOMEM_V2_WRITE=1 rewrites it): the
 // trampoline, thoughts, the refusals, held frames, a bound root, and the
 // States NextTodo reads. Then it rebuilds the mem from the story's Ops
-// alone, as binetic-agent rebuilds from its journal: the pushes and pops are not
+// alone, as gnosh rebuilds from its journal: the pushes and pops are not
 // Ops, and the rebuilt mem shows exactly as the live one.
 func TestFramesStory(t *testing.T) {
 	s := newFramesStory(t)

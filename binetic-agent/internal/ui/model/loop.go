@@ -6,9 +6,9 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/ui/util"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/ui/util"
 )
 
 const (
@@ -58,7 +58,7 @@ const (
 // a reason it is told plainly to keep going.
 //
 // The wording is measured, not guessed. Replaying a real checkpoint request
-// against the box's Qwen, with thinking off as binetic-agent sends it, an earlier
+// against the box's Qwen, with thinking off as gnosh sends it, an earlier
 // "step back and judge" version was mostly ignored: the model answered with
 // the next step of the task (1 stop in 5 where the user had said to stop).
 // Saying that the question overrides the system prompt's keep-working rules,

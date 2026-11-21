@@ -1,4 +1,4 @@
-// Package exitbanner renders what Binetic Agent prints after the TUI exits.
+// Package exitbanner renders what Crush prints after the TUI exits.
 package exitbanner
 
 import (
@@ -8,11 +8,11 @@ import (
 
 	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/colorprofile"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/ui/logo"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/ui/logo"
+	"github.com/charmbracelet/crush/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/version"
 	"github.com/charmbracelet/x/ansi"
 )
 
@@ -59,7 +59,7 @@ func logoSection(contentWidth int) string {
 	// (cmd/root.go), so it fades over the whole name only where that
 	// terminal shows 24-bit color.
 	gno, from, to := t.Wordmark(colorprofile.Detect(os.Stderr, os.Environ()) == colorprofile.TrueColor, t.Logo.TitleColorA, t.Logo.TitleColorB)
-	binetic_agentLogo := logo.Render(t.Logo.GradCanvas, version.Version, true, logo.Opts{
+	crushLogo := logo.Render(t.Logo.GradCanvas, version.Version, true, logo.Opts{
 		FieldColor:   t.Logo.FieldColor,
 		FieldColorB:  t.Logo.FieldColorB,
 		TitleColorA:  from,
@@ -71,11 +71,11 @@ func logoSection(contentWidth int) string {
 	})
 	// Wrap the greeting and the message together: wrapping only the message
 	// leaves the greeting's own width unaccounted for and overflows the frame.
-	return binetic_agentLogo + "\n" +
+	return crushLogo + "\n" +
 		lipgloss.NewStyle().Width(contentWidth).Render("Thanks for using "+version.Name+"! "+randomExitMessage())
 }
 
-// sessionResumeLines returns the "Session  <title>\nContinue binetic-agent -s <hash>"
+// sessionResumeLines returns the "Session  <title>\nContinue gnosh -s <hash>"
 // pair used by the exit banner.
 func sessionResumeLines(sess *session.Session, contentWidth int) string {
 	title := strings.ReplaceAll(sess.Title, "\n", " ")
@@ -87,7 +87,7 @@ func sessionResumeLines(sess *session.Session, contentWidth int) string {
 	}
 
 	hash := session.HashID(sess.ID)[:7]
-	label := lipgloss.NewStyle().Foreground(styles.Binetic AgentPurple)
+	label := lipgloss.NewStyle().Foreground(styles.GnoshPurple)
 	sessionLine := label.Render("Session  ") + title
 	continueLine := label.Render("Continue ") + version.Command + " -s " + hash
 	return sessionLine + "\n" + continueLine

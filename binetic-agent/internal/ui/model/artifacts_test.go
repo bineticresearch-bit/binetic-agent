@@ -7,12 +7,12 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/ui/attachments"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
-	"github.com/charmbracelet/binetic_agent/internal/ui/dialog"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/ui/attachments"
+	"github.com/charmbracelet/crush/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/ui/dialog"
 	uv "github.com/charmbracelet/ultraviolet"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/stretchr/testify/require"
@@ -225,7 +225,7 @@ func TestArtifactList_EveryPieceOfAURLLinksToAllOfIt(t *testing.T) {
 	st := minimalFileStyles()
 	arts := []SessionArtifact{
 		{Label: "hebrew ad video", Target: "/root/renders/video_a_v14e.mp4", URL: servedURL, CreatedAt: 2},
-		{Label: "script", Target: "/home/binetic_agent/src/fromhebrewad/script.md", CreatedAt: 1},
+		{Label: "script", Target: "/home/crush/src/fromhebrewad/script.md", CreatedAt: 1},
 	}
 	got, rows := artifactList(st, arts, 29, 10, noPending)
 	scr := uv.NewScreenBuffer(29, lipgloss.Height(got))
@@ -267,7 +267,7 @@ func sidebarUI(t *testing.T, height int) (*UI, uv.ScreenBuffer) {
 	u.session = &session.Session{ID: "s1", Title: "hebrew ad"}
 	u.sessionArtifacts = []SessionArtifact{
 		{Label: "hebrew ad video", Target: "/root/renders/video_a_v14e.mp4", URL: servedURL, CreatedAt: 3},
-		{Label: "script", Target: "/home/binetic_agent/src/fromhebrewad/script.md", CreatedAt: 2},
+		{Label: "script", Target: "/home/crush/src/fromhebrewad/script.md", CreatedAt: 2},
 		{Label: "subtitles", Pending: true, CreatedAt: 1},
 	}
 	u.updateLayoutAndSize()
@@ -334,7 +334,7 @@ func TestSidebarClickCopiesTheArtifact(t *testing.T) {
 		require.Equal(t, []string{servedURL}, click(text, uv.MouseLeft), "a click on %q", text)
 	}
 	require.Empty(t, click("video_a_v14e.mp4", uv.MouseRight), "only the left button copies")
-	require.Equal(t, []string{"/home/binetic_agent/src/fromhebrewad/script.md"}, click("script.md", uv.MouseLeft))
+	require.Equal(t, []string{"/home/crush/src/fromhebrewad/script.md"}, click("script.md", uv.MouseLeft))
 	require.Empty(t, click("subtitles", uv.MouseLeft), "a pending artifact has nothing to copy")
 	require.Empty(t, click("Artifacts", uv.MouseLeft))
 	require.Empty(t, click("Modified Files", uv.MouseLeft))
@@ -357,7 +357,7 @@ func TestSidebarClickFindsTheArtifactWhenScrolled(t *testing.T) {
 		}
 		*copied = nil
 		_, _ = u.Update(tea.MouseClickMsg(tea.Mouse{X: u.layout.sidebar.Min.X + 3, Y: y, Button: uv.MouseLeft}))
-		require.Equal(t, []string{"/home/binetic_agent/src/fromhebrewad/script.md"}, *copied, "scrolled %d lines", offset)
+		require.Equal(t, []string{"/home/crush/src/fromhebrewad/script.md"}, *copied, "scrolled %d lines", offset)
 		if offset > 0 {
 			scrolled++
 		}
@@ -396,7 +396,7 @@ func msgWithResults(createdAt int64, results ...message.ToolResult) message.Mess
 // The sidebar shows where an artifact is served, which the tool reports
 // in its result, in a later message than the call it answers.
 func TestDeriveArtifacts_TakesTheURLFromTheResult(t *testing.T) {
-	call := artifactCall("hebrew ad video", "/home/binetic_agent/renders/v7.mp4")
+	call := artifactCall("hebrew ad video", "/home/crush/renders/v7.mp4")
 	call.ID = "call-7"
 	msgs := []message.Message{
 		msgWith(1, call),
@@ -406,7 +406,7 @@ func TestDeriveArtifacts_TakesTheURLFromTheResult(t *testing.T) {
 	require.Len(t, arts, 1)
 	require.Equal(t, "http://192.0.2.7:7777/abc/v7.mp4", arts[0].URL)
 	require.Equal(t, "http://192.0.2.7:7777/abc/v7.mp4", arts[0].Open(), "the user is given the URL")
-	require.Equal(t, "/home/binetic_agent/renders/v7.mp4", arts[0].Target, "the path is still known")
+	require.Equal(t, "/home/crush/renders/v7.mp4", arts[0].Target, "the path is still known")
 }
 
 // An artifact nothing serves — a session from before the server, or

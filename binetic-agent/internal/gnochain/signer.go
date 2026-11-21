@@ -43,9 +43,9 @@ func caller(s Signer) crypto.Address {
 }
 
 // GnokeySigner signs with a key of the user's gnokey keybase by running
-// the user's own gnokey, as binetic-agent's gnokey tool does: the password goes to
+// the user's own gnokey, as gnosh's gnokey tool does: the password goes to
 // gnokey's stdin only, never to an argument, the environment or a log.
-// binetic-agent links no keybase code (gno's keybase package brings Ledger support
+// gnosh links no keybase code (gno's keybase package brings Ledger support
 // in C and golang.org/x/crypto/openpgp, which the Go vulnerability database
 // calls unsafe by design, GO-2026-5932).
 //

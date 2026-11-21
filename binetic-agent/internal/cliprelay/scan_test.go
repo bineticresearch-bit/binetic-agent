@@ -22,11 +22,11 @@ func scan(pieces ...string) []string {
 	return copied
 }
 
-// The copies binetic-agent makes reach the scanner as binetic-agent writes them, through
+// The copies gnosh makes reach the scanner as gnosh writes them, through
 // Bubble Tea's tea.SetClipboard, which writes ansi.SetSystemClipboard; and
 // inside tmux as tmux writes them on to its client, captured from tmux 3.6
 // with set-clipboard on (aGVsbG8= is "hello").
-func TestScannerFindsTheCopiesBinetic AgentAndTmuxMake(t *testing.T) {
+func TestScannerFindsTheCopiesGnoshAndTmuxMake(t *testing.T) {
 	t.Parallel()
 
 	text := "a selection, héllo wörld\nand 日本語\n"

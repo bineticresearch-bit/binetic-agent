@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/agent/tools"
 	"mvdan.cc/sh/v3/syntax"
 )
 
@@ -74,7 +74,7 @@ var sedPrintRange = regexp.MustCompile(`^[0-9]+(,([0-9]+|\$))?p$`)
 // Claude Code counts one, or "": the call printed something and exited 0,
 // and its command is one of bashViewCommands run on one regular file. A
 // model used to Claude Code reads with sed -n and grep and then edits;
-// Binetic Agent refused each such edit as of a file never read (run 17, four in
+// Gnosh refused each such edit as of a file never read (run 17, four in
 // its first seven minutes).
 func fileViewedByBash(call fantasy.ToolCall, resp fantasy.ToolResponse) string {
 	var meta tools.BashResponseMetadata

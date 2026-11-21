@@ -6,12 +6,12 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/ui/dialog"
-	"github.com/charmbracelet/binetic_agent/internal/ui/util"
-	"github.com/charmbracelet/binetic_agent/internal/version"
-	"github.com/charmbracelet/binetic_agent/internal/workspace"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/ui/dialog"
+	"github.com/charmbracelet/crush/internal/ui/util"
+	"github.com/charmbracelet/crush/internal/version"
+	"github.com/charmbracelet/crush/internal/workspace"
 	"github.com/stretchr/testify/require"
 )
 
@@ -90,7 +90,7 @@ func TestBranchedSaid(t *testing.T) {
 		branchedMsg{branch: session.Session{ID: "b1", Title: "Branched conversation (Branch)"}, from: session.Session{ID: "s1"}}.said())
 }
 
-// Once the branch is made, binetic-agent goes on in it and says so.
+// Once the branch is made, gnosh goes on in it and says so.
 func TestBranchedGoesOnInTheBranch(t *testing.T) {
 	pinTTLs(t)
 	u := newTestUI()

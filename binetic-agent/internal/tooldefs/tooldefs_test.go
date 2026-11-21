@@ -71,7 +71,7 @@ func TestClaudeCodeNamesOf(t *testing.T) {
 	require.Empty(t, ClaudeCodeGuardNamesOf("edit"), "Edit is edit's own name")
 	require.Empty(t, FromClaudeCode("LSP"), "--allowedTools takes one tool for each name, and LSP is six")
 
-	for _, name := range []string{"web_fetch", "web_search", "WebSearch", "WebFetch", "Bash", "bash", "binetic_agent_logs", "LSP", "TaskStop", "AskUserQuestion"} {
+	for _, name := range []string{"web_fetch", "web_search", "WebSearch", "WebFetch", "Bash", "bash", "crush_logs", "LSP", "TaskStop", "AskUserQuestion"} {
 		require.Truef(t, NamesATool(name), name)
 	}
 	require.False(t, NamesATool("Notebook"))

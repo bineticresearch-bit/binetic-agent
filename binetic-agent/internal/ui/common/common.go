@@ -10,11 +10,11 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"github.com/charmbracelet/colorprofile"
-	"github.com/charmbracelet/binetic_agent/internal/clipboard"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
-	"github.com/charmbracelet/binetic_agent/internal/ui/util"
-	"github.com/charmbracelet/binetic_agent/internal/workspace"
+	"github.com/charmbracelet/crush/internal/clipboard"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/ui/util"
+	"github.com/charmbracelet/crush/internal/workspace"
 	uv "github.com/charmbracelet/ultraviolet"
 )
 
@@ -24,11 +24,11 @@ const MaxAttachmentSize = int64(5 * 1024 * 1024)
 // PlanStartMarker is the sentinel the plan agent emits on its own line at the
 // very start of its final response, so the UI can tell the plan document
 // apart from the agent's intermediate exploratory replies while it streams.
-const PlanStartMarker = "<!-- BINETIC_AGENT_PLAN_START -->"
+const PlanStartMarker = "<!-- CRUSH_PLAN_START -->"
 
 // PlanReadyMarker is the sentinel the plan agent emits on its own line at the
 // end of its final response to signal that the plan is ready for execution.
-const PlanReadyMarker = "<!-- BINETIC_AGENT_PLAN_READY -->"
+const PlanReadyMarker = "<!-- CRUSH_PLAN_READY -->"
 
 // PlanStartMarkerPresent reports whether text contains the plan-start
 // sentinel on a line by itself. See [PlanReadyMarkerPresent] for why the

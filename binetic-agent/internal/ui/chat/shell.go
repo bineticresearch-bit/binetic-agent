@@ -8,10 +8,10 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 
-	"github.com/charmbracelet/binetic_agent/internal/ui/anim"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
-	"github.com/charmbracelet/binetic_agent/internal/ui/list"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/ui/anim"
+	"github.com/charmbracelet/crush/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/ui/list"
+	"github.com/charmbracelet/crush/internal/ui/styles"
 	"github.com/charmbracelet/x/ansi"
 )
 
@@ -233,7 +233,7 @@ func (s *ShellItem) RawRender(width int) string {
 	}
 
 	// Remap raw ANSI 16-color codes onto legible Charmtone colors so
-	// dark terminal defaults don't render illegibly on Binetic Agent's
+	// dark terminal defaults don't render illegibly on Crush's
 	// background.
 	// Strip trailing whitespace and bare ANSI resets before remapping.
 	// Programs like `task` emit "\x1b[0m\n" after their last line of

@@ -21,12 +21,12 @@ import (
 	"unicode/utf8"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/filepathext"
-	"github.com/charmbracelet/binetic_agent/internal/filetracker"
-	"github.com/charmbracelet/binetic_agent/internal/fsext"
-	"github.com/charmbracelet/binetic_agent/internal/lsp"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
-	"github.com/charmbracelet/binetic_agent/internal/skills"
+	"github.com/charmbracelet/crush/internal/filepathext"
+	"github.com/charmbracelet/crush/internal/filetracker"
+	"github.com/charmbracelet/crush/internal/fsext"
+	"github.com/charmbracelet/crush/internal/lsp"
+	"github.com/charmbracelet/crush/internal/permission"
+	"github.com/charmbracelet/crush/internal/skills"
 	"github.com/dustin/go-humanize"
 )
 
@@ -194,8 +194,8 @@ func NewViewTool(
 				return fantasy.NewTextErrorResponse("file_path is required"), nil
 			}
 
-			// Handle builtin skill files (binetic-agent:// prefix, or klash:// or
-			// binetic_agent:// from before the renames).
+			// Handle builtin skill files (gnosh:// prefix, or klash:// or
+			// crush:// from before the renames).
 			if skills.IsBuiltinPath(params.FilePath) {
 				params.FilePath = skills.CanonicalBuiltinPath(params.FilePath)
 				resp, err := readBuiltinFile(params, skillTracker)

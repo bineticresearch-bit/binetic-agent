@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/hyper"
+	"github.com/charmbracelet/crush/internal/agent/hyper"
 )
 
 // hyperCreditsModel wraps a Hyper language model so that every request

@@ -8,9 +8,9 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/hooks"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/hooks"
+	"github.com/charmbracelet/crush/internal/pubsub"
 )
 
 // stopHookReflectEvery is how many consecutive "not done"s a Stop hook
@@ -29,12 +29,12 @@ const stopHookReflectEvery = 10
 // though the Stop hook still objects. The rest of its reply is its
 // reason, written for the user. Like the plan markers it is an HTML
 // comment, and the UI strips it before rendering (see StripStopMarker).
-const StopMarker = "<!-- BINETIC_AGENT_STOP -->"
+const StopMarker = "<!-- GNOSH_STOP -->"
 
 // stopMarkers are StopMarker and the markers from before the renames, from
-// Binetic Agent to Klash to Binetic Agent. An agent may still write an old one, from a
+// Crush to Klash to Gnosh. An agent may still write an old one, from a
 // session or a prompt that predates a rename, and it counts the same.
-var stopMarkers = []string{StopMarker, "<!-- KLASH_STOP -->", "<!-- BINETIC_AGENT_STOP -->"}
+var stopMarkers = []string{StopMarker, "<!-- KLASH_STOP -->", "<!-- CRUSH_STOP -->"}
 
 // maxStopReasonLen bounds how much of the agent's reason is quoted in
 // the one-line status-bar warning. The full reason is in its reply.
@@ -73,7 +73,7 @@ func (a *sessionAgent) stopHookContinuation(
 	}
 	// A sub-agent's hooks, as in Claude Code, see the session it works
 	// for as session_id, and its own as agent_id; their warnings go to
-	// that session too, the one the user is in, which is all `binetic-agent run`
+	// that session too, the one the user is in, which is all `gnosh run`
 	// prints warnings for.
 	userSession := call.SessionID
 	if a.isSubAgent && a.sessions != nil {

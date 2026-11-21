@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -28,9 +28,9 @@ import (
 	"time"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/gnovm"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/gnovm"
+	"github.com/charmbracelet/crush/internal/permission"
 )
 
 // The tools' names.
@@ -58,7 +58,7 @@ const newDescription = `Make a named Gno VM, or change one's settings. Names: a 
 - memory_mb: memory cap, 1 to 64 (default 16); it can only grow.
 - gas: gas limit per call (default 1e9; 1 gas is about 1 ns).
 - ns_per_gas: this VM's nanoseconds per gas (default 1), for its time estimates and limits.
-- persist: keep the VM's state on disk across restarts of binetic-agent (default false); once on, it stays on.
+- persist: keep the VM's state on disk across restarts of gnosh (default false); once on, it stays on.
 - pinned: never evict it from memory to make room for others.
 - description: what the VM is for, shown by gnovm_list.`
 
@@ -193,7 +193,7 @@ func OnMemRules(f func(ctx context.Context, sessionID string, rules []gnovm.MemR
 	return func(o *runOptions) { o.onRules = f }
 }
 
-// OnMemErased has gnovm_run tell f what a call to mem erased, so binetic-agent can
+// OnMemErased has gnovm_run tell f what a call to mem erased, so gnosh can
 // erase it from its own copies of mem's text too.
 func OnMemErased(f func(ctx context.Context, sessionID string, e gnovm.MemErasure)) RunOption {
 	return func(o *runOptions) { o.onErased = f }
@@ -445,7 +445,7 @@ func refusalText(err error) string {
 }
 
 // renderRun is a run's result as the model reads it: the value and output
-// first, then what binetic-agent adds about frames (what a pop removed), then one
+// first, then what gnosh adds about frames (what a pop removed), then one
 // status line, then notes.
 func renderRun(res *gnovm.RunResult, frames string) string {
 	var b strings.Builder
@@ -660,10 +660,10 @@ func renderList(l gnovm.ListResult, deaths []string) string {
 		b.WriteString("\n")
 	}
 	if len(deaths) > 0 {
-		fmt.Fprintf(&b, "the VM worker ended %d time(s) in this binetic-agent; last: %s\n", len(deaths), deaths[len(deaths)-1])
+		fmt.Fprintf(&b, "the VM worker ended %d time(s) in this gnosh; last: %s\n", len(deaths), deaths[len(deaths)-1])
 	}
 	fmt.Fprintf(&b, "importable: fmt, %s\n", strings.Join(gnovm.ImportablePackages(), ", "))
-	b.WriteString("Built on gno.land (https://gno.land) · built on binetic-agent (https://binetic-agent.local)\n")
+	b.WriteString("Built on gno.land (https://gno.land) · built on gnosh (https://gnosh.ai)\n")
 	return b.String()
 }
 

@@ -11,22 +11,22 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/catwalk/pkg/catwalk"
-	"github.com/charmbracelet/binetic_agent/internal/agent"
-	mcptools "github.com/charmbracelet/binetic_agent/internal/agent/tools/mcp"
-	"github.com/charmbracelet/binetic_agent/internal/app"
-	"github.com/charmbracelet/binetic_agent/internal/commands"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/history"
-	"github.com/charmbracelet/binetic_agent/internal/lsp"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
-	"github.com/charmbracelet/binetic_agent/internal/proto"
-	"github.com/charmbracelet/binetic_agent/internal/question"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/shell"
-	"github.com/charmbracelet/binetic_agent/internal/skills"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/agent"
+	mcptools "github.com/charmbracelet/crush/internal/agent/tools/mcp"
+	"github.com/charmbracelet/crush/internal/app"
+	"github.com/charmbracelet/crush/internal/commands"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/history"
+	"github.com/charmbracelet/crush/internal/lsp"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/oauth"
+	"github.com/charmbracelet/crush/internal/permission"
+	"github.com/charmbracelet/crush/internal/proto"
+	"github.com/charmbracelet/crush/internal/question"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/shell"
+	"github.com/charmbracelet/crush/internal/skills"
+	"github.com/charmbracelet/crush/internal/version"
 )
 
 // Reasons the coder agent may be unavailable, returned by
@@ -151,7 +151,7 @@ type Workspace interface {
 	BackgroundJobs(ctx context.Context) ([]shell.JobInfo, error)
 	// KillBackgroundJob stops one of them.
 	KillBackgroundJob(ctx context.Context, id string) error
-	// DoctorReport is the check of the setup that binetic-agent doctor prints,
+	// DoctorReport is the check of the setup that gnosh doctor prints,
 	// the Markdown /doctor shows, as Claude Code's /doctor checks it.
 	DoctorReport(ctx context.Context) (string, error)
 	// MemCommand runs /mem, the user's command for the project's mem,

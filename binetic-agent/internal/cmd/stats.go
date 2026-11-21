@@ -17,10 +17,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/db"
-	"github.com/charmbracelet/binetic_agent/internal/event"
-	"github.com/charmbracelet/binetic_agent/internal/projects"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/db"
+	"github.com/charmbracelet/crush/internal/event"
+	"github.com/charmbracelet/crush/internal/projects"
 	"github.com/pkg/browser"
 	"github.com/spf13/cobra"
 )
@@ -51,7 +51,7 @@ var statsCmd = &cobra.Command{
 }
 
 func init() {
-	statsCmd.Flags().String("crawl-dir", "", "Crawl a directory recursively for all Binetic Agent projects and aggregate stats")
+	statsCmd.Flags().String("crawl-dir", "", "Crawl a directory recursively for all Gnosh projects and aggregate stats")
 	statsCmd.Flags().Bool("all", false, "Aggregate stats from all known projects (from projects.json)")
 }
 
@@ -226,7 +226,7 @@ func runStats(cmd *cobra.Command, _ []string) error {
 		}
 	}
 	if outputDataDir == "" {
-		outputDataDir = ".binetic-agent"
+		outputDataDir = ".gnosh"
 	}
 
 	htmlPath := filepath.Join(outputDataDir, "stats/index.html")
@@ -245,7 +245,7 @@ func runStats(cmd *cobra.Command, _ []string) error {
 }
 
 // crawlForStats crawls a directory recursively looking for session
-// databases: .binetic-agent/binetic-agent.db, or the .klash/klash.db and .binetic-agent/binetic_agent.db
+// databases: .gnosh/gnosh.db, or the .klash/klash.db and .crush/crush.db
 // names from before the renames.
 func crawlForStats(ctx context.Context, rootDir string) ([]ProjectStats, error) {
 	var dbPaths []struct {
@@ -263,9 +263,9 @@ func crawlForStats(ctx context.Context, rootDir string) ([]ProjectStats, error) 
 			return filepath.SkipDir
 		}
 
-		if !d.IsDir() && (d.Name() == "binetic-agent.db" || d.Name() == "klash.db" || d.Name() == "binetic_agent.db") {
+		if !d.IsDir() && (d.Name() == "gnosh.db" || d.Name() == "klash.db" || d.Name() == "crush.db") {
 			dir := filepath.Dir(path)
-			if base := filepath.Base(dir); base == ".binetic-agent" || base == ".klash" || base == ".binetic-agent" {
+			if base := filepath.Base(dir); base == ".gnosh" || base == ".klash" || base == ".crush" {
 				projectDir := filepath.Dir(dir)
 				dbPaths = append(dbPaths, struct {
 					dbPath     string

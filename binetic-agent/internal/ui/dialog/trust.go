@@ -8,8 +8,8 @@ import (
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/ui/common"
 	uv "github.com/charmbracelet/ultraviolet"
 	"github.com/charmbracelet/x/ansi"
 )
@@ -138,10 +138,10 @@ func (d *Trust) View(width, height int) string {
 	head = append(head, "", t.Dialog.PrimaryText.Render("Its project settings would:"))
 
 	note := "Trust it only if you wrote these settings or have read them. " +
-		"No starts binetic-agent with your own settings only, and it asks again next time."
+		"No starts gnosh with your own settings only, and it asks again next time."
 	if s.Home {
 		note = "Your home directory is trusted for this session only: " +
-			"binetic-agent asks each time it starts here. No starts it with your own settings only."
+			"gnosh asks each time it starts here. No starts it with your own settings only."
 	}
 	tail := []string{
 		"",

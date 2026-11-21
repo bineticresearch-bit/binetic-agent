@@ -3,7 +3,7 @@ package cmd
 import (
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/workspace"
+	"github.com/charmbracelet/crush/internal/workspace"
 	"github.com/stretchr/testify/require"
 )
 
@@ -17,5 +17,5 @@ func TestTUIModelFlag(t *testing.T) {
 	require.NotNil(t, f)
 	require.Equal(t, "m", f.Shorthand)
 	err := overrideTUIModel(t.Context(), struct{ workspace.Workspace }{}, "qwen3.8-27b")
-	require.EqualError(t, err, "--model is not supported with BINETIC_AGENT_CLIENT_SERVER=1 yet; pick the model with /model")
+	require.EqualError(t, err, "--model is not supported with GNOSH_CLIENT_SERVER=1 yet; pick the model with /model")
 }

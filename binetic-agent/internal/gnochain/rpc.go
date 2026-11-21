@@ -28,7 +28,7 @@ func newRPC(remote string) *rpc {
 }
 
 func (r *rpc) call(ctx context.Context, method string, params map[string]any, out any) error {
-	body, err := json.Marshal(map[string]any{"jsonrpc": "2.0", "id": "binetic-agent", "method": method, "params": params})
+	body, err := json.Marshal(map[string]any{"jsonrpc": "2.0", "id": "gnosh", "method": method, "params": params})
 	if err != nil {
 		return err
 	}

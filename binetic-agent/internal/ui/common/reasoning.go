@@ -5,13 +5,13 @@ import (
 
 	"charm.land/catwalk/pkg/catwalk"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 )
 
 // ReasoningSummary is the line the sidebar shows for how hard the current
 // model thinks, or "" when the model has no reasoning to describe.
 //
-// Binetic Agent settles reasoning two different ways and the line has to follow
+// Gnosh settles reasoning two different ways and the line has to follow
 // whichever one actually governs the request:
 //
 //   - A model with a reasoning axis -- gpt-oss, Qwen, or anything given
@@ -25,7 +25,7 @@ import (
 //
 // Nothing else reasons in a way we can name, and gets no line. Crucially
 // the axis is tried first and is not gated on CanReason: a model added by
-// hand in binetic-agentrc has no catalog entry, so gating on CanReason left a local
+// hand in crushrc has no catalog entry, so gating on CanReason left a local
 // model's level invisible.
 func ReasoningSummary(cfg *config.Config, sel config.SelectedModel, model catwalk.Model) string {
 	if kind, _ := config.ReasoningAxis(model); kind != config.ReasoningNone {

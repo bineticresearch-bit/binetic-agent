@@ -9,13 +9,13 @@ import (
 	"charm.land/bubbles/v2/spinner"
 	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
-	"github.com/charmbracelet/binetic_agent/internal/commands"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
-	"github.com/charmbracelet/binetic_agent/internal/ui/list"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
-	"github.com/charmbracelet/binetic_agent/internal/ui/util"
+	"github.com/charmbracelet/crush/internal/commands"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/ui/list"
+	"github.com/charmbracelet/crush/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/ui/util"
 	uv "github.com/charmbracelet/ultraviolet"
 )
 
@@ -545,7 +545,7 @@ func (c *Commands) defaultCommands() []*CommandItem {
 		WithDescription("What the agent runs in the background: see its output, or stop it"))
 	commands = append(commands, NewCommandItem(c.com.Styles, "doctor_report", "Doctor", "", ActionDoctorReport{}).
 		WithAliases("doctor", "checkup").
-		WithDescription("Check the config, providers, models, hooks and programs binetic-agent runs with"))
+		WithDescription("Check the config, providers, models, hooks and programs gnosh runs with"))
 	commands = append(commands, NewCommandItem(c.com.Styles, "mem", "Mem", "", ActionMem{}).
 		WithAliases("mem").
 		WithDescription("What mem holds; type mem and find, show, log, undo, forget, redact or repair"))

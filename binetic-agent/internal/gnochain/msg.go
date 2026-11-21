@@ -13,7 +13,7 @@ import (
 // order, so the chain decodes it as its own and the signature covers the
 // same bytes. It is defined here because importing gno.land/pkg/sdk/vm
 // for this one type links 67 packages of the node (consensus, validator
-// signing, mempool, p2p, the RPC server) into binetic-agent. A mismatch cannot pass
+// signing, mempool, p2p, the RPC server) into gnosh. A mismatch cannot pass
 // unnoticed: the chain would refuse the signature, and TestLive signs
 // against a real node.
 type MsgCall struct {
@@ -27,7 +27,7 @@ type MsgCall struct {
 
 // Package registers MsgCall with amino under gno.land's name for it.
 var Package = amino.RegisterPackage(amino.NewPackage(
-	"github.com/charmbracelet/binetic_agent/internal/gnochain",
+	"github.com/charmbracelet/crush/internal/gnochain",
 	"vm",
 	amino.GetCallersDirname(),
 ).WithDependencies(

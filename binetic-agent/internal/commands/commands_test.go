@@ -6,8 +6,8 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/skills"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/skills"
 	"github.com/stretchr/testify/require"
 )
 
@@ -75,12 +75,12 @@ func TestLoadAll_FirstOfTheSameNameWins(t *testing.T) {
 	require.Equal(t, "user:other", cmds[1].ID)
 }
 
-// A commands directory under the binetic-agent name must not hide the commands in
-// the binetic_agent one.
+// A commands directory under the gnosh name must not hide the commands in
+// the crush one.
 func TestBuildCommandSources_ReadsBothNames(t *testing.T) {
 	xdg := t.TempDir()
 	t.Setenv("XDG_CONFIG_HOME", xdg)
-	for name, cmd := range map[string]string{"binetic-agent": "new.md", "binetic_agent": "old.md"} {
+	for name, cmd := range map[string]string{"gnosh": "new.md", "crush": "old.md"} {
 		dir := filepath.Join(xdg, name, "commands")
 		require.NoError(t, os.MkdirAll(dir, 0o755))
 		require.NoError(t, os.WriteFile(filepath.Join(dir, cmd), []byte(name), 0o644))

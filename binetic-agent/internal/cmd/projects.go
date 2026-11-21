@@ -6,8 +6,8 @@ import (
 
 	"charm.land/lipgloss/v2"
 	"charm.land/lipgloss/v2/table"
-	"github.com/charmbracelet/binetic_agent/internal/projects"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/projects"
+	"github.com/charmbracelet/crush/internal/version"
 	"github.com/charmbracelet/x/term"
 	"github.com/spf13/cobra"
 )
@@ -18,10 +18,10 @@ var projectsCmd = &cobra.Command{
 	Long:  "List directories where " + version.Name + " project data is known to exist",
 	Example: `
 # List all projects in a table
-binetic-agent projects
+gnosh projects
 
 # Output projects data as JSON
-binetic-agent projects --json
+gnosh projects --json
   `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		jsonOutput, _ := cmd.Flags().GetBool("json")

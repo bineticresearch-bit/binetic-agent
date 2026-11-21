@@ -3,7 +3,7 @@
 summarize() and analyze.py, so rows written by older versions count alike.
 
 Usage: rescore.py results.jsonl > results-rescored.jsonl
-Adds: mem (binetic-agent's mem verbs), gnovm_runs, popped, slides, slid_tokens,
+Adds: mem (gnosh's mem verbs), gnovm_runs, popped, slides, slid_tokens,
 summary_messages (the harness's own count), tools (calls by name).
 """
 import json

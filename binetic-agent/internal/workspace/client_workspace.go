@@ -11,27 +11,27 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/charmbracelet/binetic_agent/internal/agent"
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools/mcp"
-	"github.com/charmbracelet/binetic_agent/internal/app"
-	"github.com/charmbracelet/binetic_agent/internal/client"
-	"github.com/charmbracelet/binetic_agent/internal/commands"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/herdr"
-	"github.com/charmbracelet/binetic_agent/internal/history"
-	"github.com/charmbracelet/binetic_agent/internal/log"
-	"github.com/charmbracelet/binetic_agent/internal/lsp"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
-	"github.com/charmbracelet/binetic_agent/internal/proto"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
-	"github.com/charmbracelet/binetic_agent/internal/question"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/shell"
-	"github.com/charmbracelet/binetic_agent/internal/skills"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/agent"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/agent/tools/mcp"
+	"github.com/charmbracelet/crush/internal/app"
+	"github.com/charmbracelet/crush/internal/client"
+	"github.com/charmbracelet/crush/internal/commands"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/herdr"
+	"github.com/charmbracelet/crush/internal/history"
+	"github.com/charmbracelet/crush/internal/log"
+	"github.com/charmbracelet/crush/internal/lsp"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/oauth"
+	"github.com/charmbracelet/crush/internal/permission"
+	"github.com/charmbracelet/crush/internal/proto"
+	"github.com/charmbracelet/crush/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/question"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/shell"
+	"github.com/charmbracelet/crush/internal/skills"
+	"github.com/charmbracelet/crush/internal/version"
 	"github.com/charmbracelet/x/powernap/pkg/lsp/protocol"
 	"github.com/pkg/browser"
 )
@@ -154,7 +154,7 @@ func (w *ClientWorkspace) BranchSession(ctx context.Context, sessionID, title st
 // AddDir is refused in client/server mode, as --add-dir is: the
 // directory would have to reach the server's permissions.
 func (w *ClientWorkspace) AddDir(context.Context, string) (string, bool, error) {
-	return "", false, errors.New("/add-dir cannot reach the server's permissions with BINETIC_AGENT_CLIENT_SERVER=1 yet")
+	return "", false, errors.New("/add-dir cannot reach the server's permissions with GNOSH_CLIENT_SERVER=1 yet")
 }
 
 func (w *ClientWorkspace) SessionGoal(ctx context.Context, sessionID string) (agent.Goal, bool, error) {

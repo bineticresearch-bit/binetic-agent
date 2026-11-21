@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"charm.land/lipgloss/v2"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/ui/styles"
 	"github.com/stretchr/testify/require"
 )
 
@@ -68,7 +68,7 @@ func TestX402FetchShowsTheWholeError(t *testing.T) {
 func TestX402FetchKeepsTheLinesOfAnError(t *testing.T) {
 	t.Parallel()
 
-	failure := "binetic-agent cannot pay any of the seller's offers:\n- exact 100ugnot on gno:gnoland1: binetic-agent pays only on dev and test chains\n- exact 5usdc on eip155:8453: not a gno.land chain"
+	failure := "gnosh cannot pay any of the seller's offers:\n- exact 100ugnot on gno:gnoland1: gnosh pays only on dev and test chains\n- exact 5usdc on eip155:8453: not a gno.land chain"
 	lines, _ := renderX402Fetch(newX402FetchItem(t, &message.ToolResult{ToolCallID: "1", Content: failure, IsError: true}), 100)
 
 	var items []string
@@ -78,7 +78,7 @@ func TestX402FetchKeepsTheLinesOfAnError(t *testing.T) {
 		}
 	}
 	require.Equal(t, []string{
-		"- exact 100ugnot on gno:gnoland1: binetic-agent pays only on dev and test chains",
+		"- exact 100ugnot on gno:gnoland1: gnosh pays only on dev and test chains",
 		"- exact 5usdc on eip155:8453: not a gno.land chain",
 	}, items)
 }

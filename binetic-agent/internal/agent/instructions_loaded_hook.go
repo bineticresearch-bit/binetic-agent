@@ -8,9 +8,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/prompt"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/hooks"
+	"github.com/charmbracelet/crush/internal/agent/prompt"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/hooks"
 )
 
 // instructionsLoadedState is what the InstructionsLoaded hooks of a

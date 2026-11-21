@@ -34,19 +34,19 @@ const (
 	ShellTypePowerShell
 )
 
-// Binetic AgentEnvMarkers returns a fresh slice of the environment variables that
-// Binetic Agent unconditionally sets on every shell it spawns — both the interactive
+// CrushEnvMarkers returns a fresh slice of the environment variables that
+// Crush unconditionally sets on every shell it spawns — both the interactive
 // bash tool's [Shell] and the hook runner's [Run] calls. Tools that want to
 // detect "am I being invoked by an AI agent?" can check any of these.
 // Keeping them in one place guarantees the two shell surfaces cannot drift.
 // A fresh slice is returned on every call so callers may append freely.
-func Binetic AgentEnvMarkers() []string {
+func CrushEnvMarkers() []string {
 	return []string{
-		"BINETIC_AGENT=1",
+		"GNOSH=1",
 		"KLASH=1",
-		"BINETIC_AGENT=1",
-		"AGENT=binetic_agent",
-		"AI_AGENT=binetic_agent",
+		"CRUSH=1",
+		"AGENT=crush",
+		"AI_AGENT=crush",
 	}
 }
 
@@ -97,12 +97,12 @@ func NewShell(opts *Options) *Shell {
 	}
 
 	// Strip herdr pane-ownership vars so subprocesses (including test
-	// binaries and nested binetic_agent instances) can't attach to or release
+	// binaries and nested crush instances) can't attach to or release
 	// the parent pane's agent authority.
 	env = withoutHerdrEnv(env)
 
-	// Allow tools to detect execution by Binetic Agent.
-	env = append(env, Binetic AgentEnvMarkers()...)
+	// Allow tools to detect execution by Crush.
+	env = append(env, CrushEnvMarkers()...)
 
 	logger := opts.Logger
 	if logger == nil {

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/stretchr/testify/require"
 )
 
@@ -134,7 +134,7 @@ func TestRunStopPayloadFirstPass(t *testing.T) {
 	dir := t.TempDir()
 	out := filepath.Join(dir, "payload.json")
 	envOut := filepath.Join(dir, "env.txt")
-	r := stopRunner(t, "cat > "+out+"; echo \"$BINETIC_AGENT_STOP_HOOK_ACTIVE|$BINETIC_AGENT_EVENT|$BINETIC_AGENT_SESSION_ID\" > "+envOut)
+	r := stopRunner(t, "cat > "+out+"; echo \"$CRUSH_STOP_HOOK_ACTIVE|$CRUSH_EVENT|$CRUSH_SESSION_ID\" > "+envOut)
 
 	_, err := r.RunStop(context.Background(), "sess-1", "", false)
 	require.NoError(t, err)
@@ -155,14 +155,14 @@ func TestRunStopEnvMarksActive(t *testing.T) {
 
 	dir := t.TempDir()
 	envOut := filepath.Join(dir, "env.txt")
-	r := stopRunner(t, `printf '%s|%s' "$BINETIC_AGENT_STOP_HOOK_ACTIVE" "$BINETIC_AGENT_STOP_HOOK_ACTIVE" > `+envOut)
+	r := stopRunner(t, `printf '%s|%s' "$GNOSH_STOP_HOOK_ACTIVE" "$CRUSH_STOP_HOOK_ACTIVE" > `+envOut)
 
 	_, err := r.RunStop(context.Background(), "sess", "", true)
 	require.NoError(t, err)
 
 	envLine, err := os.ReadFile(envOut)
 	require.NoError(t, err)
-	require.Equal(t, "1|1", string(envLine), "under the BINETIC_AGENT_ name and the BINETIC_AGENT_ name before it")
+	require.Equal(t, "1|1", string(envLine), "under the GNOSH_ name and the CRUSH_ name before it")
 }
 
 // updated_input patches a tool's arguments; with no tool call in flight

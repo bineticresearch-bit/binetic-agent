@@ -9,7 +9,7 @@ import (
 	"strings"
 	"sync/atomic"
 
-	"github.com/charmbracelet/binetic_agent/internal/shell"
+	"github.com/charmbracelet/crush/internal/shell"
 	"github.com/tidwall/gjson"
 )
 
@@ -98,7 +98,7 @@ type Payload struct {
 	// input carries it.
 	FilePath string `json:"file_path,omitempty"`
 	// MemoryType is set on an EventInstructionsLoaded payload: the kind of
-	// the file, Claude Code's "User", "Project" or "Local". Binetic Agent has no
+	// the file, Claude Code's "User", "Project" or "Local". Gnosh has no
 	// managed rules, so it is never "Managed".
 	MemoryType string `json:"memory_type,omitempty"`
 	// LoadReason is set on an EventInstructionsLoaded payload: what
@@ -165,7 +165,7 @@ func postPayload(sessionID, cwd, toolName, toolInputJSON, output, metadata strin
 type toolUseIDKey struct{}
 
 // WithToolUseID returns a context naming the tool call that hooks run
-// for. They get it as tool_use_id, and in BINETIC_AGENT_TOOL_USE_ID, so that a
+// for. They get it as tool_use_id, and in GNOSH_TOOL_USE_ID, so that a
 // PreToolUse and a PostToolUse hook can tell they saw the same call.
 func WithToolUseID(ctx context.Context, id string) context.Context {
 	return context.WithValue(ctx, toolUseIDKey{}, id)
@@ -485,7 +485,7 @@ const (
 )
 
 // Memory types, as in Claude Code's memory_type: the user's global
-// context files, a CLAUDE.local.md, or the rest. Binetic Agent has no managed
+// context files, a CLAUDE.local.md, or the rest. Gnosh has no managed
 // rules, so "Managed" is never used.
 const (
 	MemoryTypeUser    = "User"
@@ -497,7 +497,7 @@ const (
 // EventInstructionsLoaded hook: the file loaded, its memory type, and the
 // load reason, as Claude Code's InstructionsLoaded input carries it.
 // triggerFilePath and parentFilePath are set for a nested_traversal and
-// an include load respectively; Binetic Agent has no globbed rules, so globs is
+// an include load respectively; Gnosh has no globbed rules, so globs is
 // never sent. There is no tool in play, so tool_name is empty and
 // tool_input is an empty object.
 func BuildInstructionsLoadedPayload(sessionID, cwd, filePath, memoryType, loadReason, triggerFilePath, parentFilePath string) []byte {
@@ -552,7 +552,7 @@ func BuildSubagentStopEnv(sessionID, agentID, agentType, cwd, projectDir string,
 // It includes all current process env vars plus hook-specific ones.
 func BuildEnv(eventName, toolName, sessionID, cwd, projectDir, toolInputJSON string) []string {
 	env := os.Environ()
-	env = append(env, shell.Binetic AgentEnvMarkers()...)
+	env = append(env, shell.CrushEnvMarkers()...)
 	env = append(env, hookVar("EVENT", eventName)...)
 	env = append(env, hookVar("TOOL_NAME", toolName)...)
 	env = append(env, hookVar("SESSION_ID", sessionID)...)
@@ -581,11 +581,11 @@ func BuildEnv(eventName, toolName, sessionID, cwd, projectDir, toolInputJSON str
 }
 
 // memStatusPath names, for a project's directory, the status.json its mem
-// keeps; unset while binetic-agent's GnoVM machines are off.
+// keeps; unset while gnosh's GnoVM machines are off.
 var memStatusPath atomic.Pointer[func(projectDir string) string]
 
-// SetMemStatusPath has every hook told, as BINETIC_AGENT_MEM_STATUS, where the
-// project's mem keeps its status.json, as f names it: mem.JSON() as binetic-agent
+// SetMemStatusPath has every hook told, as GNOSH_MEM_STATUS, where the
+// project's mem keeps its status.json, as f names it: mem.JSON() as gnosh
 // last computed it, which a hook reads without starting anything (test -f
 // first: it is there once mem first changes). nil unsets it.
 func SetMemStatusPath(f func(projectDir string) string) {
@@ -596,15 +596,15 @@ func SetMemStatusPath(f func(projectDir string) string) {
 	memStatusPath.Store(&f)
 }
 
-// hookVar sets a hook's environment variable under its BINETIC_AGENT_ name and
-// under the KLASH_ and BINETIC_AGENT_ names that hooks written before the renames
+// hookVar sets a hook's environment variable under its GNOSH_ name and
+// under the KLASH_ and CRUSH_ names that hooks written before the renames
 // read.
 func hookVar(name, value string) []string {
-	return []string{"BINETIC_AGENT_" + name + "=" + value, "KLASH_" + name + "=" + value, "BINETIC_AGENT_" + name + "=" + value}
+	return []string{"GNOSH_" + name + "=" + value, "KLASH_" + name + "=" + value, "CRUSH_" + name + "=" + value}
 }
 
 // parseStdout parses the JSON output from a hook command's stdout.
-// Supports both Binetic Agent format and Claude Code format (hookSpecificOutput).
+// Supports both Crush format and Claude Code format (hookSpecificOutput).
 //
 // The top-level fields are read first, then hookSpecificOutput on top of
 // them, because Claude Code hooks use both at once: a PostToolUse or Stop
@@ -815,7 +815,7 @@ func applyClaudeCodeOutput(result *HookResult, data json.RawMessage) {
 	}
 
 	// Claude Code's additionalContext is a string; a list of them is taken
-	// too, as Binetic Agent's own context field takes one.
+	// too, as Crush's own context field takes one.
 	if raw, ok := fields["additionalContext"]; ok && string(raw) != "null" {
 		if raw[0] != '"' && raw[0] != '[' {
 			setParseError(result, fmt.Errorf(
@@ -835,7 +835,7 @@ func applyClaudeCodeOutput(result *HookResult, data json.RawMessage) {
 	}
 
 	// Claude Code's updatedInput is an object and nothing else: unlike
-	// Binetic Agent's own updated_input, a string holding one is not accepted.
+	// Crush's own updated_input, a string holding one is not accepted.
 	if raw := fields["updatedInput"]; len(raw) > 0 && string(raw) != "null" {
 		if raw[0] == '{' {
 			result.UpdatedInput = string(raw)
@@ -922,16 +922,16 @@ func rawToString(raw json.RawMessage) string {
 
 // decisionWords is every decision value a hook may return, and what it
 // means. Two vocabularies are accepted because the docs promise both
-// Binetic Agent's own and Claude Code compatibility:
+// Crush's own and Claude Code compatibility:
 //
-//   - Binetic Agent's top-level "decision": "allow", "deny".
+//   - Crush's top-level "decision": "allow", "deny".
 //   - Claude Code's top-level "decision": "approve", "block". Claude Code
 //     Stop hooks keep the agent working with {"decision": "block"}.
 //   - Claude Code's hookSpecificOutput.permissionDecision: "allow",
 //     "deny", "ask". "ask" puts the tool call to the user, as Claude
 //     Code's does, even one that would run without asking: it used to
 //     count as no opinion here, so a hook asking about a call that
-//     --allowedTools, acceptEdits or binetic-agent run let through was ignored.
+//     --allowedTools, acceptEdits or gnosh run let through was ignored.
 //
 // Matching is exact, as it is for event names.
 var decisionWords = map[string]Decision{

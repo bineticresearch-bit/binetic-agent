@@ -3,7 +3,7 @@ package tools
 import (
 	"slices"
 
-	"github.com/charmbracelet/binetic_agent/internal/shell"
+	"github.com/charmbracelet/crush/internal/shell"
 	"mvdan.cc/sh/v3/syntax"
 )
 

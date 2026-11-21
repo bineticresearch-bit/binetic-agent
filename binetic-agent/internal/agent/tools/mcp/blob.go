@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/shell"
+	"github.com/charmbracelet/crush/internal/shell"
 )
 
 // blobLimit is the largest binary content saved to a file, as in Claude

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/charmbracelet/binetic_agent/internal/commands"
+	"github.com/charmbracelet/crush/internal/commands"
 )
 
 // slashName is a slash command's name as Claude Code reads one: a letter,

@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"charm.land/lipgloss/v2"
-	"github.com/charmbracelet/binetic_agent/internal/ui/fade"
+	"github.com/charmbracelet/crush/internal/ui/fade"
 	"github.com/rivo/uniseg"
 )
 

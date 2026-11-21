@@ -13,10 +13,10 @@ func TestRegisterAndList(t *testing.T) {
 
 	// Override the projects file path for testing
 	t.Setenv("XDG_DATA_HOME", tmpDir)
-	t.Setenv("BINETIC_AGENT_GLOBAL_DATA", filepath.Join(tmpDir, "binetic_agent"))
+	t.Setenv("CRUSH_GLOBAL_DATA", filepath.Join(tmpDir, "crush"))
 
 	// Test registering a project
-	err := Register("/home/user/project1", "/home/user/project1/.binetic-agent")
+	err := Register("/home/user/project1", "/home/user/project1/.crush")
 	if err != nil {
 		t.Fatalf("Register failed: %v", err)
 	}
@@ -35,12 +35,12 @@ func TestRegisterAndList(t *testing.T) {
 		t.Errorf("Expected path /home/user/project1, got %s", projects[0].Path)
 	}
 
-	if projects[0].DataDir != "/home/user/project1/.binetic-agent" {
-		t.Errorf("Expected data_dir /home/user/project1/.binetic-agent, got %s", projects[0].DataDir)
+	if projects[0].DataDir != "/home/user/project1/.crush" {
+		t.Errorf("Expected data_dir /home/user/project1/.crush, got %s", projects[0].DataDir)
 	}
 
 	// Register another project
-	err = Register("/home/user/project2", "/home/user/project2/.binetic-agent")
+	err = Register("/home/user/project2", "/home/user/project2/.crush")
 	if err != nil {
 		t.Fatalf("Register failed: %v", err)
 	}
@@ -63,10 +63,10 @@ func TestRegisterAndList(t *testing.T) {
 func TestRegisterUpdatesExisting(t *testing.T) {
 	tmpDir := t.TempDir()
 	t.Setenv("XDG_DATA_HOME", tmpDir)
-	t.Setenv("BINETIC_AGENT_GLOBAL_DATA", filepath.Join(tmpDir, "binetic_agent"))
+	t.Setenv("CRUSH_GLOBAL_DATA", filepath.Join(tmpDir, "crush"))
 
 	// Register a project
-	err := Register("/home/user/project1", "/home/user/project1/.binetic-agent")
+	err := Register("/home/user/project1", "/home/user/project1/.crush")
 	if err != nil {
 		t.Fatalf("Register failed: %v", err)
 	}
@@ -77,7 +77,7 @@ func TestRegisterUpdatesExisting(t *testing.T) {
 	// Wait a bit and re-register
 	time.Sleep(10 * time.Millisecond)
 
-	err = Register("/home/user/project1", "/home/user/project1/.binetic-agent-new")
+	err = Register("/home/user/project1", "/home/user/project1/.crush-new")
 	if err != nil {
 		t.Fatalf("Register failed: %v", err)
 	}
@@ -88,7 +88,7 @@ func TestRegisterUpdatesExisting(t *testing.T) {
 		t.Fatalf("Expected 1 project after update, got %d", len(projects))
 	}
 
-	if projects[0].DataDir != "/home/user/project1/.binetic-agent-new" {
+	if projects[0].DataDir != "/home/user/project1/.crush-new" {
 		t.Errorf("Expected updated data_dir, got %s", projects[0].DataDir)
 	}
 
@@ -100,7 +100,7 @@ func TestRegisterUpdatesExisting(t *testing.T) {
 func TestLoadEmptyFile(t *testing.T) {
 	tmpDir := t.TempDir()
 	t.Setenv("XDG_DATA_HOME", tmpDir)
-	t.Setenv("BINETIC_AGENT_GLOBAL_DATA", filepath.Join(tmpDir, "binetic_agent"))
+	t.Setenv("CRUSH_GLOBAL_DATA", filepath.Join(tmpDir, "crush"))
 
 	// List before any projects exist
 	projects, err := List()
@@ -116,9 +116,9 @@ func TestLoadEmptyFile(t *testing.T) {
 func TestProjectsFilePath(t *testing.T) {
 	tmpDir := t.TempDir()
 	t.Setenv("XDG_DATA_HOME", tmpDir)
-	t.Setenv("BINETIC_AGENT_GLOBAL_DATA", filepath.Join(tmpDir, "binetic_agent"))
+	t.Setenv("CRUSH_GLOBAL_DATA", filepath.Join(tmpDir, "crush"))
 
-	expected := filepath.Join(tmpDir, "binetic_agent", "projects.json")
+	expected := filepath.Join(tmpDir, "crush", "projects.json")
 	actual := projectsFilePath()
 
 	if actual != expected {
@@ -129,11 +129,11 @@ func TestProjectsFilePath(t *testing.T) {
 func TestRegisterWithParentDataDir(t *testing.T) {
 	tmpDir := t.TempDir()
 	t.Setenv("XDG_DATA_HOME", tmpDir)
-	t.Setenv("BINETIC_AGENT_GLOBAL_DATA", filepath.Join(tmpDir, "binetic_agent"))
+	t.Setenv("CRUSH_GLOBAL_DATA", filepath.Join(tmpDir, "crush"))
 
-	// Register a project where .binetic-agent is in a parent directory.
-	// e.g., working in /home/user/monorepo/packages/app but .binetic-agent is at /home/user/monorepo/.binetic-agent
-	err := Register("/home/user/monorepo/packages/app", "/home/user/monorepo/.binetic-agent")
+	// Register a project where .crush is in a parent directory.
+	// e.g., working in /home/user/monorepo/packages/app but .crush is at /home/user/monorepo/.crush
+	err := Register("/home/user/monorepo/packages/app", "/home/user/monorepo/.crush")
 	if err != nil {
 		t.Fatalf("Register failed: %v", err)
 	}
@@ -151,19 +151,19 @@ func TestRegisterWithParentDataDir(t *testing.T) {
 		t.Errorf("Expected path /home/user/monorepo/packages/app, got %s", projects[0].Path)
 	}
 
-	if projects[0].DataDir != "/home/user/monorepo/.binetic-agent" {
-		t.Errorf("Expected data_dir /home/user/monorepo/.binetic-agent, got %s", projects[0].DataDir)
+	if projects[0].DataDir != "/home/user/monorepo/.crush" {
+		t.Errorf("Expected data_dir /home/user/monorepo/.crush, got %s", projects[0].DataDir)
 	}
 }
 
 func TestRegisterWithExternalDataDir(t *testing.T) {
 	tmpDir := t.TempDir()
 	t.Setenv("XDG_DATA_HOME", tmpDir)
-	t.Setenv("BINETIC_AGENT_GLOBAL_DATA", filepath.Join(tmpDir, "binetic_agent"))
+	t.Setenv("CRUSH_GLOBAL_DATA", filepath.Join(tmpDir, "crush"))
 
-	// Register a project where .binetic-agent is in a completely different location.
-	// e.g., project at /home/user/project but data stored at /var/data/binetic_agent/myproject
-	err := Register("/home/user/project", "/var/data/binetic_agent/myproject")
+	// Register a project where .crush is in a completely different location.
+	// e.g., project at /home/user/project but data stored at /var/data/crush/myproject
+	err := Register("/home/user/project", "/var/data/crush/myproject")
 	if err != nil {
 		t.Fatalf("Register failed: %v", err)
 	}
@@ -181,18 +181,18 @@ func TestRegisterWithExternalDataDir(t *testing.T) {
 		t.Errorf("Expected path /home/user/project, got %s", projects[0].Path)
 	}
 
-	if projects[0].DataDir != "/var/data/binetic_agent/myproject" {
-		t.Errorf("Expected data_dir /var/data/binetic_agent/myproject, got %s", projects[0].DataDir)
+	if projects[0].DataDir != "/var/data/crush/myproject" {
+		t.Errorf("Expected data_dir /var/data/crush/myproject, got %s", projects[0].DataDir)
 	}
 }
 
 func TestRegisterOrdersByRecency(t *testing.T) {
 	tmpDir := t.TempDir()
 	t.Setenv("XDG_DATA_HOME", tmpDir)
-	t.Setenv("BINETIC_AGENT_GLOBAL_DATA", filepath.Join(tmpDir, "binetic_agent"))
+	t.Setenv("CRUSH_GLOBAL_DATA", filepath.Join(tmpDir, "crush"))
 
 	for _, path := range []string{"/p1", "/p2", "/p3", "/p1"} {
-		if err := Register(path, path+"/.binetic-agent"); err != nil {
+		if err := Register(path, path+"/.crush"); err != nil {
 			t.Fatalf("Register failed: %v", err)
 		}
 	}

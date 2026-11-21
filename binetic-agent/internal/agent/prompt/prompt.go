@@ -13,13 +13,13 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/filepathext"
-	"github.com/charmbracelet/binetic_agent/internal/fsext"
-	"github.com/charmbracelet/binetic_agent/internal/gitutil"
-	"github.com/charmbracelet/binetic_agent/internal/home"
-	"github.com/charmbracelet/binetic_agent/internal/shell"
-	"github.com/charmbracelet/binetic_agent/internal/skills"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/filepathext"
+	"github.com/charmbracelet/crush/internal/fsext"
+	"github.com/charmbracelet/crush/internal/gitutil"
+	"github.com/charmbracelet/crush/internal/home"
+	"github.com/charmbracelet/crush/internal/shell"
+	"github.com/charmbracelet/crush/internal/skills"
 )
 
 // Prompt represents a template-based prompt generator.
@@ -270,9 +270,9 @@ func expandPath(path string, store *config.ConfigStore) string {
 
 // LoadContextFiles loads the context files at paths, in the order the
 // paths are given, each file once. A path listed again in another case
-// (BINETIC_AGENT.md, binetic-agent.md) is skipped, and so is a file already loaded under
-// another name: a symlink such as CLAUDE.md -> AGENTS.md, or BINETIC_AGENT.md ->
-// BINETIC_AGENT.md after the rename, would otherwise put the same text in the
+// (GNOSH.md, gnosh.md) is skipped, and so is a file already loaded under
+// another name: a symlink such as CLAUDE.md -> AGENTS.md, or CRUSH.md ->
+// GNOSH.md after the rename, would otherwise put the same text in the
 // prompt twice. The order is fixed because the system prompt is rebuilt
 // (on a model switch, a config reload), and a model server's prompt
 // cache reuses only the part of a conversation before the first change:
@@ -294,8 +294,8 @@ func LoadContextFiles(paths []string, store *config.ConfigStore, importRoot stri
 // ProjectContextFiles loads the project's context files at paths: those
 // in each directory above the working directory, the outermost first,
 // then the working directory's own, as Claude Code reads CLAUDE.md files,
-// so the instructions closest to where binetic-agent started come last. Started
-// in a subdirectory of a repository, binetic-agent read none of the
+// so the instructions closest to where gnosh started come last. Started
+// in a subdirectory of a repository, gnosh read none of the
 // repository's. A directory above gives only files the user or root
 // owns, so a shared one such as /tmp cannot slip instructions into a
 // session, and their imports stay inside that directory.
@@ -366,7 +366,7 @@ func pathsIn(dir string, paths []string) []string {
 }
 
 // ownedByUserOrRoot reports whether the file at path belongs to the user
-// binetic-agent runs as, or to root.
+// gnosh runs as, or to root.
 func ownedByUserOrRoot(path string) bool {
 	uid, err := fsext.Owner(path)
 	return err == nil && (uid == os.Getuid() || uid == 0)

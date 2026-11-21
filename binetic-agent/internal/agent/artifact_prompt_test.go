@@ -7,18 +7,18 @@ import (
 	"testing"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/stretchr/testify/require"
 )
 
 // The coder is asked to record what it produced only when there is a
 // sidebar to show it in: the artifact tool is given to an interactive
-// session alone, and a prompt that asked a `binetic-agent run` for it would send
+// session alone, and a prompt that asked a `gnosh run` for it would send
 // it after a tool it was never given.
 func TestTheCoderIsAskedForArtifactsOnlyWhenInteractive(t *testing.T) {
 	env := testEnv(t)
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", filepath.Join(t.TempDir(), "binetic-agent.json"))
-	binetic_agentJSON := `{
+	t.Setenv("CRUSH_GLOBAL_CONFIG", filepath.Join(t.TempDir(), "crush.json"))
+	crushJSON := `{
   "options": {"disable_default_providers": true, "disable_provider_auto_update": true},
   "providers": {"mock": {"id": "mock", "name": "Mock", "type": "openai",
     "base_url": "http://127.0.0.1:9/v1", "api_key": "test-key",
@@ -26,7 +26,7 @@ func TestTheCoderIsAskedForArtifactsOnlyWhenInteractive(t *testing.T) {
   "models": {"large": {"provider": "mock", "model": "mock-model"},
              "small": {"provider": "mock", "model": "mock-model"}}
 }`
-	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "binetic-agent.json"), []byte(binetic_agentJSON), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "crush.json"), []byte(crushJSON), 0o644))
 
 	coderPromptFor := func(interactive bool) string {
 		cfg, err := config.Init(env.workingDir, "", false, config.TrustFolderForSession())
@@ -62,8 +62,8 @@ func TestTheCoderIsAskedForArtifactsOnlyWhenInteractive(t *testing.T) {
 // prompt's gate rests on.
 func TestTheArtifactToolFollowsTheSameGate(t *testing.T) {
 	env := testEnv(t)
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", filepath.Join(t.TempDir(), "binetic-agent.json"))
-	binetic_agentJSON := `{
+	t.Setenv("CRUSH_GLOBAL_CONFIG", filepath.Join(t.TempDir(), "crush.json"))
+	crushJSON := `{
   "options": {"disable_default_providers": true, "disable_provider_auto_update": true},
   "providers": {"mock": {"id": "mock", "name": "Mock", "type": "openai",
     "base_url": "http://127.0.0.1:9/v1", "api_key": "test-key",
@@ -71,7 +71,7 @@ func TestTheArtifactToolFollowsTheSameGate(t *testing.T) {
   "models": {"large": {"provider": "mock", "model": "mock-model"},
              "small": {"provider": "mock", "model": "mock-model"}}
 }`
-	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "binetic-agent.json"), []byte(binetic_agentJSON), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "crush.json"), []byte(crushJSON), 0o644))
 
 	has := func(interactive bool) bool {
 		cfg, err := config.Init(env.workingDir, "", false, config.TrustFolderForSession())
@@ -118,8 +118,8 @@ func (f fakePublisher) CacheDir() string { return f.dir }
 // no test of the tool on its own would notice.
 func TestTheCoordinatorGivesTheToolItsPublisher(t *testing.T) {
 	env := testEnv(t)
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", filepath.Join(t.TempDir(), "binetic-agent.json"))
-	binetic_agentJSON := `{
+	t.Setenv("CRUSH_GLOBAL_CONFIG", filepath.Join(t.TempDir(), "crush.json"))
+	crushJSON := `{
   "options": {"disable_default_providers": true, "disable_provider_auto_update": true},
   "providers": {"mock": {"id": "mock", "name": "Mock", "type": "openai",
     "base_url": "http://127.0.0.1:9/v1", "api_key": "test-key",
@@ -127,7 +127,7 @@ func TestTheCoordinatorGivesTheToolItsPublisher(t *testing.T) {
   "models": {"large": {"provider": "mock", "model": "mock-model"},
              "small": {"provider": "mock", "model": "mock-model"}}
 }`
-	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "binetic-agent.json"), []byte(binetic_agentJSON), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "crush.json"), []byte(crushJSON), 0o644))
 	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "cut.mp4"), []byte("x"), 0o644))
 
 	cfg, err := config.Init(env.workingDir, "", false, config.TrustFolderForSession())

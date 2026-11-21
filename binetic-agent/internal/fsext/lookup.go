@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/charmbracelet/binetic_agent/internal/home"
+	"github.com/charmbracelet/crush/internal/home"
 )
 
 // LookupClosestBounded searches for targets starting from dir and walking

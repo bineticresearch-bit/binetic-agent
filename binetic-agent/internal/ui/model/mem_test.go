@@ -7,11 +7,11 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/ui/dialog"
-	"github.com/charmbracelet/binetic_agent/internal/ui/util"
-	"github.com/charmbracelet/binetic_agent/internal/workspace"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/ui/dialog"
+	"github.com/charmbracelet/crush/internal/ui/util"
+	"github.com/charmbracelet/crush/internal/workspace"
 	"github.com/stretchr/testify/require"
 )
 
@@ -64,13 +64,13 @@ func TestMemCommandOpensTheDialog(t *testing.T) {
 	_, _ = u.Update(want)
 	require.True(t, u.dialog.ContainsDialog(dialog.ReportID))
 
-	ws.err = errors.New("mem is in use by another binetic-agent process; try again shortly")
+	ws.err = errors.New("mem is in use by another gnosh process; try again shortly")
 	info, ok := u.memCommand("")().(util.InfoMsg)
 	require.True(t, ok)
 	require.Equal(t, util.InfoTypeError, info.Type)
 }
 
-// As binetic-agent starts, mem's notice is shown when there is one.
+// As gnosh starts, mem's notice is shown when there is one.
 func TestMemNotice(t *testing.T) {
 	t.Parallel()
 
@@ -86,7 +86,7 @@ func TestMemNotice(t *testing.T) {
 }
 
 // mem's notice comes again with a prompt: a new session's first, unless
-// the notice shown as binetic-agent started stands for it, and the first of a new
+// the notice shown as gnosh started stands for it, and the first of a new
 // day; not with every prompt.
 func TestMemNoticeOnPrompt(t *testing.T) {
 	t.Parallel()

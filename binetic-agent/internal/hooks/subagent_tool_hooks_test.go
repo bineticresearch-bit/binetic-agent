@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/stretchr/testify/require"
 )
 
@@ -40,7 +40,7 @@ func TestToolHooksOfASubAgentsCallNameTheSubAgent(t *testing.T) {
 			dir := t.TempDir()
 			payload, envOut := filepath.Join(dir, "payload.json"), filepath.Join(dir, "env.txt")
 			cfg := &config.Config{Hooks: map[string][]config.HookConfig{event: {{
-				Command: `cat > ` + payload + `; printf '%s|%s|%s' "$BINETIC_AGENT_SESSION_ID" "$BINETIC_AGENT_AGENT_ID" "$BINETIC_AGENT_AGENT_TYPE" > ` + envOut,
+				Command: `cat > ` + payload + `; printf '%s|%s|%s' "$GNOSH_SESSION_ID" "$GNOSH_AGENT_ID" "$GNOSH_AGENT_TYPE" > ` + envOut,
 			}}}}
 			require.NoError(t, cfg.ValidateHooks())
 			r := NewRunner(cfg.Hooks[event], dir, dir)

@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -166,7 +166,7 @@ func TestGoalTurnTable(t *testing.T) {
 	require.Contains(t, GoalCheckpoint(b, 10, "STOP"), "the goal `g` \"the goal\" 10 times")
 }
 
-// A real `binetic-agent run --goal` never ended its turns (Qwen, 2026-10-30): asked
+// A real `gnosh run --goal` never ended its turns (Qwen, 2026-10-30): asked
 // to find out which day suits the release, the agent
 // planned "ask the user which day suits the release" and "record the
 // chosen release day as a fact in mem", put the question under step 1 as

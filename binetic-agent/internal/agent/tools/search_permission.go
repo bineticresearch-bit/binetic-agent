@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/fsext"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
+	"github.com/charmbracelet/crush/internal/fsext"
+	"github.com/charmbracelet/crush/internal/permission"
 )
 
 // askToSearch asks before a search of dir outside the working directory,

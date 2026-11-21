@@ -2,11 +2,11 @@
 
 Thanks for wanting to help.
 
-This project is a fork of [Binetic Agent](https://github.com/charmbracelet/binetic_agent) by
+This project is a fork of [Crush](https://github.com/charmbracelet/crush) by
 Charmbracelet, Inc. Its primary licence is the GNO Network General Public
 License, version 6, with Additional Terms (Strong Attribution), in
 [LICENSE.md](./LICENSE.md); each contribution is under the licence of the
-part it changes. The files that came from Binetic Agent remain Charmbracelet's, under
+part it changes. The files that came from Crush remain Charmbracelet's, under
 FSL-1.1-MIT, reproduced at the end of that file; `internal/gnovm/`, the GnoVM
 machine subsystem, carries its own copy of the same License in
 [internal/gnovm/LICENSE.md](./internal/gnovm/LICENSE.md).
@@ -25,7 +25,7 @@ See [AGENTS.md](./AGENTS.md) for the conventions in more detail.
 By submitting a contribution to this repository — opening a pull request,
 adding to one, sending a patch, or any other form of submission — you agree
 to the terms below for that contribution, as this file reads on the `main`
-branch of <https://github.com/binetic-agent-ai/binetic-agent> (or at another location the
+branch of <https://github.com/gnosh-ai/gnosh> (or at another location the
 Maintainer names in the copy there) when you submit it, unless you say
 otherwise in writing at the time you submit it. For that contribution, they
 replace the terms of any earlier version of this file. Work you have already
@@ -65,7 +65,7 @@ rebased it or submitted it again. Apart from the assignment above, neither
 Jae Kwon nor the Maintainer grants anything under this agreement by
 submitting work. Listing work here does not change who owns it.
 
-**Charm** means Charmbracelet, Inc., the author of the upstream Binetic Agent
+**Charm** means Charmbracelet, Inc., the author of the upstream Crush
 project this fork is derived from.
 
 **Contribution** means any work you intentionally submit to this repository,
@@ -86,7 +86,7 @@ Both grants are of the same scope, and each stands on its own: Charm's
 grant is made directly to Charm, which is an intended beneficiary of this
 agreement and may rely on it, whether or not the Maintainer ever sends
 your Contribution upstream. The purpose of granting Charm the same rights
-is so that work you do here can flow back to Binetic Agent without having to come
+is so that work you do here can flow back to Crush without having to come
 back to you for permission.
 
 **Exception for `internal/gnovm/`.** For the parts of a Contribution under
@@ -94,7 +94,7 @@ back to you for permission.
 grants to the Maintainer, in this section and in section 2; the separate
 grants to Charm do not extend to them, whatever an earlier agreement under
 this file said. The rest of a Contribution that also changes other files is
-under the usual terms. That subsystem is not part of Binetic Agent and is licensed
+under the usual terms. That subsystem is not part of Crush and is licensed
 under different terms.
 
 ### 2. Patent licence
@@ -150,10 +150,10 @@ to.
 
 - It does not change the licence on the code. This project's primary licence
   is the GNO Network General Public License, version 6, with Additional Terms
-  (Strong Attribution); the files that came from Binetic Agent stay under
+  (Strong Attribution); the files that came from Crush stay under
   FSL-1.1-MIT; and your Contribution is distributed under the licence of the
   part it changes.
-- It gives neither the Maintainer nor you any rights to Binetic Agent beyond what
+- It gives neither the Maintainer nor you any rights to Crush beyond what
   FSL-1.1-MIT already grants, and no rights at all to Charm's trademarks,
   trade names or product names.
 - Charm runs its own contributor process for the upstream project. This

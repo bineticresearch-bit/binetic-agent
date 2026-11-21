@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/hyper"
-	"github.com/charmbracelet/binetic_agent/internal/message"
+	"github.com/charmbracelet/crush/internal/agent/hyper"
+	"github.com/charmbracelet/crush/internal/message"
 
 	"charm.land/fantasy/providers/openai"
 	"github.com/stretchr/testify/require"

@@ -10,19 +10,19 @@ import (
 	"strings"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/env"
-	"github.com/charmbracelet/binetic_agent/internal/lock"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/env"
+	"github.com/charmbracelet/crush/internal/lock"
+	"github.com/charmbracelet/crush/internal/version"
 )
 
 // ErrDataDirLocked is returned by Connect when the data directory is
-// already in use by another binetic-agent process.
-var ErrDataDirLocked = errors.New("data directory already in use by another binetic-agent process")
+// already in use by another gnosh process.
+var ErrDataDirLocked = errors.New("data directory already in use by another gnosh process")
 
 // dataDirLockFile is the lock file inside the data directory. It lives
 // next to the database so users can `ls` and find it, and is named for
-// it: binetic-agent.lock beside binetic-agent.db, klash.lock or binetic_agent.lock beside the
-// klash.db or binetic_agent.db from before the renames. A process from before a
+// it: gnosh.lock beside gnosh.db, klash.lock or crush.lock beside the
+// klash.db or crush.db from before the renames. A process from before a
 // rename locks the lock named for its database, so a newer one sharing that
 // database must lock the same file, or both would open it at once.
 func dataDirLockFile(dataDir string) string {
@@ -57,7 +57,7 @@ type dataDirLock struct {
 // includes whatever owner info that process wrote.
 //
 // Acquisition is skipped (returning a no-op lock) when
-// BINETIC_AGENT_SKIP_DATADIR_LOCK is set to a truthy value. This is intended
+// GNOSH_SKIP_DATADIR_LOCK is set to a truthy value. This is intended
 // as an escape hatch for hostile filesystems that do not implement
 // advisory locking; it should not be used in normal operation.
 func acquireDataDirLock(dataDir string) (*dataDirLock, error) {
@@ -97,7 +97,7 @@ func acquireDataDirLockAt(dataDir, path string) (*dataDirLock, error) {
 
 // skipDataDirLock reports whether the data-dir lock should be bypassed.
 func skipDataDirLock() bool {
-	v, _ := strconv.ParseBool(env.Getenv("BINETIC_AGENT_SKIP_DATADIR_LOCK"))
+	v, _ := strconv.ParseBool(env.Getenv("GNOSH_SKIP_DATADIR_LOCK"))
 	return v
 }
 

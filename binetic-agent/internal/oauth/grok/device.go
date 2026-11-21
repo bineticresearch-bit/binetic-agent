@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
+	"github.com/charmbracelet/crush/internal/oauth"
 )
 
 // deviceCodeEndpoint is a variable so tests can point it at a stub
@@ -36,7 +36,7 @@ func RequestDeviceCode(ctx context.Context) (*DeviceCode, error) {
 	vals := url.Values{
 		"client_id": {ClientID},
 		"scope":     {Scope},
-		"referrer":  {"binetic_agent"},
+		"referrer":  {"crush"},
 	}
 	req, err := http.NewRequestWithContext(
 		ctx,

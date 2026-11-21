@@ -10,11 +10,11 @@ import (
 	"path/filepath"
 	"slices"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/diff"
-	"github.com/charmbracelet/binetic_agent/internal/filepathext"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/session"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/diff"
+	"github.com/charmbracelet/crush/internal/filepathext"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/session"
 )
 
 // RewindOptions say what Rewind restores to the point before a prompt:
@@ -140,7 +140,7 @@ type fileBefore struct {
 	// existed is false for a file the agent made.
 	existed bool
 	// known is false when the change did not record what the file held:
-	// a write from before binetic-agent recorded what it wrote over.
+	// a write from before gnosh recorded what it wrote over.
 	known bool
 }
 

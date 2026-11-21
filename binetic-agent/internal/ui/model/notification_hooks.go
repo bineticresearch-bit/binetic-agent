@@ -8,12 +8,12 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/hooks"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/hooks"
+	"github.com/charmbracelet/crush/internal/version"
 )
 
-// How long each of Binetic Agent's two notifications waits for the user before
+// How long each of Gnosh's two notifications waits for the user before
 // its Notification hooks fire, as in Claude Code: a permission prompt
 // that has waited about six seconds, and a finished turn with no reply
 // for about a minute. They are variables, not constants, so a test

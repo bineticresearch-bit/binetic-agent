@@ -20,7 +20,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
+	"github.com/charmbracelet/crush/internal/oauth"
 )
 
 const (
@@ -96,7 +96,7 @@ func AuthorizeURL(redirectURI string, pkce PKCE, state string) string {
 		"id_token_add_organizations": {"true"},
 		"codex_cli_simplified_flow":  {"true"},
 		"state":                      {state},
-		"originator":                 {"binetic_agent"},
+		"originator":                 {"crush"},
 	}
 	return Issuer + "/oauth/authorize?" + vals.Encode()
 }

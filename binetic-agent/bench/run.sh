@@ -2,7 +2,7 @@
 # run.sh: one harness x one task x one repetition -> one JSON row.
 # See bench/README.md.
 #
-# Usage: run.sh <binetic-agent|binetic-agent-swarm|binetic_agent|codex> <task> <rep>
+# Usage: run.sh <gnosh|gnosh-swarm|crush|codex> <task> <rep>
 #
 # Environment:
 #   LANE       label for the row (qwen-64k, h100-gpt-oss-120b, ...)
@@ -10,7 +10,7 @@
 #   MODEL      the model id the server knows; the proxy pins every request to it
 #   WINDOW     context window told to every harness (default 65536)
 #   GATE       optional command, polled every 30 s until it exits 0, before the run
-#   BINETIC_AGENT_BIN, BINETIC_AGENT_BIN, CODEX_BIN   harness binaries
+#   GNOSH_BIN, CRUSH_BIN, CODEX_BIN   harness binaries
 #   GO         go binary; its directory goes first on PATH
 #   TASKS      tasks directory (default: tasks/ next to this script)
 #   RUNS       where run directories go (default: ~/runs)
@@ -19,21 +19,21 @@
 #              that runs out is killed and the row says timed_out
 #   MAX_TOKENS_CAP  optional cap the proxy puts on max_tokens (default 0 = off)
 #   REASONING  optional reasoning effort passed to every harness (low|medium|high);
-#              binetic-agent and binetic_agent refuse it for a model their discovery does not mark
+#              gnosh and crush refuse it for a model their discovery does not mark
 #              as reasoning, and send the model's default ("medium") themselves
 #   CODEX_REASONING  reasoning effort for Codex alone (its model_reasoning_effort)
 #   SERVER_REASONING  the proxy puts this reasoning effort on every request of every
 #              harness, as a local server's default would be (the fair way to set it)
-#   BINETIC_AGENT_APPEND_FILE, PROMPT_SUFFIX_FILE, VARIANT   binetic-agent prompt experiments: text
+#   GNOSH_APPEND_FILE, PROMPT_SUFFIX_FILE, VARIANT   gnosh prompt experiments: text
 #              added to the end of the system prompt, text added to the end of
 #              each user prompt, and the experiment's name for the row
 #   DUMP       if set, the proxy saves the first 40 request bodies in requests/
 #   CONTINUE_MODE  "new" gives prompt2.txt to a brand-new session instead of the
 #              harness's continue flag (what carries over is only what the
-#              harness keeps outside the conversation: binetic-agent's mem, Codex's memories)
-#   BINETIC_AGENT_TEMPLATES  optional dir of prompt templates (coder.md.tpl, ...) copied to
-#              binetic-agent's user template dir, for prompt experiments
-#   SWARM      binetic-agent-swarm only: how many binetic-agent sessions work the task at once
+#              harness keeps outside the conversation: gnosh's mem, Codex's memories)
+#   GNOSH_TEMPLATES  optional dir of prompt templates (coder.md.tpl, ...) copied to
+#              gnosh's user template dir, for prompt experiments
+#   SWARM      gnosh-swarm only: how many gnosh sessions work the task at once
 #              (default 3). The first gets the task and a line saying the others
 #              will help; once its plan is in mem (waitplan.py), the others start
 #              with SWARM_HELPER_PROMPT. All share the run's HOME, so one mem; each
@@ -41,7 +41,7 @@
 #              session's start until the last one ends.
 #
 # A run directory holds: home/ (the harness's HOME, config and sessions),
-# work/ (the task's repository), data/ (binetic-agent's and binetic_agent's -D), proxy.jsonl
+# work/ (the task's repository), data/ (gnosh's and crush's -D), proxy.jsonl
 # (one line per model request), session-N.out/.err, check.txt and row.json.
 set -u
 harness=${1:?harness}; task=${2:?task}; rep=${3:?rep}
@@ -85,38 +85,38 @@ runenv=(env -i PATH="$PATH" HOME="$H" USER="$(id -un)" LANG=C.UTF-8 TERM=dumb
   XDG_CONFIG_HOME="$H/.config" XDG_DATA_HOME="$H/.local/share" XDG_CACHE_HOME="$H/.cache"
   XDG_STATE_HOME="$H/.local/state" GOPATH="$H/go" GOCACHE="$H/.cache/go-build" GOFLAGS=-mod=mod
   GOTOOLCHAIN=local DO_NOT_TRACK=1
-  BINETIC_AGENT_DISABLE_METRICS=1 BINETIC_AGENT_DISABLE_PROVIDER_AUTO_UPDATE=1
-  BINETIC_AGENT_DISABLE_METRICS=1 BINETIC_AGENT_DISABLE_PROVIDER_AUTO_UPDATE=1
-  BINETIC_AGENT_DISABLE_DEFAULT_PROVIDERS=1 BINETIC_AGENT_DISABLE_UPDATE_CHECK=1)
+  CRUSH_DISABLE_METRICS=1 CRUSH_DISABLE_PROVIDER_AUTO_UPDATE=1
+  GNOSH_DISABLE_METRICS=1 GNOSH_DISABLE_PROVIDER_AUTO_UPDATE=1
+  GNOSH_DISABLE_DEFAULT_PROVIDERS=1 GNOSH_DISABLE_UPDATE_CHECK=1)
 reason=()
 case $harness in
-  binetic-agent|binetic-agent-swarm)
-    mkdir -p "$H/.config/binetic-agent"
-    printf 'provider add box --type llamacpp --base-url "http://127.0.0.1:%s"\n' "$port" > "$H/.config/binetic-agent/binetic-agentrc"
-    if [ -n "${BINETIC_AGENT_TEMPLATES:-}" ]; then  # experiments: the user's own prompt templates
-      mkdir -p "$H/.config/binetic-agent/templates" && cp "$BINETIC_AGENT_TEMPLATES"/* "$H/.config/binetic-agent/templates/"
+  gnosh|gnosh-swarm)
+    mkdir -p "$H/.config/gnosh"
+    printf 'provider add box --type llamacpp --base-url "http://127.0.0.1:%s"\n' "$port" > "$H/.config/gnosh/gnoshrc"
+    if [ -n "${GNOSH_TEMPLATES:-}" ]; then  # experiments: the user's own prompt templates
+      mkdir -p "$H/.config/gnosh/templates" && cp "$GNOSH_TEMPLATES"/* "$H/.config/gnosh/templates/"
     fi
     [ -n "${REASONING:-}" ] && reason=(--reasoning-effort "$REASONING")
-    # Prompt experiments (binetic-agent only): BINETIC_AGENT_APPEND_FILE is added to the end of
+    # Prompt experiments (gnosh only): GNOSH_APPEND_FILE is added to the end of
     # the system prompt, PROMPT_SUFFIX_FILE to the end of each user prompt, and
     # VARIANT names the experiment in the row.
-    append=(); [ -n "${BINETIC_AGENT_APPEND_FILE:-}" ] && append=(--append-system-prompt-file "$BINETIC_AGENT_APPEND_FILE")
+    append=(); [ -n "${GNOSH_APPEND_FILE:-}" ] && append=(--append-system-prompt-file "$GNOSH_APPEND_FILE")
     suffix=""; [ -n "${PROMPT_SUFFIX_FILE:-}" ] && suffix=$(cat "$PROMPT_SUFFIX_FILE")
-    version=$("$BINETIC_AGENT_BIN" --version 2>&1 | head -1)${BINETIC_AGENT_TEMPLATES:+ +templates $(basename "$BINETIC_AGENT_TEMPLATES")}${VARIANT:+ +variant $VARIANT}
+    version=$("$GNOSH_BIN" --version 2>&1 | head -1)${GNOSH_TEMPLATES:+ +templates $(basename "$GNOSH_TEMPLATES")}${VARIANT:+ +variant $VARIANT}
     session() { local cont=(); [ "$1" -gt 1 ] && [ "${CONTINUE_MODE:-}" != new ] && cont=(--continue)
-      "${runenv[@]}" timeout -k 30 "$TIMEOUT" "$BINETIC_AGENT_BIN" run -q -y -c "$work" -D "$dir/data" \
+      "${runenv[@]}" timeout -k 30 "$TIMEOUT" "$GNOSH_BIN" run -q -y -c "$work" -D "$dir/data" \
       -m "box/$MODEL" --small-model "box/$MODEL" "${reason[@]}" "${append[@]}" "${cont[@]}" "$2$suffix" < /dev/null; }
     # swarm_session <data dir> <prompt>: one session of a swarm, in its own -D.
-    swarm_session() { "${runenv[@]}" timeout -k 30 "$TIMEOUT" "$BINETIC_AGENT_BIN" run -q -y -c "$work" -D "$1" \
+    swarm_session() { "${runenv[@]}" timeout -k 30 "$TIMEOUT" "$GNOSH_BIN" run -q -y -c "$work" -D "$1" \
       -m "box/$MODEL" --small-model "box/$MODEL" "${reason[@]}" "${append[@]}" "$2" < /dev/null; }
-    [ "$harness" = binetic-agent-swarm ] && version="$version +swarm ${SWARM:-3}" ;;
-  binetic_agent)
-    mkdir -p "$H/.config/binetic_agent"
-    printf 'provider add box --type llamacpp --base-url "http://127.0.0.1:%s"\n' "$port" > "$H/.config/binetic_agent/binetic-agentrc"
+    [ "$harness" = gnosh-swarm ] && version="$version +swarm ${SWARM:-3}" ;;
+  crush)
+    mkdir -p "$H/.config/crush"
+    printf 'provider add box --type llamacpp --base-url "http://127.0.0.1:%s"\n' "$port" > "$H/.config/crush/crushrc"
     [ -n "${REASONING:-}" ] && reason=(--reasoning-effort "$REASONING")
-    version=$("$BINETIC_AGENT_BIN" --version 2>&1 | head -1)
+    version=$("$CRUSH_BIN" --version 2>&1 | head -1)
     session() { local cont=(); [ "$1" -gt 1 ] && [ "${CONTINUE_MODE:-}" != new ] && cont=(--continue)
-      "${runenv[@]}" timeout -k 30 "$TIMEOUT" "$BINETIC_AGENT_BIN" run -q -y -c "$work" -D "$dir/data" \
+      "${runenv[@]}" timeout -k 30 "$TIMEOUT" "$CRUSH_BIN" run -q -y -c "$work" -D "$dir/data" \
       -m "box/$MODEL" --small-model "box/$MODEL" "${reason[@]}" "${cont[@]}" "$2" < /dev/null; } ;;
   codex)
     mkdir -p "$H/.codex"
@@ -162,11 +162,11 @@ esac
 # check runs once and its line is kept as check1.
 runenv+=(GO="${GO:-go}")
 t0=$(date +%s.%N); exits=(); timed_out=false; n=0; check1=""; planned_s=""
-if [ "$harness" = binetic-agent-swarm ]; then
+if [ "$harness" = gnosh-swarm ]; then
   N=${SWARM:-3}
-  [ -f "$tdir/prompt2.txt" ] && { echo "run.sh: binetic-agent-swarm runs one-prompt tasks only" >&2; exit 2; }
-  note=${SWARM_PLANNER_NOTE:-"$((N-1)) more binetic-agent sessions in this project share your mem and will work on this with you. First plan it in mem, with the todos that do not depend on each other under .Parallel(); then take todos with mem.Next(), as they will."}
-  helper=${SWARM_HELPER_PROMPT:-"Another binetic-agent session in this project has planned a task in mem, and you are here to help with it. Take the next free todo with mem.Next(), do its work, pop it with what came of it, and keep taking todos until mem.Next() has nothing left for you. Do not plan the task again."}
+  [ -f "$tdir/prompt2.txt" ] && { echo "run.sh: gnosh-swarm runs one-prompt tasks only" >&2; exit 2; }
+  note=${SWARM_PLANNER_NOTE:-"$((N-1)) more gnosh sessions in this project share your mem and will work on this with you. First plan it in mem, with the todos that do not depend on each other under .Parallel(); then take todos with mem.Next(), as they will."}
+  helper=${SWARM_HELPER_PROMPT:-"Another gnosh session in this project has planned a task in mem, and you are here to help with it. Take the next free todo with mem.Next(), do its work, pop it with what came of it, and keep taking todos until mem.Next() has nothing left for you. Do not plan the task again."}
   pids=()
   mkdir -p "$dir/data-1"
   { swarm_session "$dir/data-1" "$(cat "$tdir/prompt.txt")
@@ -186,7 +186,7 @@ $note" > "$dir/session-1.out" 2> "$dir/session-1.err"; echo $? > "$dir/exit-1"; 
   done
 fi
 for p in "$tdir/prompt.txt" "$tdir/prompt2.txt"; do
-  [ "$harness" = binetic-agent-swarm ] && break
+  [ "$harness" = gnosh-swarm ] && break
   [ -f "$p" ] || continue
   n=$((n+1))
   if [ "$n" -gt 1 ]; then
@@ -216,7 +216,7 @@ if check1:
     row["check1"] = check1
 if variant:
     row["variant"] = variant
-if harness == "binetic-agent-swarm":
+if harness == "gnosh-swarm":
     row["swarm"] = int(swarm)
     row["planned_s"] = float(planned) if planned else None
 row.update(json.loads(summ))

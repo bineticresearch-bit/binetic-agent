@@ -9,13 +9,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/hooks"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/hooks"
 	"github.com/stretchr/testify/require"
 )
 
 // An Esc while a SessionStart hook runs ends the turn with the cancelled
-// RunComplete a waiting client blocks on (`binetic-agent run`, the TUI's pending
+// RunComplete a waiting client blocks on (`gnosh run`, the TUI's pending
 // turn). The hooks ran after the dispatch before, and the cancel path
 // there returned without one.
 func TestRun_CancelInASessionStartHookReportsTheCancelledTurn(t *testing.T) {

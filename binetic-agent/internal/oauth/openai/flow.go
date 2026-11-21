@@ -6,8 +6,8 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
-	"github.com/charmbracelet/binetic_agent/internal/oauth/callback"
+	"github.com/charmbracelet/crush/internal/oauth"
+	"github.com/charmbracelet/crush/internal/oauth/callback"
 )
 
 // The redirect URI must be a loopback address on a port OpenAI's

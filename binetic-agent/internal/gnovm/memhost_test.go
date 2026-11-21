@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -26,7 +26,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/lock"
+	"github.com/charmbracelet/crush/internal/lock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -85,7 +85,7 @@ func TestMemHostKeepsWhatChanged(t *testing.T) {
 	require.ErrorContains(t, err, "nothing was kept")
 	require.Zero(t, res.Seq)
 
-	// Another binetic-agent process finds it, through the journal and the store.
+	// Another gnosh process finds it, through the journal and the store.
 	other := newTestMemHost(t, dir)
 	res, err = other.call(context.Background(), memRequest{Code: `println(mem.Show())`, User: true})
 	require.NoError(t, err)
@@ -107,7 +107,7 @@ func TestMemHostKeepsWhatChanged(t *testing.T) {
 	require.Equal(t, memStamp{Layout: memLayout, Gno: stdlibVersion(), Generation: j.generation, Seq: 1, End: j.size, Hash: j.lastHash}, st)
 }
 
-// An entry in the journal that the store lacks, as when binetic-agent died between
+// An entry in the journal that the store lacks, as when gnosh died between
 // journaling a call and writing its batch, or another process journaled it,
 // is applied at the next call.
 func TestMemHostCatchesUp(t *testing.T) {
@@ -130,7 +130,7 @@ func TestMemHostCatchesUp(t *testing.T) {
 }
 
 // A store of an older layout is rebuilt from the journal; one a newer
-// binetic-agent wrote is refused.
+// gnosh wrote is refused.
 func TestMemHostRebuildsAnOlderStore(t *testing.T) {
 	t.Parallel()
 	dir := t.TempDir()
@@ -167,14 +167,14 @@ func TestMemHostRebuildsAnOlderStore(t *testing.T) {
 	_, err := h.call(context.Background(), memRequest{Code: `println(mem.Show())`})
 	var ref *refusal
 	require.ErrorAs(t, err, &ref)
-	require.Contains(t, err.Error(), "a newer binetic-agent wrote mem")
+	require.Contains(t, err.Error(), "a newer gnosh wrote mem")
 
 	// A newer gno's store, or a newer layout's index, is refused too: two
 	// builds on one mem would otherwise rebuild it over each other.
 	setStamp(func(st *memStamp) { st.Layout, st.Gno = memLayout, "v99.0.0" })
 	_, err = h.call(context.Background(), memRequest{Code: `println(mem.Show())`})
 	require.ErrorAs(t, err, &ref)
-	require.EqualError(t, err, "a newer binetic-agent wrote mem (gno v99.0.0); restart binetic-agent to use it")
+	require.EqualError(t, err, "a newer gnosh wrote mem (gno v99.0.0); restart gnosh to use it")
 	setStamp(func(st *memStamp) { st.Gno = stdlibVersion() })
 	idx, err := filepath.Glob(filepath.Join(dir, "index-*.db"))
 	require.NoError(t, err)
@@ -187,7 +187,7 @@ func TestMemHostRebuildsAnOlderStore(t *testing.T) {
 	require.NoError(t, x.close())
 	_, err = h.call(context.Background(), memRequest{Code: `println(mem.Show())`})
 	require.ErrorAs(t, err, &ref)
-	require.Contains(t, err.Error(), "a newer binetic-agent wrote mem's index")
+	require.Contains(t, err.Error(), "a newer gnosh wrote mem's index")
 }
 
 // A catch-up cut short keeps every batch it applied, so a rebuild of a
@@ -467,7 +467,7 @@ func TestMemHostForgetsAFactAlone(t *testing.T) {
 	require.Contains(t, memOK(t, h, `print(mem.Check()); println(mem.Show())`).Output, "mem is empty")
 }
 
-// Two binetic-agent processes take turns through mem's lock, and every input is
+// Two gnosh processes take turns through mem's lock, and every input is
 // kept once, in one order.
 func TestMemHostTwoProcessesTakeTurns(t *testing.T) {
 	t.Parallel()
@@ -799,7 +799,7 @@ func TestMemBlock(t *testing.T) {
 	require.Equal(t, "<mem>\n"+
 		"Rules the user gave you; follow them (the user's words today come first):\n"+
 		"- `push-after-landing` (set by the user, 2026-10-30): push to GitHub only after landed:\n"+
-		"From your memory (mem), kept by binetic-agent for this project: what you found and were told in earlier sessions. `mem.Show()` shows the outline; `mem.Find(\"words\")` searches everything.\n"+
+		"From your memory (mem), kept by gnosh for this project: what you found and were told in earlier sessions. `mem.Show()` shows the outline; `mem.Find(\"words\")` searches everything.\n"+
 		"mem: 5 todos open · 1 question for the user · 1 fact\n"+
 		"due: `renew-tls-cert` \"renew the TLS cert\" (since 2026-12-01)\n"+
 		"waiting on the user: `release-v2/tag-v2-0-0/which-key-signs-tag` \"which key signs the &lt;tag&gt;?\"\n"+
@@ -915,7 +915,7 @@ func TestMemRedactLeavesRulesToTheUser(t *testing.T) {
 	require.Contains(t, memOK(t, h, `println(mem.Show("push"))`).Output, "never push (redacted) first")
 }
 
-// status.json is what hooks read of mem (BINETIC_AGENT_MEM_STATUS names it): its
+// status.json is what hooks read of mem (GNOSH_MEM_STATUS names it): its
 // field names are an interface, pinned here; renaming one breaks hooks.
 // MemStatusPath names it, and makes nothing for a mem not yet there.
 func TestMemStatusIsAHookInterface(t *testing.T) {
@@ -1115,12 +1115,12 @@ func TestMemOpensAMemAnEarlierBuildMade(t *testing.T) {
 }
 
 // A mem input that only called mem, failed by Go's own runtime under it, is
-// told the fault is binetic-agent's, and what to do: told only "runtime error:
+// told the fault is gnosh's, and what to do: told only "runtime error:
 // index out of range [11] with length 10", the agent in Jae's lane spent
 // seven minutes searching the disk and mem's files (2026-10-30). The model's
 // own code failing in Gno is told as before. The earlier build's mem from
 // testdata, stamped as this build's, has its earlier Mem read as today's.
-func TestMemSaysWhenItFailsInsideBinetic Agent(t *testing.T) {
+func TestMemSaysWhenItFailsInsideGnosh(t *testing.T) {
 	t.Parallel()
 	dir := t.TempDir()
 	require.NoError(t, os.CopyFS(dir, os.DirFS(filepath.Join("testdata", "memupgrade", "empty-layout2"))))
@@ -1135,8 +1135,8 @@ func TestMemSaysWhenItFailsInsideBinetic Agent(t *testing.T) {
 
 	h := newTestMemHost(t, dir)
 	_, err = h.call(context.Background(), memRequest{Code: `mem.Fact("staging-db", "db-stg-7")`, Session: "s1"})
-	require.ErrorContains(t, err, "mem failed inside binetic-agent, not in your call: runtime error: index out of range")
-	require.ErrorContains(t, err, "This is a bug in binetic-agent: tell the user what failed, and go on without mem")
+	require.ErrorContains(t, err, "mem failed inside gnosh, not in your call: runtime error: index out of range")
+	require.ErrorContains(t, err, "This is a bug in gnosh: tell the user what failed, and go on without mem")
 
 	h = newTestMemHost(t, t.TempDir())
 	_, err = h.call(context.Background(), memRequest{Code: "x := []int{1}\n_ = x[5]", Session: "s1"})

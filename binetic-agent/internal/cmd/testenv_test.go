@@ -4,13 +4,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/stretchr/testify/require"
 )
 
 // A test that names its own XDG directories gets them: testenv.Run keeps
 // the global config and data in the XDG variables, which a test's own
-// setting wins over. It set BINETIC_AGENT_GLOBAL_* first, which win over XDG, so
+// setting wins over. It set CRUSH_GLOBAL_* first, which win over XDG, so
 // the projects tests, which isolate with XDG_DATA_HOME, shared one file.
 func TestATestsOwnXDGDirectoriesWin(t *testing.T) {
 	data := t.TempDir()

@@ -12,10 +12,10 @@ import (
 
 	"charm.land/catwalk/pkg/catwalk"
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/gnovm"
-	"github.com/charmbracelet/binetic_agent/internal/message"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/gnovm"
+	"github.com/charmbracelet/crush/internal/message"
 	"github.com/stretchr/testify/require"
 )
 
@@ -499,7 +499,7 @@ func TestParseGoalCheck(t *testing.T) {
 		require.Error(t, err, answer)
 	}
 
-	// A goal met on the user's word says so in binetic-agent's words, once.
+	// A goal met on the user's word says so in gnosh's words, once.
 	for answer, want := range map[string]string{
 		`{"ok": true, "basis": "user", "reason": "Lin signed off on 1.3.0 this morning"}`:                       "on the user's word: Lin signed off on 1.3.0 this morning",
 		`{"ok": true, "basis": "user", "reason": "On the user's word: they did it on their laptop"}`:            "on the user's word: they did it on their laptop",
@@ -584,8 +584,8 @@ func TestCoordinatorGoals(t *testing.T) {
 // keeps: the coder's and the plan agent's share them.
 func TestCoordinatorAgentsShareItsGoals(t *testing.T) {
 	env := testEnv(t)
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", filepath.Join(t.TempDir(), "binetic-agent.json"))
-	binetic_agentJSON := `{
+	t.Setenv("CRUSH_GLOBAL_CONFIG", filepath.Join(t.TempDir(), "crush.json"))
+	crushJSON := `{
   "options": {"disable_default_providers": true, "disable_provider_auto_update": true},
   "providers": {"mock": {"id": "mock", "name": "Mock", "type": "openai",
     "base_url": "http://127.0.0.1:9/v1", "api_key": "test-key",
@@ -593,7 +593,7 @@ func TestCoordinatorAgentsShareItsGoals(t *testing.T) {
   "models": {"large": {"provider": "mock", "model": "mock-model"},
              "small": {"provider": "mock", "model": "mock-model"}}
 }`
-	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "binetic-agent.json"), []byte(binetic_agentJSON), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "crush.json"), []byte(crushJSON), 0o644))
 	cfg, err := config.Init(env.workingDir, "", false, config.TrustFolderForSession())
 	require.NoError(t, err)
 	cfg.SetupAgents()

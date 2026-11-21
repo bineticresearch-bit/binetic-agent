@@ -12,10 +12,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/csync"
-	"github.com/charmbracelet/binetic_agent/internal/fsext"
-	"github.com/charmbracelet/binetic_agent/internal/home"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/csync"
+	"github.com/charmbracelet/crush/internal/fsext"
+	"github.com/charmbracelet/crush/internal/home"
 	powernap "github.com/charmbracelet/x/powernap/pkg/lsp"
 	"github.com/charmbracelet/x/powernap/pkg/lsp/protocol"
 	"github.com/charmbracelet/x/powernap/pkg/transport"
@@ -278,7 +278,7 @@ func (c *Client) Restart() error {
 
 	// Register handlers before Initialize so servers that send
 	// requests during the handshake (e.g. window/workDoneProgress/create)
-	// don't binetic-agent on an unhandled response.
+	// don't gnosh on an unhandled response.
 	c.registerHandlers()
 
 	if err := c.client.Initialize(initCtx, false); err != nil {

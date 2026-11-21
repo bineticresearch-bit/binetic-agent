@@ -5,17 +5,17 @@
 
 > [!TIP]
 >
-> Binetic Agent can configure itself via a builtin config skill. That is to say,
-> can generally just tell Binetic Agent want you want to configure using natural
+> Gnosh can configure itself via a builtin config skill. That is to say,
+> can generally just tell Gnosh want you want to configure using natural
 > language.
 >
-> If you're migrating from the old JSON format, you can also ask Binetic Agent to
+> If you're migrating from the old JSON format, you can also ask Gnosh to
 > convert the config for you.
 
-Binetic Agent is configured with Bash via a set of Binetic Agent-specific builtin commands. By
-default, global config lives at `~/.config/binetic-agent/binetic-agentrc` on Unix-like systems
-and `%USERPROFILE%\.config\binetic-agent\binetic-agentrc` on Windows. It works like a `.bashrc`:
-it runs when Binetic Agent starts and configures the agent.
+Gnosh is configured with Bash via a set of Gnosh-specific builtin commands. By
+default, global config lives at `~/.config/gnosh/gnoshrc` on Unix-like systems
+and `%USERPROFILE%\.config\gnosh\gnoshrc` on Windows. It works like a `.bashrc`:
+it runs when Gnosh starts and configures the agent.
 
 ```bash
 # Add Ollama.
@@ -57,9 +57,9 @@ provider add my-secret-provider \
 
 Two reasons:
 
-1. Binetic Agent ships with a first-class Bash interpreter, so we get the logic for
+1. Gnosh ships with a first-class Bash interpreter, so we get the logic for
    free.
-2. Ultimately, Binetic Agent needs to be able to configure itself, and command-based
+2. Ultimately, Gnosh needs to be able to configure itself, and command-based
    config allows both users and the agent to use the same tools.
 
 ## What about JSON?
@@ -70,64 +70,64 @@ be receiving new features. For more see [Legacy JSON](#legacy-json).
 ## Config versioning
 
 Not breaking the config API is really important to us! That said, you can
-target specific Binetic Agent versions with `$BINETIC_AGENT_VERSION`:
+target specific Gnosh versions with `$GNOSH_VERSION`:
 
 ```bash
-if [[ $BINETIC_AGENT_VERSION == "0.85.*" ]]; then
+if [[ $GNOSH_VERSION == "0.85.*" ]]; then
     option debug true
 fi
 ```
 
 ## Security
 
-Just like `binetic-agent.json`, `binetic-agentrc` is a trusted file. Guard it carefully and
+Just like `gnosh.json`, `gnoshrc` is a trusted file. Guard it carefully and
 don't download random configs without reading them first.
 
-A project's own `binetic-agentrc` and `binetic-agent.json` wait until you trust its folder.
-The first time Binetic Agent starts in a folder whose settings would run code or allow
-anything (a `binetic-agentrc`, hooks, MCP or LSP servers, tools allowed without asking,
+A project's own `gnoshrc` and `gnosh.json` wait until you trust its folder.
+The first time Gnosh starts in a folder whose settings would run code or allow
+anything (a `gnoshrc`, hooks, MCP or LSP servers, tools allowed without asking,
 providers, `env`, hosts and the other options), it asks whether you trust the
 files in it, and lists what they would do. Until you say yes, the project's
-`binetic-agentrc` does not run, and of its JSON (the `binetic-agent.json` in its `.binetic-agent/`
+`gnoshrc` does not run, and of its JSON (the `gnosh.json` in its `.gnosh/`
 folder too) only `permissions.deny`, `options.disabled_tools` and
 `options.disabled_skills` apply; a project skills folder that links outside
-the project is left out too. `binetic-agent run` leaves the rest out and says so on
-stderr. `binetic-agent trust [folder]` trusts a folder from the command line, and
+the project is left out too. `gnosh run` leaves the rest out and says so on
+stderr. `gnosh trust [folder]` trusts a folder from the command line, and
 `--trust-folder` trusts it for one session without recording it. A setting
-you want in a folder you have not trusted goes in your global `binetic-agentrc`. See
+you want in a folder you have not trusted goes in your global `gnoshrc`. See
 [A cloned repository runs nothing until you trust it](../../README.md#a-cloned-repository-runs-nothing-until-you-trust-it).
 
 ## Where config lives
 
-Binetic Agent looks for config in the following places, with lower numbers taking
+Gnosh looks for config in the following places, with lower numbers taking
 precedence:
 
 | Priority | Unix-like                        | Windows                           |
 | -------- | -------------------------------- | --------------------------------- |
-| 1        | `./.binetic-agentrc`                     | `.\.binetic-agentrc`                      |
-| 2        | `./binetic-agentrc`                      | `.\binetic-agentrc`                       |
-| 3        | `$XDG_CONFIG_HOME/binetic-agent/binetic-agentrc` | `%XDG_CONFIG_HOME%\binetic-agent\binetic-agentrc` |
+| 1        | `./.gnoshrc`                     | `.\.gnoshrc`                      |
+| 2        | `./gnoshrc`                      | `.\gnoshrc`                       |
+| 3        | `$XDG_CONFIG_HOME/gnosh/gnoshrc` | `%XDG_CONFIG_HOME%\gnosh\gnoshrc` |
 
-Legacy JSON uses `.binetic-agent.json` / `binetic-agent.json` in the same directories as the
+Legacy JSON uses `.gnosh.json` / `gnosh.json` in the same directories as the
 above. Everything found is merged, with project settings overriding global ones
-and `binetic-agentrc` overriding JSON in the same directory. If a folder has both, they
-merge and Binetic Agent logs a warning.
+and `gnoshrc` overriding JSON in the same directory. If a folder has both, they
+merge and Gnosh logs a warning.
 
-Data directories (`~/.local/share/binetic-agent` on Unix-like systems and
-`%LOCALAPPDATA%\binetic-agent` on Windows) contain machine-owned JSON state. Binetic Agent does
-not discover or execute a `binetic-agentrc` from those locations.
+Data directories (`~/.local/share/gnosh` on Unix-like systems and
+`%LOCALAPPDATA%\gnosh` on Windows) contain machine-owned JSON state. Gnosh does
+not discover or execute a `gnoshrc` from those locations.
 
-Binetic Agent was called Klash, and before that Binetic Agent, and every klash and binetic_agent name
-still works: `klashrc` and `binetic-agentrc`, `klash.json` and `binetic-agent.json`,
-`~/.config/klash` and `~/.config/binetic_agent`, the same under `~/.local/share`, a
-project's `.klash/` or `.binetic-agent/` with its `klash.db` or `binetic_agent.db`, and
-`KLASH_*` and `BINETIC_AGENT_*` variables. Where several exist, the newest name wins,
-binetic-agent's over klash's over binetic_agent's; `~/.config/binetic-agent` and `~/.local/share/binetic-agent`
+Gnosh was called Klash, and before that Crush, and every klash and crush name
+still works: `klashrc` and `crushrc`, `klash.json` and `crush.json`,
+`~/.config/klash` and `~/.config/crush`, the same under `~/.local/share`, a
+project's `.klash/` or `.crush/` with its `klash.db` or `crush.db`, and
+`KLASH_*` and `CRUSH_*` variables. Where several exist, the newest name wins,
+gnosh's over klash's over crush's; `~/.config/gnosh` and `~/.local/share/gnosh`
 take over only once they hold a config file.
 
 > [!NOTE]
-> Binetic Agent also stores state data in `$XDG_DATA_HOME/binetic-agent`
-> (`%LOCALAPPDATA%\binetic-agent` on Windows). This is application state, and should
+> Gnosh also stores state data in `$XDG_DATA_HOME/gnosh`
+> (`%LOCALAPPDATA%\gnosh` on Windows). This is application state, and should
 > not be edited by hand.
 
 ## Command Reference
@@ -144,7 +144,7 @@ Available Commands:
   lsp           Manage language servers
   hook          Manage hooks
   permissions   Configure tool permissions
-  option        Configure general Binetic Agent behavior
+  option        Configure general Gnosh behavior
 ```
 
 ### provider
@@ -214,7 +214,7 @@ Usage:
 ### model
 
 Manage custom models and the large/small model slots. Model references use the
-same `<provider>/<id>` form printed by `binetic-agent models`.
+same `<provider>/<id>` form printed by `gnosh models`.
 
 ```text
 Usage:
@@ -483,7 +483,7 @@ permissions deny sourcegraph 'Bash(git push *)' 'Bash(rm -rf *)'
 
 ### option
 
-Configure general Binetic Agent behavior, paths, attribution, and the terminal UI.
+Configure general Gnosh behavior, paths, attribution, and the terminal UI.
 Boolean values are optional and default to `true`.
 
 ```text
@@ -506,11 +506,11 @@ Boolean Keys:
   default-providers              include built-in providers
   idle-compaction                summarize a long conversation left idle for
                                  54 minutes
-  attribution-generated-with     add the Generated with Binetic Agent line
+  attribution-generated-with     add the Generated with Gnosh line
 
 String Keys:
   data-directory string            directory for project data and state
-  initialize-as string             context filename created by binetic-agent init
+  initialize-as string             context filename created by gnosh init
   notifications string             notification style: auto, native, osc, bell,
                                    or disabled
   attribution-trailer-style string attribution trailer: none, co-authored-by,
@@ -583,7 +583,7 @@ Available Keys:
                                 always, or never
   exit-banner default|compact|none
                                 control the post-session banner: default shows
-                                the Binetic Agent logo, compact shows only the resume
+                                the Gnosh logo, compact shows only the resume
                                 hint, none hides it entirely
   completions-max-depth int     maximum directory depth shown by completions
   completions-max-items int     maximum items returned to completions
@@ -602,7 +602,7 @@ option ui completions-max-items 200
 
 > [!IMPORTANT]
 > These skill paths load by default — you do NOT need `skill-path`
-> for them: `.agents/skills`, `.binetic-agent/skills`, `.claude/skills`,
+> for them: `.agents/skills`, `.gnosh/skills`, `.claude/skills`,
 > `.cursor/skills`.
 
 > [!NOTE]
@@ -617,9 +617,9 @@ option ui completions-max-items 200
 Because it's Bash, a shared base config is just a `source`:
 
 ```bash
-# Unix-like: ~/.config/binetic-agent/binetic-agentrc
-# Windows:   %USERPROFILE%\.config\binetic-agent\binetic-agentrc
-source ~/team/binetic-agent-base.sh    # sets up providers, a few skills
+# Unix-like: ~/.config/gnosh/gnoshrc
+# Windows:   %USERPROFILE%\.config\gnosh\gnoshrc
+source ~/team/gnosh-base.sh    # sets up providers, a few skills
 
 # …but on this machine, drop a skill path the base added and add my own.
 option reset skill-path
@@ -631,13 +631,13 @@ script or pulled in via `source`. Later lines win, just like a shell.
 
 ## Legacy JSON
 
-`binetic-agent.json` is the original format and is now deprecated. We plan to support
+`gnosh.json` is the original format and is now deprecated. We plan to support
 it for the forseeable future, but new configuration options will only be added
 to Bash-based config.
 
 ```jsonc
 {
-  "$schema": "https://charm.land/binetic-agent.json",
+  "$schema": "https://charm.land/crush.json",
   "providers": {
     "anthropic": { "api_key": "$ANTHROPIC_API_KEY" },
   },
@@ -651,7 +651,7 @@ to Bash-based config.
 For a full reference, See the [JSON schema](../../schema.json).
 
 In JSON, only selected string fields (API keys, URLs, MCP/LSP commands and args,
-headers) are shell-expanded at load time. In `binetic-agentrc` there's no such list —
+headers) are shell-expanded at load time. In `gnoshrc` there's no such list —
 it's all just Bash.
 
 Both formats are trusted code: they run with your shell privileges before the UI

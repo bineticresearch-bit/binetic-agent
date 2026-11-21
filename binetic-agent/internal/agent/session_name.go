@@ -6,8 +6,8 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/session"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/session"
 )
 
 // sessionNamePrompt is Claude Code's prompt for the name /rename makes

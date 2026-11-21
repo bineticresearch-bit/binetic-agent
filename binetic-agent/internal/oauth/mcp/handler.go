@@ -16,8 +16,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
-	"github.com/charmbracelet/binetic_agent/internal/oauth/callback"
+	"github.com/charmbracelet/crush/internal/oauth"
+	"github.com/charmbracelet/crush/internal/oauth/callback"
 	"github.com/modelcontextprotocol/go-sdk/auth"
 	"github.com/modelcontextprotocol/go-sdk/oauthex"
 	"github.com/pkg/browser"
@@ -125,7 +125,7 @@ func NewHandler(
 	// Resolve the redirect port without binding it. The listener is only
 	// opened when an authorization actually runs (see fetchAuthorizationCode),
 	// so a handler that restores a valid token never occupies the port and
-	// several Binetic Agent processes can share it; only the one doing a live login
+	// several Crush processes can share it; only the one doing a live login
 	// binds, and only for the duration of that login.
 	//
 	// A fixed port comes straight from config. Otherwise we probe for the
@@ -194,7 +194,7 @@ func NewHandler(
 		Client: newOAuthMetadataClient(http.DefaultTransport, serverURL),
 		DynamicClientRegistrationConfig: &auth.DynamicClientRegistrationConfig{
 			Metadata: &oauthex.ClientRegistrationMetadata{
-				ClientName:   "Binetic Agent",
+				ClientName:   "Crush",
 				RedirectURIs: []string{redirectURL},
 				GrantTypes:   []string{"authorization_code", "refresh_token"},
 			},
@@ -396,7 +396,7 @@ func (h *Handler) Close() {
 //
 // The listener is bound lazily, on the first authorization attempt, and
 // released as soon as that attempt settles. A handler that holds a valid
-// token never binds at all, so any number of Binetic Agent processes may coexist;
+// token never binds at all, so any number of Crush processes may coexist;
 // the callback port is occupied only for the few seconds an actual login
 // is in flight.
 type callbackReceiver struct {

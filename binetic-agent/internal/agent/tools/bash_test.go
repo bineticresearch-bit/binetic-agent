@@ -12,10 +12,10 @@ import (
 	"unicode/utf8"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
-	"github.com/charmbracelet/binetic_agent/internal/shell"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/permission"
+	"github.com/charmbracelet/crush/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/shell"
 	"github.com/stretchr/testify/require"
 )
 
@@ -136,7 +136,7 @@ func TestBashTool_ToolNameAsCommand(t *testing.T) {
 		Command:     "job_kill 077",
 	})
 
-	require.Contains(t, resp.Content, "job_kill is a Binetic Agent tool, not a shell command: call the job_kill tool instead.")
+	require.Contains(t, resp.Content, "job_kill is a Gnosh tool, not a shell command: call the job_kill tool instead.")
 }
 
 // A command that is not installed, or a lookup that finds nothing, even
@@ -424,8 +424,8 @@ func TestBashTool_RunsTheSessionEnvFile(t *testing.T) {
 	workingDir := t.TempDir()
 	tool := newBashToolForTest(workingDir)
 	envFile := filepath.Join(t.TempDir(), "it's; a $file.sh")
-	require.NoError(t, os.WriteFile(envFile, []byte("export BINETIC_AGENT_TEST_GREETING=hello\n"), 0o600))
-	const command = `echo "greeting=[$BINETIC_AGENT_TEST_GREETING]"`
+	require.NoError(t, os.WriteFile(envFile, []byte("export GNOSH_TEST_GREETING=hello\n"), 0o600))
+	const command = `echo "greeting=[$GNOSH_TEST_GREETING]"`
 	session := context.WithValue(context.Background(), SessionIDContextKey, "s1")
 	withEnv := WithSessionEnvFile(session, envFile)
 

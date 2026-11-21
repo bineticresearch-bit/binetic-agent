@@ -10,7 +10,7 @@ import (
 	"github.com/charmbracelet/x/ansi"
 	xstrings "github.com/charmbracelet/x/exp/strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/ui/notification"
+	"github.com/charmbracelet/crush/internal/ui/notification"
 )
 
 // Capabilities define different terminal capabilities supported.

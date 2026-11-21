@@ -4,12 +4,12 @@ import (
 	"testing"
 
 	"charm.land/catwalk/pkg/catwalk"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/csync"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/csync"
 	"github.com/stretchr/testify/require"
 )
 
-// In process, /doctor's report is binetic-agent doctor's check of the store the
+// In process, /doctor's report is gnosh doctor's check of the store the
 // session runs with.
 func TestAppWorkspaceDoctorReport(t *testing.T) {
 	t.Parallel()

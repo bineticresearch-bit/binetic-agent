@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -71,7 +71,7 @@ func openMemIndex(path string) (*memIndex, error) {
 	}
 	switch {
 	case layout > memIndexLayout:
-		return fail(&refusal{"a newer binetic-agent wrote mem's index (layout " + strconv.Itoa(layout) + "); restart binetic-agent to use it"})
+		return fail(&refusal{"a newer gnosh wrote mem's index (layout " + strconv.Itoa(layout) + "); restart gnosh to use it"})
 	case layout == memIndexLayout:
 		return &memIndex{db: db}, nil
 	}

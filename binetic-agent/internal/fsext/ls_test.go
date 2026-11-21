@@ -66,7 +66,7 @@ func TestGlobalIgnorePatternsReadsBothNames(t *testing.T) {
 	t.Parallel()
 
 	configDir := t.TempDir()
-	for app, pattern := range map[string]string{"binetic-agent": "*.log", "binetic_agent": "secret/"} {
+	for app, pattern := range map[string]string{"gnosh": "*.log", "crush": "secret/"} {
 		require.NoError(t, os.MkdirAll(filepath.Join(configDir, app), 0o755))
 		require.NoError(t, os.WriteFile(filepath.Join(configDir, app, "ignore"), []byte(pattern+"\n"), 0o644))
 	}
@@ -81,8 +81,8 @@ func TestGlobalIgnorePatternsReadsBothNames(t *testing.T) {
 		}
 		return false
 	}
-	require.True(t, matches("debug.log", false), "the binetic-agent ignore file counts")
-	require.True(t, matches("secret", true), "and so does the binetic_agent one")
+	require.True(t, matches("debug.log", false), "the gnosh ignore file counts")
+	require.True(t, matches("secret", true), "and so does the crush one")
 	require.False(t, matches("main.go", false))
 
 	require.Empty(t, globalIgnorePatterns(t.TempDir()), "no ignore file, no patterns")

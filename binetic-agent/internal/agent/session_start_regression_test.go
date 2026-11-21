@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"charm.land/catwalk/pkg/catwalk"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/hooks"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/hooks"
 	"github.com/stretchr/testify/require"
 )
 
@@ -27,7 +27,7 @@ func TestRun_SessionStartRunsOnceForConcurrentPrompts(t *testing.T) {
 	count := filepath.Join(dir, "count")
 	source := filepath.Join(dir, "source")
 	r := sessionStartAgent(t, false, "",
-		sessionStartHooks("", `sleep 2; echo x >> `+count+`; echo "$BINETIC_AGENT_SESSION_START_SOURCE" > `+source)...)
+		sessionStartHooks("", `sleep 2; echo x >> `+count+`; echo "$GNOSH_SESSION_START_SOURCE" > `+source)...)
 
 	var wg sync.WaitGroup
 	wg.Add(2)

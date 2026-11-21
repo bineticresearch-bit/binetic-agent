@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -19,8 +19,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// GNOMEM.md says an upgrade keeps everything an earlier Binetic Agent kept in mem,
-// and what a Binetic Agent still running from before the upgrade says. The mem in
+// GNOMEM.md says an upgrade keeps everything an earlier Gnosh kept in mem,
+// and what a Gnosh still running from before the upgrade says. The mem in
 // testdata/memupgrade/goals-layout2 is one a layout-2 build left on
 // 2026-10-30, after an agent kept GNOMEM's own example in it: the release-v2
 // goal, its steps and its question for the user, and the staging-db fact.
@@ -44,7 +44,7 @@ func TestDocMemKeepsWhatAnEarlierBuildKept(t *testing.T) {
 	require.Contains(t, memOK(t, h, `mem.Done("release-v2/1", "now 2.0.0")`).Output,
 		"done `release-v2/1` \"bump the version\" → now 2.0.0; next: `release-v2/2` \"tag v2.0.0\"")
 
-	// The store as a later layout leaves it, which the Binetic Agent still running
+	// The store as a later layout leaves it, which the Gnosh still running
 	// from before that upgrade finds on its next call.
 	stores, err := filepath.Glob(filepath.Join(dir, "store-*"))
 	require.NoError(t, err)

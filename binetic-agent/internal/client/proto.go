@@ -13,10 +13,10 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/proto"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/proto"
+	"github.com/charmbracelet/crush/internal/pubsub"
 	"github.com/charmbracelet/x/powernap/pkg/lsp/protocol"
 )
 
@@ -672,7 +672,7 @@ func (c *Client) KillBackgroundJob(ctx context.Context, id, jobID string) error 
 	return nil
 }
 
-// DoctorReport is the check of the workspace's setup that binetic-agent doctor
+// DoctorReport is the check of the workspace's setup that gnosh doctor
 // prints, as the Markdown /doctor shows.
 func (c *Client) DoctorReport(ctx context.Context, id string) (string, error) {
 	rsp, err := c.get(ctx, fmt.Sprintf("/workspaces/%s/doctor", id), nil, nil)

@@ -5,10 +5,10 @@ import (
 	"strings"
 
 	"charm.land/lipgloss/v2"
-	mcp "github.com/charmbracelet/binetic_agent/internal/agent/tools/mcp"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
-	"github.com/charmbracelet/binetic_agent/internal/ui/logo"
+	mcp "github.com/charmbracelet/crush/internal/agent/tools/mcp"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/ui/logo"
 	uv "github.com/charmbracelet/ultraviolet"
 	"github.com/charmbracelet/ultraviolet/layout"
 )
@@ -27,7 +27,7 @@ func (m *UI) modelInfo(width int) string {
 		// How hard the model thinks, read from the same per-model axis the
 		// /model arrows set. It is deliberately not inside the provider
 		// lookup above and not gated on CanReason: a model added by hand in
-		// binetic-agentrc has neither a catalog entry nor, necessarily, a named
+		// crushrc has neither a catalog entry nor, necessarily, a named
 		// provider, and both gates used to leave its level invisible.
 		reasoningInfo = common.ReasoningSummary(m.com.Config(), model.ModelCfg, model.CatwalkCfg)
 	}

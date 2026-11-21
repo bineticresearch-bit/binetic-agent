@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/diff"
-	"github.com/charmbracelet/binetic_agent/internal/ui/dialog"
+	"github.com/charmbracelet/crush/internal/diff"
+	"github.com/charmbracelet/crush/internal/ui/dialog"
 )
 
 // diffLinesPerFile is how much of one file's diff /diff shows; the rest

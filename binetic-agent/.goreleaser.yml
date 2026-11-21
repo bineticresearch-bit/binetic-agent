@@ -2,7 +2,7 @@
 # vim: set ts=2 sw=2 tw=0 fo=jcroql
 version: 2
 
-project_name: binetic_agent
+project_name: crush
 
 notarize:
   macos:
@@ -19,7 +19,7 @@ notarize:
 metadata:
   mod_timestamp: "{{ .CommitTimestamp }}"
   license: "LicenseRef-GNO-Network-GPL-6.0-with-Strong-Attribution"
-  homepage: "https://charm.sh/binetic_agent"
+  homepage: "https://charm.sh/crush"
   description: "A powerful terminal-based AI assistant for developers, providing intelligent coding assistance directly in your terminal."
   full_description: "A powerful terminal-based AI assistant for developers, providing intelligent coding assistance directly in your terminal."
   maintainers:
@@ -41,10 +41,10 @@ before:
     - mkdir completions
     - rm -rf manpages
     - mkdir manpages
-    - sh -c 'go run . completion bash >./completions/binetic_agent.bash'
-    - sh -c 'go run . completion zsh >./completions/binetic_agent.zsh'
-    - sh -c 'go run . completion fish >./completions/binetic_agent.fish'
-    - sh -c 'go run . man | gzip -c >./manpages/binetic_agent.1.gz'
+    - sh -c 'go run . completion bash >./completions/crush.bash'
+    - sh -c 'go run . completion zsh >./completions/crush.zsh'
+    - sh -c 'go run . completion fish >./completions/crush.fish'
+    - sh -c 'go run . man | gzip -c >./manpages/crush.1.gz'
 
 # gomod:
 #   proxy: true
@@ -78,13 +78,13 @@ builds:
       - goos: windows
         goarch: arm
     ldflags:
-      - -s -w -X github.com/charmbracelet/binetic_agent/internal/version.Version={{.Version}}
+      - -s -w -X github.com/charmbracelet/crush/internal/version.Version={{.Version}}
     flags:
       - -trimpath
 
 archives:
   - name_template: >-
-      binetic_agent_
+      crush_
       {{- .Version }}_
       {{- title .Os }}_
       {{- if eq .Arch "amd64" }}x86_64
@@ -115,7 +115,7 @@ checksum:
 aur_sources:
   - private_key: "{{ .Env.AUR_KEY }}"
     disable: "{{ with .Prerelease }}true{{ end }}"
-    git_url: "ssh://aur@aur.archlinux.org/binetic_agent.git"
+    git_url: "ssh://aur@aur.archlinux.org/crush.git"
     commit_author:
       name: "Charm"
       email: "charmcli@users.noreply.github.com"
@@ -132,67 +132,67 @@ aur_sources:
       export CGO_CXXFLAGS="${CXXFLAGS}"
       export CGO_LDFLAGS="${LDFLAGS}"
       export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
-      go build -ldflags="-w -s -buildid='' -linkmode=external -X github.com/charmbracelet/binetic_agent/internal/version.Version=v${pkgver}" .
-      ./binetic_agent completion bash >./completions/binetic_agent.bash
-      ./binetic_agent completion zsh >./completions/binetic_agent.zsh
-      ./binetic_agent completion fish >./completions/binetic_agent.fish
-      ./binetic_agent man | gzip -c >./manpages/binetic_agent.1.gz
+      go build -ldflags="-w -s -buildid='' -linkmode=external -X github.com/charmbracelet/crush/internal/version.Version=v${pkgver}" .
+      ./crush completion bash >./completions/crush.bash
+      ./crush completion zsh >./completions/crush.zsh
+      ./crush completion fish >./completions/crush.fish
+      ./crush man | gzip -c >./manpages/crush.1.gz
     package: |-
       # bin
-      install -Dm755 "./binetic_agent" "${pkgdir}/usr/bin/binetic_agent"
+      install -Dm755 "./crush" "${pkgdir}/usr/bin/crush"
       # license
-      mkdir -p "${pkgdir}/usr/share/licenses/binetic_agent/"
-      install -Dm644 ./LICENSE* "${pkgdir}/usr/share/licenses/binetic_agent/"
+      mkdir -p "${pkgdir}/usr/share/licenses/crush/"
+      install -Dm644 ./LICENSE* "${pkgdir}/usr/share/licenses/crush/"
       # completions
       mkdir -p "${pkgdir}/usr/share/bash-completion/completions/"
       mkdir -p "${pkgdir}/usr/share/zsh/site-functions/"
       mkdir -p "${pkgdir}/usr/share/fish/vendor_completions.d/"
-      install -Dm644 "./completions/binetic_agent.bash" "${pkgdir}/usr/share/bash-completion/completions/binetic_agent"
-      install -Dm644 "./completions/binetic_agent.zsh" "${pkgdir}/usr/share/zsh/site-functions/_binetic_agent"
-      install -Dm644 "./completions/binetic_agent.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/binetic_agent.fish"
+      install -Dm644 "./completions/crush.bash" "${pkgdir}/usr/share/bash-completion/completions/crush"
+      install -Dm644 "./completions/crush.zsh" "${pkgdir}/usr/share/zsh/site-functions/_crush"
+      install -Dm644 "./completions/crush.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/crush.fish"
       # man pages
-      install -Dm644 "./manpages/binetic_agent.1.gz" "${pkgdir}/usr/share/man/man1/binetic_agent.1.gz"
+      install -Dm644 "./manpages/crush.1.gz" "${pkgdir}/usr/share/man/man1/crush.1.gz"
       # readme
-      mkdir -pv "${pkgdir}/usr/share/doc/binetic_agent/"
-      install -Dm644 README* "${pkgdir}/usr/share/doc/binetic_agent/"
+      mkdir -pv "${pkgdir}/usr/share/doc/crush/"
+      install -Dm644 README* "${pkgdir}/usr/share/doc/crush/"
 
 aurs:
   - private_key: "{{ .Env.AUR_KEY }}"
     disable: "{{ with .Prerelease }}true{{ end }}"
-    git_url: "ssh://aur@aur.archlinux.org/binetic_agent-bin.git"
+    git_url: "ssh://aur@aur.archlinux.org/crush-bin.git"
     commit_author:
       name: "Charm"
       email: "charmcli@users.noreply.github.com"
     provides:
-      - binetic_agent
+      - crush
     conflicts:
-      - binetic_agent
+      - crush
     package: |-
       case "$CARCH" in
         aarch64)
-          cd "${srcdir}/binetic_agent_${pkgver}_Linux_arm64"
+          cd "${srcdir}/crush_${pkgver}_Linux_arm64"
           ;;
         *)
-          cd "${srcdir}/binetic_agent_${pkgver}_Linux_${CARCH}"
+          cd "${srcdir}/crush_${pkgver}_Linux_${CARCH}"
           ;;
       esac
       # bin
-      install -Dm755 "./binetic_agent" "${pkgdir}/usr/bin/binetic_agent"
+      install -Dm755 "./crush" "${pkgdir}/usr/bin/crush"
       # license
-      mkdir -p "${pkgdir}/usr/share/licenses/binetic_agent/"
-      install -Dm644 ./LICENSE* "${pkgdir}/usr/share/licenses/binetic_agent/"
+      mkdir -p "${pkgdir}/usr/share/licenses/crush/"
+      install -Dm644 ./LICENSE* "${pkgdir}/usr/share/licenses/crush/"
       # completions
       mkdir -p "${pkgdir}/usr/share/bash-completion/completions/"
       mkdir -p "${pkgdir}/usr/share/zsh/site-functions/"
       mkdir -p "${pkgdir}/usr/share/fish/vendor_completions.d/"
-      install -Dm644 "./completions/binetic_agent.bash" "${pkgdir}/usr/share/bash-completion/completions/binetic_agent"
-      install -Dm644 "./completions/binetic_agent.zsh" "${pkgdir}/usr/share/zsh/site-functions/_binetic_agent"
-      install -Dm644 "./completions/binetic_agent.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/binetic_agent.fish"
+      install -Dm644 "./completions/crush.bash" "${pkgdir}/usr/share/bash-completion/completions/crush"
+      install -Dm644 "./completions/crush.zsh" "${pkgdir}/usr/share/zsh/site-functions/_crush"
+      install -Dm644 "./completions/crush.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/crush.fish"
       # man pages
-      install -Dm644 "./manpages/binetic_agent.1.gz" "${pkgdir}/usr/share/man/man1/binetic_agent.1.gz"
+      install -Dm644 "./manpages/crush.1.gz" "${pkgdir}/usr/share/man/man1/crush.1.gz"
       # readme
-      mkdir -pv "${pkgdir}/usr/share/doc/binetic_agent/"
-      install -Dm644 README* "${pkgdir}/usr/share/doc/binetic_agent/"
+      mkdir -pv "${pkgdir}/usr/share/doc/crush/"
+      install -Dm644 README* "${pkgdir}/usr/share/doc/crush/"
 
 furies:
   - disable: "{{ if (or .Prerelease .IsNightly) }}true{{ end }}"
@@ -226,9 +226,9 @@ scoops:
       email: "charmcli@users.noreply.github.com"
 
 npms:
-  - name: "@charmland/binetic_agent"
-    repository: "git+https://github.com/charmbracelet/binetic_agent.git"
-    bugs: https://github.com/charmbracelet/binetic_agent/issues
+  - name: "@charmland/crush"
+    repository: "git+https://github.com/charmbracelet/crush.git"
+    bugs: https://github.com/charmbracelet/crush/issues
     access: public
     disable: "{{ with .Prerelease }}true{{ end }}"
 
@@ -240,14 +240,14 @@ nfpms:
       - archlinux
     file_name_template: "{{ .ConventionalFileName }}"
     contents:
-      - src: ./completions/binetic_agent.bash
-        dst: '{{ if eq .Format "termux.deb" }}/data/data/com.termux/files/usr{{ end }}/etc/bash_completion.d/binetic_agent'
-      - src: ./completions/binetic_agent.fish
-        dst: '{{ if eq .Format "termux.deb" }}/data/data/com.termux/files{{ end }}/usr/share/fish/vendor_completions.d/binetic_agent.fish'
-      - src: ./completions/binetic_agent.zsh
-        dst: '{{ if eq .Format "termux.deb" }}/data/data/com.termux/files{{ end }}/usr/share/zsh/site-functions/_binetic_agent'
-      - src: ./manpages/binetic_agent.1.gz
-        dst: '{{ if eq .Format "termux.deb" }}/data/data/com.termux/files{{ end }}/usr/share/man/man1/binetic_agent.1.gz'
+      - src: ./completions/crush.bash
+        dst: '{{ if eq .Format "termux.deb" }}/data/data/com.termux/files/usr{{ end }}/etc/bash_completion.d/crush'
+      - src: ./completions/crush.fish
+        dst: '{{ if eq .Format "termux.deb" }}/data/data/com.termux/files{{ end }}/usr/share/fish/vendor_completions.d/crush.fish'
+      - src: ./completions/crush.zsh
+        dst: '{{ if eq .Format "termux.deb" }}/data/data/com.termux/files{{ end }}/usr/share/zsh/site-functions/_crush'
+      - src: ./manpages/crush.1.gz
+        dst: '{{ if eq .Format "termux.deb" }}/data/data/com.termux/files{{ end }}/usr/share/man/man1/crush.1.gz'
     rpm:
       signature:
         key_file: '{{ if ne (index .Env "GPG_KEY_PATH") "" }}{{ .Env.GPG_KEY_PATH }}{{ else }}{{ end }}'
@@ -286,15 +286,15 @@ nix:
     formatter: nixfmt
     skip_upload: "{{ with .Prerelease }}true{{ end }}"
     extra_install: |-
-      installManPage ./manpages/binetic_agent.1.gz
+      installManPage ./manpages/crush.1.gz
       installShellCompletion ./completions/*
 
 winget:
   - publisher: charmbracelet
     copyright: Charmbracelet, Inc
     publisher_url: https://charm.land
-    release_notes_url: "https://github.com/charmbracelet/binetic_agent/releases/tag/{{.Tag}}"
-    license_url: https://github.com/charmbracelet/binetic_agent/blob/main/LICENSE.md
+    release_notes_url: "https://github.com/charmbracelet/crush/releases/tag/{{.Tag}}"
+    license_url: https://github.com/charmbracelet/crush/blob/main/LICENSE.md
     skip_upload: "{{ with .Prerelease }}true{{ end }}"
     commit_author:
       name: "Charm"
@@ -303,7 +303,7 @@ winget:
       owner: "charmbracelet"
       name: winget-pkgs
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
-      branch: "binetic_agent-{{.Version}}"
+      branch: "crush-{{.Version}}"
       pull_request:
         enabled: true
         draft: false
@@ -378,7 +378,7 @@ release:
 
     ```bash
     cosign verify-blob \
-      --certificate-identity-regexp '^https://github.com/charmbracelet/binetic_agent/\.github/workflows/(release|nightly)\.yml@' \
+      --certificate-identity-regexp '^https://github.com/charmbracelet/crush/\.github/workflows/(release|nightly)\.yml@' \
       --certificate-oidc-issuer 'https://token.actions.githubusercontent.com' \
       --bundle 'checksums.txt.sigstore.json' \
       ./checksums.txt

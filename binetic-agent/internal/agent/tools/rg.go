@@ -10,7 +10,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/log"
+	"github.com/charmbracelet/crush/internal/log"
 )
 
 var getRg = sync.OnceValue(func() string {

@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/message"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/message"
 	"github.com/stretchr/testify/require"
 )
 
@@ -35,7 +35,7 @@ func assistantMsg(id, session string, parts ...message.ContentPart) message.Mess
 }
 
 // A turn that calls a tool streams as Claude Code's does: the assistant
-// message with its tool_use before the tool's result, though binetic-agent marks
+// message with its tool_use before the tool's result, though gnosh marks
 // the message finished only after the tool has run, then the answer; each
 // once, however many updates come.
 func TestStreamJSONWritesATurnInOrder(t *testing.T) {
@@ -95,7 +95,7 @@ func TestStreamJSONWritesATurnInOrder(t *testing.T) {
 }
 
 // A pop marks the rows it cuts, and each mark comes as an update. Rows of
-// an earlier run of the session, as when each turn is its own `binetic-agent run`,
+// an earlier run of the session, as when each turn is its own `gnosh run`,
 // were never written by this one: they must not stream as this turn's work.
 func TestStreamJSONSkipsRowsAPopCut(t *testing.T) {
 	t.Parallel()

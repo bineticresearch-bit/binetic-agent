@@ -1,5 +1,5 @@
-// Package doctor checks the setup Binetic Agent runs with in a directory, as
-// Claude Code's doctor does: for binetic-agent doctor, and /doctor in the TUI.
+// Package doctor checks the setup Gnosh runs with in a directory, as
+// Claude Code's doctor does: for gnosh doctor, and /doctor in the TUI.
 package doctor
 
 import (
@@ -11,10 +11,10 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/home"
-	"github.com/charmbracelet/binetic_agent/internal/shell"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/home"
+	"github.com/charmbracelet/crush/internal/shell"
+	"github.com/charmbracelet/crush/internal/version"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
 )
@@ -29,7 +29,7 @@ func Report(store *config.ConfigStore, lookPath func(string) (string, error)) (l
 	}
 	cfg := store.Config()
 
-	add("✓", "binetic-agent %s", version.Version)
+	add("✓", "gnosh %s", version.Version)
 
 	if paths := store.LoadedPaths(); len(paths) > 0 {
 		add("✓", "config: %s", strings.Join(paths, ", "))
@@ -127,7 +127,7 @@ func Report(store *config.ConfigStore, lookPath func(string) (string, error)) (l
 }
 
 // missingHookCost says what a hook that cannot run costs at event, and
-// how Report marks it. Binetic Agent fails closed, so where a hook can block it
+// how Report marks it. Gnosh fails closed, so where a hook can block it
 // blocks every time it fires, and a turn cannot do its work: an error.
 // Where none can, it is a warning each time.
 func missingHookCost(event string) (mark, cost string) {
@@ -155,7 +155,7 @@ var commandName = regexp.MustCompile(`^[A-Za-z0-9_.+-]+$`)
 
 // hookCommandProblem says that the program a hook command starts with is
 // not installed, when it starts with a bare name ("ruff check", "npx
-// prettier"): a hook whose program is missing exits 127, which Binetic Agent
+// prettier"): a hook whose program is missing exits 127, which Gnosh
 // counts as a hook that could not run. Shell keywords and builtins, the
 // hook shell's own builtins (jq), and a command that starts any other way
 // (a path, which hookScriptProblem checks, an assignment or a quote) are
@@ -195,7 +195,7 @@ func hookScriptProblem(command, dir string) string {
 	other := false
 	expanded := os.Expand(script, func(name string) string {
 		switch name {
-		case "CLAUDE_PROJECT_DIR", "BINETIC_AGENT_PROJECT_DIR", "KLASH_PROJECT_DIR", "BINETIC_AGENT_PROJECT_DIR":
+		case "CLAUDE_PROJECT_DIR", "GNOSH_PROJECT_DIR", "KLASH_PROJECT_DIR", "CRUSH_PROJECT_DIR":
 			return dir
 		}
 		other = true
@@ -221,7 +221,7 @@ func hookScriptProblem(command, dir string) string {
 }
 
 // Markdown is the report as /doctor shows it in the TUI: a line per check,
-// as binetic-agent doctor prints them, and last whether a turn can run here.
+// as gnosh doctor prints them, and last whether a turn can run here.
 func Markdown(lines []string, ok bool) string {
 	var sb strings.Builder
 	sb.WriteString("## Doctor\n\n")
@@ -231,7 +231,7 @@ func Markdown(lines []string, ok bool) string {
 	if ok {
 		sb.WriteString("\nA turn can run here.\n")
 	} else {
-		sb.WriteString("\nBinetic Agent could not run a turn here: see the lines marked ✗.\n")
+		sb.WriteString("\nGnosh could not run a turn here: see the lines marked ✗.\n")
 	}
 	return sb.String()
 }

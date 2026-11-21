@@ -11,14 +11,14 @@ import (
 
 	"charm.land/fantasy"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/tooldefs"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/tooldefs"
 )
 
-// UserToolsDir is where a user's own tool descriptions live, beside binetic-agentrc:
-// ~/.config/binetic_agent/tools. A file <name>.md replaces what the model is told
+// UserToolsDir is where a user's own tool descriptions live, beside crushrc:
+// ~/.config/crush/tools. A file <name>.md replaces what the model is told
 // about that tool, and a name listed in disabled.txt (one per line, # for
-// comments) is not offered to the model at all. `binetic_agent prompt tools --export`
+// comments) is not offered to the model at all. `crush prompt tools --export`
 // writes the current descriptions there to start from; see exportMark for
 // why an export takes effect only once it is edited.
 func UserToolsDir() string {
@@ -112,7 +112,7 @@ func UserToolDescription(name string) (path string, used bool) {
 	return path, used
 }
 
-// exportMark opens the first line of a file written by `binetic_agent prompt tools
+// exportMark opens the first line of a file written by `crush prompt tools
 // --export`, and the line ends with the hash of the description written
 // below it. While the text still has that hash, nobody has edited it, and
 // the current built-in description is used instead: an export is a starting

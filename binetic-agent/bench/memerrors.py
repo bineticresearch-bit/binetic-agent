@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""How binetic-agent's mem calls went: every gnovm_run call in the given runs' binetic-agent
+"""How gnosh's mem calls went: every gnovm_run call in the given runs' gnosh
 session stores, and the errors they returned, by kind.
 
 Usage: memerrors.py <run dir>...
@@ -39,7 +39,7 @@ def main():
     kinds = collections.Counter()
     example = {}
     for d in sys.argv[1:]:
-        for db in sorted(glob.glob(os.path.join(d, "data*", "binetic-agent.db"))):
+        for db in sorted(glob.glob(os.path.join(d, "data*", "gnosh.db"))):
             c = sqlite3.connect("file:%s?mode=ro" % db, uri=True)
             ids = set()
             try:

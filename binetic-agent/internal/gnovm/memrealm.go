@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -77,7 +77,7 @@ var memRunAddr = crypto.AddressFromPreimage([]byte("klash mem"))
 
 // memRealm is a project's mem: the realm in a goleveldb store on disk. The
 // libraries it runs on stay in the base, in memory, and are never written
-// to the store: a binetic-agent upgrade brings new library code.
+// to the store: a gnosh upgrade brings new library code.
 type memRealm struct {
 	b  *base
 	db *goleveldb.GoLevelDB
@@ -120,7 +120,7 @@ func (r *memRealm) close() error { return r.db.Close() }
 // transaction reads the libraries' objects and types from that cache, not
 // from the store it writes to; filling it copies every library's bytes,
 // about 100 ms). It is done once per process and touches no mem on disk,
-// so a call does it before taking mem's lock: a new binetic-agent process pays for
+// so a call does it before taking mem's lock: a new gnosh process pays for
 // it without holding up the others (PARALLEL.md).
 func (b *base) warmMem() error {
 	if _, err := b.ensure(memPackages); err != nil {
@@ -158,7 +158,7 @@ func (r *memRealm) deploy() (err error) {
 
 // preprocessMemRealm puts the realm's block nodes in the base, once: gno
 // keeps a package's syntax trees in memory only, so every process rebuilds
-// them, as a chain node does at restart, from binetic-agent's own copy of the source.
+// them, as a chain node does at restart, from gnosh's own copy of the source.
 func (b *base) preprocessMemRealm() (err error) {
 	if b.memRealmReady {
 		return nil
@@ -198,7 +198,7 @@ type memCall struct {
 	// Waits is what the input's Next waits for, when it waits; nil
 	// otherwise (PARALLEL.md).
 	Waits []MemWait
-	// Closes are the closes binetic-agent is to check before the input is kept
+	// Closes are the closes gnosh is to check before the input is kept
 	// (memContext.checkCloses).
 	Closes []MemClose
 	// At is the call's time, which its Ops share.
@@ -348,7 +348,7 @@ func (r *memRealm) call(code string, ctx memContext) (call memCall, err error) {
 			_, inside := p.(runtime.Error)
 			inside = inside && memOnlyCalls(code)
 			if inside {
-				slog.Error("mem failed inside binetic-agent", "error", p, "stack", string(debug.Stack()))
+				slog.Error("mem failed inside gnosh", "error", p, "stack", string(debug.Stack()))
 			}
 			if terr := meter.tripped(); terr != nil {
 				fail(classifyTrip(terr).Error())
@@ -437,13 +437,13 @@ var (
 )
 
 // memInsideText is what a mem input that only called mem is told when Go's
-// own runtime failed under it, in binetic-agent or the GnoVM: the input did nothing
+// own runtime failed under it, in gnosh or the GnoVM: the input did nothing
 // wrong. Told only "runtime error: index out of range [11] with length
 // 10", the agent in Jae's lane took it for its own to fix, and spent seven
 // minutes searching the disk, reading mem's files and the binary's
 // strings, and trying to drop mem, until he cancelled it (2026-10-30).
 func memInsideText(p any) string {
-	return "mem failed inside binetic-agent, not in your call: " + fmt.Sprint(p) + ". This is a bug in binetic-agent: tell the user what failed, and go on without mem; do not look through mem's files or the system to repair it"
+	return "mem failed inside gnosh, not in your call: " + fmt.Sprint(p) + ". This is a bug in gnosh: tell the user what failed, and go on without mem; do not look through mem's files or the system to repair it"
 }
 
 // memOnlyCalls reports whether a mem input only calls mem: each statement
@@ -582,7 +582,7 @@ func memInput(src memSource) (*std.MemPackage, int) {
 	return mpkg, bodyLine
 }
 
-// memBinding is the file binetic-agent adds to every mem input: mem, bound to the
+// memBinding is the file gnosh adds to every mem input: mem, bound to the
 // realm's Mem, and how a trailing read of it is shown.
 const memBinding = `package main
 

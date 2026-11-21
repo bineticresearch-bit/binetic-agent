@@ -16,7 +16,7 @@ const earlyLimit = 1000
 // loading runs in that time, since the log file lives in the data
 // directory the config names, and every warning it gave (a provider
 // skipped for a missing API key, a default model that does not exist, a
-// binetic-agentrc beside a binetic-agent.json) used to be thrown away.
+// crushrc beside a crush.json) used to be thrown away.
 func Early() slog.Handler { return early }
 
 var early = newEarlyHandler(earlyLimit)

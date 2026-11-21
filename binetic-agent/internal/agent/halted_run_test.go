@@ -8,12 +8,12 @@ import (
 
 	"charm.land/catwalk/pkg/catwalk"
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/hooks"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/hooks"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/pubsub"
 	"github.com/stretchr/testify/require"
 )
 
@@ -99,7 +99,7 @@ func TestRun_ADeniedPermissionMarksTheTurnHalted(t *testing.T) {
 func TestRun_ADeniedPermissionIsNotHandedToTheStopHooks(t *testing.T) {
 	env := testEnv(t)
 	cfg := &config.Config{Hooks: map[string][]config.HookConfig{hooks.EventStop: {{
-		Command: `[ "$BINETIC_AGENT_STOP_HOOK_ACTIVE" = "1" ] && exit 0; echo "not done" >&2; exit 2`,
+		Command: `[ "$CRUSH_STOP_HOOK_ACTIVE" = "1" ] && exit 0; echo "not done" >&2; exit 2`,
 	}}}}
 	require.NoError(t, cfg.ValidateHooks())
 

@@ -10,21 +10,21 @@ import (
 
 // BuiltinPrefix is the path prefix for builtin skill files. It is used by
 // the View tool to distinguish embedded files from disk files.
-const BuiltinPrefix = "binetic-agent://skills/"
+const BuiltinPrefix = "gnosh://skills/"
 
 // legacyBuiltinPrefixes are the prefixes builtin skill files had before the
-// renames, from Binetic Agent to Klash to Binetic Agent. Old sessions and prompt templates
+// renames, from Crush to Klash to Gnosh. Old sessions and prompt templates
 // still name files under them, so they still resolve (see
 // CanonicalBuiltinPath).
-var legacyBuiltinPrefixes = []string{"klash://skills/", "binetic_agent://skills/"}
+var legacyBuiltinPrefixes = []string{"klash://skills/", "crush://skills/"}
 
 // legacySkillNames maps builtin skills' names from before the renames to
 // their names now.
 var legacySkillNames = map[string]string{
-	"klash-config": "binetic-agent-config",
-	"klash-hooks":  "binetic-agent-hooks",
-	"binetic_agent-config": "binetic-agent-config",
-	"binetic_agent-hooks":  "binetic-agent-hooks",
+	"klash-config": "gnosh-config",
+	"klash-hooks":  "gnosh-hooks",
+	"crush-config": "gnosh-config",
+	"crush-hooks":  "gnosh-hooks",
 }
 
 // CanonicalSkillName returns a builtin skill's current name given the name
@@ -56,7 +56,7 @@ func cutBuiltinPrefix(path string) (string, bool) {
 
 // CanonicalBuiltinPath returns a builtin skill file's path under the
 // current prefix and skill name: klash://skills/klash-config/SKILL.md is
-// binetic-agent://skills/binetic-agent-config/SKILL.md. Other paths are returned as they
+// gnosh://skills/gnosh-config/SKILL.md. Other paths are returned as they
 // are.
 func CanonicalBuiltinPath(path string) string {
 	rest, ok := cutBuiltinPrefix(path)
@@ -114,9 +114,9 @@ func DiscoverBuiltinWithStates() ([]*Skill, []*SkillState) {
 			return nil
 		}
 
-		// Set paths using the binetic-agent prefix. Strip the leading "builtin/"
+		// Set paths using the gnosh prefix. Strip the leading "builtin/"
 		// so the path is relative to the embedded root
-		// (e.g., "binetic-agent://skills/binetic-agent-config/SKILL.md").
+		// (e.g., "gnosh://skills/gnosh-config/SKILL.md").
 		relPath, _ := filepath.Rel("builtin", path)
 		relPath = filepath.ToSlash(relPath)
 		skill.SkillFilePath = BuiltinPrefix + relPath

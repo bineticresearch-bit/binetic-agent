@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -21,19 +21,19 @@ import (
 )
 
 // TestMemRecallLive measures recall with a real embedding server, named by
-// BINETIC_AGENT_TEST_EMBEDDINGS (the AI box's: http://127.0.0.1:8091/v1), through
-// binetic-agent's own code: a project's mem of 31 entries, and 28 prompts, 17 of
+// GNOSH_TEST_EMBEDDINGS (the AI box's: http://127.0.0.1:8091/v1), through
+// gnosh's own code: a project's mem of 31 entries, and 28 prompts, 17 of
 // which mem has the answer to. With Qwen3-Embedding-0.6B on 2026-10-30, at
 // memRecallScore, 12 of the 17 were given their answer and none of the
 // other 11 was given anything; each prompt's best rows are logged with
 // their scores. It fails when a model, or a change to what is embedded,
 // makes recall miss more or add noise. Run it where the server is:
 //
-//	BINETIC_AGENT_TEST_EMBEDDINGS=http://127.0.0.1:8091/v1 go test -run TestMemRecallLive -v ./internal/gnovm/
+//	GNOSH_TEST_EMBEDDINGS=http://127.0.0.1:8091/v1 go test -run TestMemRecallLive -v ./internal/gnovm/
 func TestMemRecallLive(t *testing.T) {
-	url := os.Getenv("BINETIC_AGENT_TEST_EMBEDDINGS")
+	url := os.Getenv("GNOSH_TEST_EMBEDDINGS")
 	if url == "" {
-		t.Skip("BINETIC_AGENT_TEST_EMBEDDINGS names no embedding server")
+		t.Skip("GNOSH_TEST_EMBEDDINGS names no embedding server")
 	}
 	h := newTestHost(t, t.TempDir())
 	h.opts.Embeddings = url

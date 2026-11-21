@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/agent/notify"
 )
 
 // A prompt sent behind a running turn and refused (a UserPromptSubmit hook

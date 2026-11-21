@@ -43,7 +43,7 @@ func neutralizeControlTokens(s string) string {
 // sanitizeControlTokens runs neutralizeControlTokens over every text-bearing
 // part of every non-system message: user and assistant text, model reasoning,
 // and tool results (both plain text and the text that rides alongside media).
-// System messages are Binetic Agent's own prompt and are left untouched. Slices are
+// System messages are Crush's own prompt and are left untouched. Slices are
 // copied before mutation so stored messages are never changed in place.
 func sanitizeControlTokens(messages []fantasy.Message) []fantasy.Message {
 	for i, msg := range messages {

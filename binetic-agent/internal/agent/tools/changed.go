@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/fsext"
+	"github.com/charmbracelet/crush/internal/fsext"
 )
 
 // FileBefore is what a file held before a file tool's call changed it.
@@ -16,7 +16,7 @@ type FileBefore struct {
 	// Existed is false for a file the call made.
 	Existed bool
 	// Known is false when the change did not record what the file held:
-	// a write from before binetic-agent recorded what it wrote over.
+	// a write from before gnosh recorded what it wrote over.
 	Known bool
 }
 

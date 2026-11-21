@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -17,9 +17,9 @@ import (
 )
 
 // Recall (MEMPLAN §6): with each prompt the user types in a main session,
-// binetic-agent gives the model what mem holds close in meaning to it, which the
+// gnosh gives the model what mem holds close in meaning to it, which the
 // model may not think to look for. It reads mem's index and vectors in
-// binetic-agent's own process, under mem's lock, and waits no longer than
+// gnosh's own process, under mem's lock, and waits no longer than
 // memEmbedWait: with no embedding server set, or with it down, a prompt
 // goes without.
 

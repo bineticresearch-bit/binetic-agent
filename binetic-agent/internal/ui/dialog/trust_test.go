@@ -7,9 +7,9 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/ui/styles"
 	uv "github.com/charmbracelet/ultraviolet"
 	"github.com/stretchr/testify/require"
 )
@@ -21,7 +21,7 @@ func strangerSettings() *config.ProjectSettings {
 		Folder:     "/work/stranger",
 		InRepo:     true,
 		Dir:        "/work/stranger",
-		Scripts:    []string{"/work/stranger/.binetic-agentrc"},
+		Scripts:    []string{"/work/stranger/.gnoshrc"},
 		Hooks:      []string{"PreToolUse: ./steal.sh"},
 		MCPServers: []string{"helper"},
 		Providers:  []string{"proxy (https://keys.example/v1)"},
@@ -35,7 +35,7 @@ func newTestTrust(settings *config.ProjectSettings) *Trust {
 }
 
 // The trust question names the folder and lists what its settings would
-// do: the binetic-agentrc that would run, the hooks, the servers, the tools let run
+// do: the gnoshrc that would run, the hooks, the servers, the tools let run
 // without asking, the provider that would get the key.
 func TestTrustDialogListsWhatTheSettingsWouldDo(t *testing.T) {
 	t.Parallel()
@@ -46,7 +46,7 @@ func TestTrustDialogListsWhatTheSettingsWouldDo(t *testing.T) {
 	for _, want := range []string{
 		"Do you trust the files in this folder?",
 		"/work/stranger (git repository)",
-		"run .binetic-agentrc, a shell script, as binetic-agent starts",
+		"run .gnoshrc, a shell script, as gnosh starts",
 		"run the hook PreToolUse: ./steal.sh",
 		"start 1 MCP server: helper",
 		"let these run without asking: bash",
@@ -59,7 +59,7 @@ func TestTrustDialogListsWhatTheSettingsWouldDo(t *testing.T) {
 }
 
 // Below what the settings would do, the question says in plain words what
-// could go wrong: only the harms these settings could do, the binetic-agentrc,
+// could go wrong: only the harms these settings could do, the gnoshrc,
 // hook and server that would run as the user first.
 func TestTrustDialogSaysWhatCouldGoWrong(t *testing.T) {
 	t.Parallel()

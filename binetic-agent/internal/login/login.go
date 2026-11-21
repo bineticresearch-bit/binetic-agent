@@ -1,4 +1,4 @@
-// Package login authenticates Binetic Agent with OAuth-capable platforms from the
+// Package login authenticates Crush with OAuth-capable platforms from the
 // command line. In interactive terminals it runs a small Bubble Tea program
 // that guides the user through opening a browser and waiting for the
 // callback. When stdin is not a terminal, it falls back to a plain,
@@ -15,11 +15,11 @@ import (
 	"github.com/charmbracelet/x/term"
 	"github.com/pkg/browser"
 
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
-	"github.com/charmbracelet/binetic_agent/internal/oauth/copilot"
-	"github.com/charmbracelet/binetic_agent/internal/oauth/grok"
-	"github.com/charmbracelet/binetic_agent/internal/oauth/hyper"
-	"github.com/charmbracelet/binetic_agent/internal/oauth/openai"
+	"github.com/charmbracelet/crush/internal/oauth"
+	"github.com/charmbracelet/crush/internal/oauth/copilot"
+	"github.com/charmbracelet/crush/internal/oauth/grok"
+	"github.com/charmbracelet/crush/internal/oauth/hyper"
+	"github.com/charmbracelet/crush/internal/oauth/openai"
 )
 
 // Platforms accepted by Run.

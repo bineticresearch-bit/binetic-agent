@@ -1,14 +1,14 @@
 ---
 name: builtin-skills
 description:
-  Use when creating a new builtin skill for Binetic Agent, editing an existing builtin
+  Use when creating a new builtin skill for Crush, editing an existing builtin
   skill (internal/skills/builtin/), or when the user needs to understand how the
   embedded skill system works.
 ---
 
 # Builtin Skills
 
-Binetic Agent embeds skills directly into the binary via `internal/skills/builtin/`.
+Crush embeds skills directly into the binary via `internal/skills/builtin/`.
 These are always available without user configuration.
 
 ## How It Works
@@ -17,8 +17,8 @@ These are always available without user configuration.
 - The tree is embedded at compile time via `//go:embed builtin/*` in
   `internal/skills/embed.go`.
 - `DiscoverBuiltin()` walks the embedded FS, parses each `SKILL.md`, and sets
-  paths with the `binetic_agent://skills/` prefix (e.g., `binetic_agent://skills/jq/SKILL.md`).
-- The View tool resolves `binetic_agent://` paths from the embedded FS, not disk.
+  paths with the `crush://skills/` prefix (e.g., `crush://skills/jq/SKILL.md`).
+- The View tool resolves `crush://` paths from the embedded FS, not disk.
 - User skills with the same name override builtins (last occurrence wins in
   `Deduplicate()`).
 
@@ -37,6 +37,6 @@ These are always available without user configuration.
 
 | Skill          | Directory               | Description                                |
 | -------------- | ----------------------- | ------------------------------------------ |
-| `binetic_agent-config` | `builtin/binetic_agent-config/` | Binetic Agent configuration help                   |
-| `binetic_agent-hooks`  | `builtin/binetic_agent-hooks/`  | Authoring, configuring and debugging hooks |
+| `crush-config` | `builtin/crush-config/` | Crush configuration help                   |
+| `crush-hooks`  | `builtin/crush-hooks/`  | Authoring, configuring and debugging hooks |
 | `jq`           | `builtin/jq/`           | jq JSON processor usage guide              |

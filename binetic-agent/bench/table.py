@@ -34,12 +34,12 @@ def table(rows, title):
     by = defaultdict(list)
     for r in rows:
         by[r["harness"]].append(r)
-    for h in ("binetic-agent", "binetic_agent", "codex"):
+    for h in ("gnosh", "crush", "codex"):
         rs = by.get(h)
         if not rs:
             continue
         passed = sum(1 for r in rs if r["passed"])
-        gn = h == "binetic-agent"
+        gn = h == "gnosh"
         out.append("| %s | %d/%d | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (
             h, passed, len(rs), s(med([r["wall_s"] for r in rs])),
             med([r["requests"] for r in rs]),

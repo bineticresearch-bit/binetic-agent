@@ -8,19 +8,19 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// loadScriptErr runs a binetic-agentrc script expecting it to be rejected, and
+// loadScriptErr runs a crushrc script expecting it to be rejected, and
 // returns the error.
 func loadScriptErr(t *testing.T, script string) error {
 	t.Helper()
-	path := filepath.Join(t.TempDir(), "binetic-agentrc")
+	path := filepath.Join(t.TempDir(), "crushrc")
 	_, err := LoadShellConfig(t.Context(), path, []byte(script))
 	require.Error(t, err, "the script should have been rejected")
 	return err
 }
 
 // The loader refuses to start on an unknown hook event, so writing one
-// here would hand the user a binetic-agentrc that breaks Binetic Agent on next launch —
-// a startup failure produced by a command Binetic Agent itself offers. Fail on
+// here would hand the user a crushrc that breaks Crush on next launch —
+// a startup failure produced by a command Crush itself offers. Fail on
 // the line that is actually wrong instead.
 func TestHookAddRejectsUnknownEvent(t *testing.T) {
 	t.Parallel()
@@ -100,7 +100,7 @@ func TestHookAddAllowsMatcherOnPreToolUse(t *testing.T) {
 func TestHookAddRejectionWritesNothing(t *testing.T) {
 	t.Parallel()
 
-	path := filepath.Join(t.TempDir(), "binetic-agentrc")
+	path := filepath.Join(t.TempDir(), "crushrc")
 	out, err := LoadShellConfig(t.Context(), path, []byte(`hook add banana --command "echo hi"`))
 	require.Error(t, err)
 

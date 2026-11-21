@@ -14,12 +14,12 @@ import (
 
 	"charm.land/catwalk/pkg/catwalk"
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/gnovm"
-	gnovmtools "github.com/charmbracelet/binetic_agent/internal/gnovm/tools"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/gnovm"
+	gnovmtools "github.com/charmbracelet/crush/internal/gnovm/tools"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/pubsub"
 	"github.com/stretchr/testify/require"
 )
 
@@ -229,7 +229,7 @@ func contents(msgs []fantasy.Message) []fantasy.Message {
 }
 
 // providerSees is msgs as a provider is sent them: without their provider
-// options, and without the metadata a tool result keeps for binetic-agent alone
+// options, and without the metadata a tool result keeps for gnosh alone
 // (ClientMetadata), which the turn that made a call holds and a later
 // turn, reading the result back, does not.
 func providerSees(msgs []fantasy.Message) []fantasy.Message {
@@ -282,7 +282,7 @@ func newFramesScenario(t *testing.T, replies map[string]memReply, steps [][]fant
 	return &framesScenario{t: t, env: env, frames: frames, mem: mem, model: model, agent: agent, sessID: sess.ID, notices: notices}
 }
 
-// run is one turn, as `binetic-agent run` sends one (no title is generated).
+// run is one turn, as `gnosh run` sends one (no title is generated).
 func (s *framesScenario) run(prompt string) {
 	s.t.Helper()
 	_, err := s.agent.Run(s.t.Context(), SessionAgentCall{SessionID: s.sessID, Prompt: prompt, NonInteractive: true})

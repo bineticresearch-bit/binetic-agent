@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -16,7 +16,7 @@ package gnovm
 
 func turnHeld(dir, session string) bool { return false }
 
-// turnLocksKnown is false: no turn lock can be read, so binetic-agent cannot tell
+// turnLocksKnown is false: no turn lock can be read, so gnosh cannot tell
 // which sessions work, and mem keeps every hold (gnomem's workKnown).
 const turnLocksKnown = false
 

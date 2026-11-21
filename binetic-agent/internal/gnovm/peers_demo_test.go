@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -33,7 +33,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// The demonstration of peers (PARALLEL.md, demonstration A): N binetic-agent-like
+// The demonstration of peers (PARALLEL.md, demonstration A): N gnosh-like
 // processes work one tree in one mem at once, each running the loop a model
 // would (Next; work; Pop with what came of it; Next), and finish the same
 // tree as one process does, faster. Each peer is this test binary started
@@ -42,16 +42,16 @@ import (
 
 // peerEnv marks a child: it runs TestPeerChild only, and never starts
 // another.
-const peerEnv = "BINETIC_AGENT_PEER_CHILD"
+const peerEnv = "GNOSH_PEER_CHILD"
 
 // peerWork is how long todo id's own work takes, long beside a mem call (a
 // few tens of ms) and a peer's start (about 600 ms), as a model's work is: a
 // leaf 1 to 2.6 s, by its name; a shape and the build 400 ms; the notes
 // 1.2 s; the task 300 ms.
 func peerWork(id string) time.Duration {
-	// BINETIC_AGENT_PEER_WORK (a duration) makes every todo's work that long: the
+	// GNOSH_PEER_WORK (a duration) makes every todo's work that long: the
 	// swarm's control (peers_swarm_test.go).
-	if d, err := time.ParseDuration(os.Getenv("BINETIC_AGENT_PEER_WORK")); err == nil {
+	if d, err := time.ParseDuration(os.Getenv("GNOSH_PEER_WORK")); err == nil {
 		return d
 	}
 	name := stepName(id)
@@ -86,8 +86,8 @@ func TestPeerChild(t *testing.T) {
 	if os.Getenv(peerEnv) != "1" {
 		t.Skip("a peer process only")
 	}
-	dir, project, session, role := os.Getenv("BINETIC_AGENT_PEER_DIR"), os.Getenv("BINETIC_AGENT_PEER_PROJECT"), os.Getenv("BINETIC_AGENT_PEER_SESSION"), os.Getenv("BINETIC_AGENT_PEER_ROLE")
-	logf, err := os.Create(os.Getenv("BINETIC_AGENT_PEER_LOG"))
+	dir, project, session, role := os.Getenv("GNOSH_PEER_DIR"), os.Getenv("GNOSH_PEER_PROJECT"), os.Getenv("GNOSH_PEER_SESSION"), os.Getenv("GNOSH_PEER_ROLE")
+	logf, err := os.Create(os.Getenv("GNOSH_PEER_LOG"))
 	require.NoError(t, err)
 	defer logf.Close()
 	enc := json.NewEncoder(logf)
@@ -111,7 +111,7 @@ func TestPeerChild(t *testing.T) {
 	var stack []string
 	code := "mem.Next()"
 	if role == "planner" {
-		code = "mem.Frame(" + strconv.Quote(os.Getenv("BINETIC_AGENT_PEER_ROOT")) + ").Push()\nmem.Next()"
+		code = "mem.Frame(" + strconv.Quote(os.Getenv("GNOSH_PEER_ROOT")) + ").Push()\nmem.Next()"
 	}
 	for n := 1; ; n++ {
 		// A pop is noted as it is sent: the call it starts may then wait.
@@ -216,8 +216,8 @@ func peersRun(t *testing.T, roles []string) peersOutcome {
 		log := filepath.Join(dir, fmt.Sprintf("peer-%d.log", i))
 		logs = append(logs, log)
 		cmd := exec.CommandContext(t.Context(), os.Args[0], "-test.run=^TestPeerChild$", "-test.timeout=5m")
-		cmd.Env = append(os.Environ(), peerEnv+"=1", "BINETIC_AGENT_PEER_DIR="+dir, "BINETIC_AGENT_PEER_PROJECT="+project,
-			fmt.Sprintf("BINETIC_AGENT_PEER_SESSION=peer%d", i+1), "BINETIC_AGENT_PEER_ROLE="+role, "BINETIC_AGENT_PEER_ROOT="+root, "BINETIC_AGENT_PEER_LOG="+log)
+		cmd.Env = append(os.Environ(), peerEnv+"=1", "GNOSH_PEER_DIR="+dir, "GNOSH_PEER_PROJECT="+project,
+			fmt.Sprintf("GNOSH_PEER_SESSION=peer%d", i+1), "GNOSH_PEER_ROLE="+role, "GNOSH_PEER_ROOT="+root, "GNOSH_PEER_LOG="+log)
 		out := &strings.Builder{}
 		cmd.Stdout, cmd.Stderr = out, out
 		require.NoError(t, cmd.Start())
@@ -467,7 +467,7 @@ func TestPeersDemonstration(t *testing.T) {
 		sim := o.simulate(n, o.firstPush(), cost)
 		t.Logf("%d peers %v: %s, %.2fx one peer's; their rule's own schedule %s (%.2fx); bound %s; %d waits; %d peers did work",
 			n, roles, o.wall.Round(time.Millisecond), speedup, sim.Round(time.Millisecond), float64(one.wall)/float64(sim), bound.Round(time.Millisecond), waits, len(sessions))
-		if os.Getenv("BINETIC_AGENT_PEERS_TIMELINE") != "" {
+		if os.Getenv("GNOSH_PEERS_TIMELINE") != "" {
 			for _, e := range o.events {
 				t.Logf("  %6dms %-7s %-4s %s %s", e.At-o.start.UnixMilli(), e.Session, e.Kind, e.Id, e.Waited)
 			}
@@ -567,7 +567,7 @@ func TestPeersKilledHolder(t *testing.T) {
 	require.NoError(t, res.Err, res.Output)
 	log := filepath.Join(dir, "holder.log")
 	cmd := exec.CommandContext(t.Context(), os.Args[0], "-test.run=^TestPeerChild$", "-test.timeout=5m")
-	cmd.Env = append(os.Environ(), peerEnv+"=1", "BINETIC_AGENT_PEER_DIR="+dir, "BINETIC_AGENT_PEER_PROJECT="+project, "BINETIC_AGENT_PEER_SESSION=holder", "BINETIC_AGENT_PEER_ROLE=hold", "BINETIC_AGENT_PEER_LOG="+log)
+	cmd.Env = append(os.Environ(), peerEnv+"=1", "GNOSH_PEER_DIR="+dir, "GNOSH_PEER_PROJECT="+project, "GNOSH_PEER_SESSION=holder", "GNOSH_PEER_ROLE=hold", "GNOSH_PEER_LOG="+log)
 	require.NoError(t, cmd.Start())
 	defer func() { _ = cmd.Process.Kill(); _, _ = cmd.Process.Wait() }()
 	require.Eventually(t, func() bool { b, _ := os.ReadFile(log); return strings.Contains(string(b), `"push"`) }, 30*time.Second, 50*time.Millisecond)

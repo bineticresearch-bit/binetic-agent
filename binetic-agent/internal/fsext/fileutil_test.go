@@ -200,7 +200,7 @@ func TestGlobWithDoubleStar(t *testing.T) {
 	t.Run("respects basic ignore patterns", func(t *testing.T) {
 		testDir := t.TempDir()
 
-		rootIgnore := filepath.Join(testDir, ".binetic-agentignore")
+		rootIgnore := filepath.Join(testDir, ".crushignore")
 
 		require.NoError(t, os.WriteFile(rootIgnore, []byte("*.tmp\nbackup/\n"), 0o644))
 
@@ -275,12 +275,12 @@ func TestGlobSearchesARootOfAnIgnoredName(t *testing.T) {
 	t.Parallel()
 
 	root := filepath.Join(t.TempDir(), ".local")
-	for _, rel := range []string{"tools/binetic-agent.sh", ".git/hook.sh"} {
+	for _, rel := range []string{"tools/gnosh.sh", ".git/hook.sh"} {
 		full := filepath.Join(root, rel)
 		require.NoError(t, os.MkdirAll(filepath.Dir(full), 0o755))
 		require.NoError(t, os.WriteFile(full, []byte("x"), 0o644))
 	}
 	got, _, err := GlobGitignoreAware(t.Context(), "**/*.sh", root, 10)
 	require.NoError(t, err)
-	require.Equal(t, []string{filepath.Join(root, "tools", "binetic-agent.sh")}, got)
+	require.Equal(t, []string{filepath.Join(root, "tools", "gnosh.sh")}, got)
 }

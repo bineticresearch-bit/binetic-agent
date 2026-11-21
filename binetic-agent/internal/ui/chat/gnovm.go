@@ -5,11 +5,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/gnovm"
-	gnovmtools "github.com/charmbracelet/binetic_agent/internal/gnovm/tools"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/gnovm"
+	gnovmtools "github.com/charmbracelet/crush/internal/gnovm/tools"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/ui/styles"
 )
 
 // -----------------------------------------------------------------------------

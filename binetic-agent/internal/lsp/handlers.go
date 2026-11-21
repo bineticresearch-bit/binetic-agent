@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"log/slog"
 
-	"github.com/charmbracelet/binetic_agent/internal/lsp/util"
+	"github.com/charmbracelet/crush/internal/lsp/util"
 	powernap "github.com/charmbracelet/x/powernap/pkg/lsp"
 	"github.com/charmbracelet/x/powernap/pkg/lsp/protocol"
 )
@@ -26,7 +26,7 @@ func HandleWorkDoneProgressCreate(_ context.Context, _ string, _ json.RawMessage
 }
 
 // HandleRegisterCapability answers a server's capability registrations.
-// Binetic Agent does not watch the files a server registers for: it tells
+// Gnosh does not watch the files a server registers for: it tells
 // servers about changes itself (NotifyWorkspaceChange and the open
 // files), so a workspace/didChangeWatchedFiles registration is accepted
 // and dropped.

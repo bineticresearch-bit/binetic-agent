@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/stretchr/testify/require"
 )
 
@@ -103,7 +103,7 @@ func TestRunnerHonoursClaudeCodeBlock(t *testing.T) {
 	result, err := r.Run(context.Background(), EventPreToolUse, "sess", "bash", `{}`)
 	require.NoError(t, err)
 	require.Equal(t, DecisionDeny, result.Decision,
-		"before this, Binetic Agent read Claude Code's block as no opinion and ran the tool")
+		"before this, Crush read Claude Code's block as no opinion and ran the tool")
 	require.Equal(t, "no rm -rf", result.Reason)
 }
 

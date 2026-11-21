@@ -8,18 +8,18 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/shell"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/shell"
+	"github.com/charmbracelet/crush/internal/version"
 )
 
-// loadTimeout bounds a single binetic-agentrc execution. Config loading runs on the
+// loadTimeout bounds a single crushrc execution. Config loading runs on the
 // startup and reload critical paths while the config store's write lock is
 // held, so a script that blocks (a hung command substitution, a stray loop)
 // must not be able to wedge the whole store. The interpreter honors context
 // cancellation, so this deadline reliably interrupts a runaway script.
 const loadTimeout = 30 * time.Second
 
-// LoadShellConfig executes a binetic-agentrc script and returns its config as a
+// LoadShellConfig executes a crushrc script and returns its config as a
 // single JSON object. The script uses config builtins (provider, model, mcp,
 // etc.) that mutate a ConfigBuilder in execution order; the builder is then
 // marshaled to JSON, which the config loader merges with any other config
@@ -42,9 +42,9 @@ func LoadShellConfig(ctx context.Context, path string, src []byte) ([]byte, erro
 	cwd := filepath.Dir(path)
 
 	// Expose the running version so scripts can feature-detect, e.g.
-	// [[ "$BINETIC_AGENT_VERSION" == "devel" ]] or branch on the release; scripts
-	// written before the renames read it as KLASH_VERSION or BINETIC_AGENT_VERSION.
-	env := append(os.Environ(), "BINETIC_AGENT_VERSION="+version.Version, "KLASH_VERSION="+version.Version, "BINETIC_AGENT_VERSION="+version.Version)
+	// [[ "$GNOSH_VERSION" == "devel" ]] or branch on the release; scripts
+	// written before the renames read it as KLASH_VERSION or CRUSH_VERSION.
+	env := append(os.Environ(), "GNOSH_VERSION="+version.Version, "KLASH_VERSION="+version.Version, "CRUSH_VERSION="+version.Version)
 
 	err := shell.Run(runCtx, shell.RunOptions{
 		Command: string(src),

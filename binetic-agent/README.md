@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://binetic-agent.local"><img src="docs/brand/banner.svg" width="100%" alt="Binetic Agent: an AI harness that thinks in Gno"></a>
+  <a href="https://gnosh.ai"><img src="docs/brand/banner.svg" width="100%" alt="Gnosh: an AI harness that thinks in Gno"></a>
 </p>
 
 <p align="center">
@@ -11,12 +11,12 @@
 </p>
 
 <p align="center"><strong>An AI harness that thinks in Gno.</strong><br>
-Binetic Agent is functional AI: the agent's context is a call stack. It runs the <a href="https://github.com/gnolang/gno">Gno</a> VM in the AI harness and keeps the agent's plan, what it found and the facts you gave it in <code>mem</code>, in Gno on your disk. Each step of a task is a frame: when it returns, its work leaves the model's context and its result stays, as a function's locals go when it returns. A new session starts with what is still open and the newest facts, so it picks up where the last one stopped.</p>
+Gnosh is functional AI: the agent's context is a call stack. It runs the <a href="https://github.com/gnolang/gno">Gno</a> VM in the AI harness and keeps the agent's plan, what it found and the facts you gave it in <code>mem</code>, in Gno on your disk. Each step of a task is a frame: when it returns, its work leaves the model's context and its result stays, as a function's locals go when it returns. A new session starts with what is still open and the newest facts, so it picks up where the last one stopped.</p>
 
-<p align="center">Security-first underneath: a fork of Charm's <a href="https://github.com/charmbracelet/binetic_agent">Binetic Agent</a> that closes the doors a coding agent usually leaves open.</p>
+<p align="center">Security-first underneath: a fork of Charm's <a href="https://github.com/charmbracelet/crush">Crush</a> that closes the doors a coding agent usually leaves open.</p>
 
 <p align="center">
-  <a href="https://binetic-agent.local/binetic-agent-demo.mp4"><img src="https://binetic-agent.local/binetic-agent-demo.jpg" width="100%" alt="Binetic Agent in a terminal: click to play a 106-second real run"></a><br>
+  <a href="https://gnosh.ai/gnosh-demo.mp4"><img src="https://gnosh.ai/gnosh-demo.jpg" width="100%" alt="Gnosh in a terminal: click to play a 106-second real run"></a><br>
   <sub>A real run, recorded in Ghostty, with the waiting cut short: Qwen3.8 27B on a home AI box works out the backoff in Gno, plans a task in <code>mem</code>, and a new session finishes it. Click to play.</sub>
 </p>
 
@@ -27,7 +27,7 @@ Binetic Agent is functional AI: the agent's context is a call stack. It runs the
   <a href="GNOMEM.md">GNOMEM</a> ·
   <a href="#security-first">Security first</a> ·
   <a href="#coming-from-claude-code">Coming from Claude Code</a> ·
-  <a href="#what-else-changed-from-binetic_agent">What else changed</a> ·
+  <a href="#what-else-changed-from-crush">What else changed</a> ·
   <a href="#built-for-gnoland">Built for gno.land</a> ·
   <a href="#installation">Installation</a>
 </p>
@@ -40,7 +40,7 @@ Binetic Agent is functional AI: the agent's context is a call stack. It runs the
 <p align="center"><em>“Yo dawg, I heard you like Go, so I put Go in your Go
 and slapped it onto Qwen, so it can run Go while it writes Go.”</em></p>
 
-Binetic Agent is a fork of Charm's [Binetic Agent](https://github.com/charmbracelet/binetic_agent):
+Gnosh is a fork of Charm's [Crush](https://github.com/charmbracelet/crush):
 the same terminal UI, sessions, LSP and MCP support, and any model you like,
 from a hosted API to one running on your own machine. On top of that:
 
@@ -48,13 +48,13 @@ from a hosted API to one running on your own machine. On top of that:
   done is cut from the model's context with its result kept, so finished work
   never piles up, and a long task needs no compaction to survive it:
   [frames](#frames-no-more-compaction).
-- **A swarm on one plan.** Binetic Agent sessions in one project share one `mem`:
+- **A swarm on one plan.** Gnosh sessions in one project share one `mem`:
   one plans the work, the others take its free todos, each once, under
   mem's lock. On a server with memory to spare they run side by side for
   little more than the cost of one: six sessions on one 48 GB GPU did a
-  nine-package job 1.8x faster than Binetic Agent and 2.7x faster than one Binetic Agent
+  nine-package job 1.8x faster than Crush and 2.7x faster than one Gnosh
   session: [the swarm](#a-swarm-on-one-plan).
-- **Thinks in Gno.** The Gno VM runs inside Binetic Agent, and the agent works an
+- **Thinks in Gno.** The Gno VM runs inside Gnosh, and the agent works an
   answer out in a machine instead of estimating it:
   [the machines underneath](#thinks-in-gno-the-machines-underneath).
 - **Plans in Gno.** A task is a todo in `mem` with the todos under it. A todo
@@ -71,7 +71,7 @@ from a hosted API to one running on your own machine. On top of that:
   web page or command output are defused before the model reads them.
 - **The web reader can't read your files.** The sub-agent that reads web pages
   for it can open only the pages it fetched.
-- **Mistakes fail closed.** A misspelt guard stops Binetic Agent instead of being
+- **Mistakes fail closed.** A misspelt guard stops Gnosh instead of being
   ignored, and a check that cannot run holds the work up instead of waving it
   through.
 - **Speaks Claude Code.** Its flags and its hooks.
@@ -84,7 +84,7 @@ from a hosted API to one running on your own machine. On top of that:
 ## Frames: no more compaction
 
 A model's context fills with everything it read and ran, until a compaction
-throws most of it away and the task limps on from a summary. Binetic Agent works a
+throws most of it away and the task limps on from a summary. Gnosh works a
 task as a call stack instead. Each todo is a frame: the agent enters it
 (`mem.Push`), works, and leaves it with a result (`mem.Pop("what came of
 it")`), and from then on everything between the push and the pop, the files
@@ -104,13 +104,13 @@ mem.Todo("rename the project").Push()   // stack: rename-project · tree: rename
 mem.Todo("rename it in the code")       // stack: rename-project · tree: rename-project › rename-code
 mem.Todo("rename it in the tests")      // stack: rename-project · tree: rename-project › rename-code, rename-tests
 mem.Next()                              // stack: rename-project › rename-code
-mem.Pop("go.mod and main.go say binetic-agent") // stack: rename-project · rename-code is done; its work leaves the context
+mem.Pop("go.mod and main.go say gnosh") // stack: rename-project · rename-code is done; its work leaves the context
 mem.Next()                              // stack: rename-project › rename-tests
 ```
 
 So a long task runs with the context holding the plan, the results so far and
 the present todo's work, however many todos there are. And when the work
-outgrows the context before a todo is done, Binetic Agent slides instead of
+outgrows the context before a todo is done, Gnosh slides instead of
 compacting: the oldest rounds leave the context, those before the first todo
 first, since mem holds the plan, the results so far and the thoughts, and the
 agent is told so. A summary is made only with nothing to slide. In the model server's log of
@@ -119,18 +119,18 @@ the whole 20K-token conversation, and the requests after it were back to a
 few hundred each: the cache survived the cut.
 
 In a real run on 31 October 2026, the second session of the rename below,
-each pop's result ends with Binetic Agent's own line on what left the context (shown
+each pop's result ends with Gnosh's own line on what left the context (shown
 as it happened; the replayed calls are under
 [what the agent runs](#what-the-agent-runs)):
 
 ```go
-mem.Frame("klash-to-binetic-agent-rename/binetic-agent-readme-rename").Push()
-// in `klash-to-binetic-agent-rename/binetic-agent-readme-rename` "rename klash to binetic-agent in README.md": do it now, with your tools; once what they return shows it done, pop it with that and what the next todo needs. …
+mem.Frame("klash-to-gnosh-rename/gnosh-readme-rename").Push()
+// in `klash-to-gnosh-rename/gnosh-readme-rename` "rename klash to gnosh in README.md": do it now, with your tools; once what they return shows it done, pop it with that and what the next todo needs. …
 // … the README read, edited and searched; then
-mem.Pop("README.md fully renamed klash→binetic-agent (title, prose, build/usage snippet, config file mentions incl. binetic-agent.toml and binetic-agent.example.toml); case-insensitive grep for klash finds nothing")
-// done `klash-to-binetic-agent-rename/binetic-agent-readme-rename` "rename klash to binetic-agent in README.md" → README.md fully renamed klash→binetic-agent (title, prose, build/usage snippet, config file mentions incl. binetic-agent.toml and binetic-agent.example.toml); case-insensitive grep for klash finds nothing
-// next: `klash-to-binetic-agent-rename/binetic-agent-build-output-rename` "rename the build output klash to binetic-agent in the Makefile": mem.Frame("klash-to-binetic-agent-rename/binetic-agent-build-output-rename").Push()
-// Everything since you entered `klash-to-binetic-agent-rename/binetic-agent-readme-rename` was removed from your context: this result stays; the user still sees all of it. In it you edited README.md. Your reads inside it are forgotten: view a file before you edit it.
+mem.Pop("README.md fully renamed klash→gnosh (title, prose, build/usage snippet, config file mentions incl. gnosh.toml and gnosh.example.toml); case-insensitive grep for klash finds nothing")
+// done `klash-to-gnosh-rename/gnosh-readme-rename` "rename klash to gnosh in README.md" → README.md fully renamed klash→gnosh (title, prose, build/usage snippet, config file mentions incl. gnosh.toml and gnosh.example.toml); case-insensitive grep for klash finds nothing
+// next: `klash-to-gnosh-rename/gnosh-build-output-rename` "rename the build output klash to gnosh in the Makefile": mem.Frame("klash-to-gnosh-rename/gnosh-build-output-rename").Push()
+// Everything since you entered `klash-to-gnosh-rename/gnosh-readme-rename` was removed from your context: this result stays; the user still sees all of it. In it you edited README.md. Your reads inside it are forgotten: view a file before you edit it.
 ```
 
 [GNOMEM](GNOMEM.md#frames) has the design: what a frame holds, what a thought
@@ -142,50 +142,50 @@ A model server with memory to spare runs several requests at once for
 little more than the cost of one: on a 48 GB RTX 6000 Ada serving Qwen 3.8
 27B with vLLM, one request streamed 30 tokens a second and eight at once
 streamed 218 in all, 27 each. A coding session uses one of those streams.
-Binetic Agent sessions in one project share one `mem`, so several of them can work
+Gnosh sessions in one project share one `mem`, so several of them can work
 one plan: each takes a free todo with `mem.Next()` under mem's lock, none
 takes a todo twice, and one with nothing free waits on mem instead of
 polling.
 
-To run one, give binetic-agent the task in one terminal and say others will help:
+To run one, give gnosh the task in one terminal and say others will help:
 
 ```
-Two more binetic-agent sessions will work on this with you. First plan it in mem,
+Two more gnosh sessions will work on this with you. First plan it in mem,
 with the todos that do not depend on each other under .Parallel().
 ```
 
-Once it has planned, open binetic-agent in the same project in more terminals and
+Once it has planned, open gnosh in the same project in more terminals and
 tell each: `Help with the plan in mem: take todos with mem.Next() until none
 are left.` [bench/run.sh](bench/run.sh) does the same unattended
-(`SWARM=6 bench/run.sh binetic-agent-swarm algos 1`).
+(`SWARM=6 bench/run.sh gnosh-swarm algos 1`).
 
 Measured on that server, each harness alone on it in turn, on a job of nine
 small Go packages with a test suite each (every run passed):
 
 | harness | sessions | time | model requests |
 |---|---|---|---|
-| Binetic Agent | 6 | **312 s** | 108 |
-| Binetic Agent | 1 | 550 s | 13 |
-| Binetic Agent | 3 | 692 s | 107 |
-| Binetic Agent | 1 | 850 s | 30 |
+| Gnosh | 6 | **312 s** | 108 |
+| Crush | 1 | 550 s | 13 |
+| Gnosh | 3 | 692 s | 107 |
+| Gnosh | 1 | 850 s | 30 |
 | Codex | 1 | 1,240 s | 21 |
 
-Binetic Agent is quick alone because it batches, writing several packages in one
-reply, where a Binetic Agent session takes a step a reply; three Binetic Agent sessions did
+Crush is quick alone because it batches, writing several packages in one
+reply, where a Gnosh session takes a step a reply; three Gnosh sessions did
 not catch it, six did. How it was measured, and the other results:
 [bench/RESULTS.md](bench/RESULTS.md).
 
 ## Memory that runs
 
 A model forgets. Each session starts empty, and a compaction throws away most
-of what came before. Binetic Agent gives the agent `mem`, kept in Gno on your disk
+of what came before. Gnosh gives the agent `mem`, kept in Gno on your disk
 with no size limit: its todos and the todos under them, what it tried and
 found, what waits on you, and facts. It is typed data rather than a page of
 notes, and the agent asks it questions instead of re-reading it. [GNOMEM](GNOMEM.md) has the design and real runs.
 
 ### A todo that outlives the session
 
-> **You:** Rename the project from klash to binetic-agent everywhere: the code, the
+> **You:** Rename the project from klash to gnosh everywhere: the code, the
 > tests, the README, the Makefile and the config example. Plan it as todos
 > and do the first one now; we'll carry on in another session. It's done
 > when nothing in the project mentions klash and `go test ./...` passes.
@@ -252,14 +252,14 @@ reminder for the next session, not an alarm: nothing fires at a time of day.
 you what mem holds. `/mem find` searches it, `/mem log` lists every change
 with who made it, `/mem undo` takes one back, and `/mem redact` takes a
 secret's exact text out of mem and out of its history. From a terminal,
-`binetic-agent mem` (and `binetic-agent mem show`, `find` and `log`) prints the same with no
+`gnosh mem` (and `gnosh mem show`, `find` and `log`) prints the same with no
 model, not even a provider set up.
 
-Binetic Agent also speaks up unasked. As a session starts, it tells you in one line
+Gnosh also speaks up unasked. As a session starts, it tells you in one line
 what is due and what waits on you, as in
 `mem waiting on you: "which day suits you for the release?" (release-v2/which-day-suits-you)`,
 whether or not the model brings it up. And when a session sets, changes or
-removes a rule, which every later session follows as yours, Binetic Agent warns you
+removes a rule, which every later session follows as yours, Gnosh warns you
 and says how to undo it.
 [GNOMEM](GNOMEM.md#yours-to-see-and-change) has a whole session of it, which
 the tests replay.
@@ -269,54 +269,54 @@ the tests replay.
 These are calls like the ones the agent made in the real runs above, replayed
 on a fresh project in one session; under each call, as comments, what mem
 answered. The agent sends each call as the code of a `gnovm_run` tool call to
-the VM named mem. A test replays them against every change to Binetic Agent, so they
+the VM named mem. A test replays them against every change to Gnosh, so they
 stay true. The task:
 
 ```go mem
 mem.Show()
 // mem is empty: mem.Todo("what to get done") adds a todo, and mem.Fact("cmd/test", "…") keeps a fact
-r := mem.Todo("rename the project from klash to binetic-agent")
+r := mem.Todo("rename the project from klash to gnosh")
 r.Todo("rename it in the code and the Makefile")
 r.Todo("rename it in the tests")
 r.Todo("rename it in the README and the config example")
 r.Todo("verify that nothing says klash and the tests pass")
-// added `rename-project-klash-binetic-agent` "rename the project from klash to binetic-agent"
-// added `rename-project-klash-binetic-agent/rename-code-makefile` "rename it in the code and the Makefile"
-// added `rename-project-klash-binetic-agent/rename-tests` "rename it in the tests"
-// added `rename-project-klash-binetic-agent/rename-readme-config-example` "rename it in the README and the config example"
-// added `rename-project-klash-binetic-agent/verify-nothing-says-klash` "verify that nothing says klash and the tests pass"
-mem.Frame("rename-project-klash-binetic-agent").Push()
+// added `rename-project-klash-gnosh` "rename the project from klash to gnosh"
+// added `rename-project-klash-gnosh/rename-code-makefile` "rename it in the code and the Makefile"
+// added `rename-project-klash-gnosh/rename-tests` "rename it in the tests"
+// added `rename-project-klash-gnosh/rename-readme-config-example` "rename it in the README and the config example"
+// added `rename-project-klash-gnosh/verify-nothing-says-klash` "verify that nothing says klash and the tests pass"
+mem.Frame("rename-project-klash-gnosh").Push()
 mem.Next()
-// in `rename-project-klash-binetic-agent` "rename the project from klash to binetic-agent": its todos are its work, mem.Next() steps into `rename-project-klash-binetic-agent/rename-code-makefile` "rename it in the code and the Makefile"; once they are closed, pop it with what came of them and what the next todo needs. Everything from here until the pop is removed from your context then, what you were told included; what matters after, keep as a thought first. Your result stays, and nothing you did is undone.
-// in `rename-project-klash-binetic-agent/rename-code-makefile` "rename it in the code and the Makefile": do it now, with your tools; once what they return shows it done, pop it with that and what the next todo needs. …
-mem.Pop("go.mod, main.go and the Makefile say binetic-agent; the tests still expect klash")
-// done `rename-project-klash-binetic-agent/rename-code-makefile` "rename it in the code and the Makefile" → go.mod, main.go and the Makefile say binetic-agent; the tests still expect klash
-// next: `rename-project-klash-binetic-agent/rename-tests` "rename it in the tests": mem.Next()
+// in `rename-project-klash-gnosh` "rename the project from klash to gnosh": its todos are its work, mem.Next() steps into `rename-project-klash-gnosh/rename-code-makefile` "rename it in the code and the Makefile"; once they are closed, pop it with what came of them and what the next todo needs. Everything from here until the pop is removed from your context then, what you were told included; what matters after, keep as a thought first. Your result stays, and nothing you did is undone.
+// in `rename-project-klash-gnosh/rename-code-makefile` "rename it in the code and the Makefile": do it now, with your tools; once what they return shows it done, pop it with that and what the next todo needs. …
+mem.Pop("go.mod, main.go and the Makefile say gnosh; the tests still expect klash")
+// done `rename-project-klash-gnosh/rename-code-makefile` "rename it in the code and the Makefile" → go.mod, main.go and the Makefile say gnosh; the tests still expect klash
+// next: `rename-project-klash-gnosh/rename-tests` "rename it in the tests": mem.Next()
 mem.Show()
 // mem: 1 todo open
 // todos:
-//   [ ] `rename-project-klash-binetic-agent` "rename the project from klash to binetic-agent" (1/4 done · this session · just now · held by this session, just now)
-//     [x] `rename-project-klash-binetic-agent/rename-code-makefile` "rename it in the code and the Makefile" → go.mod, main.go and the Makefile say binetic-agent; the tests still expect klash
-//     [ ] `rename-project-klash-binetic-agent/rename-tests` "rename it in the tests"  ← next
-//     [ ] `rename-project-klash-binetic-agent/rename-readme-config-example` "rename it in the README and the config example"
-//     [ ] `rename-project-klash-binetic-agent/verify-nothing-says-klash` "verify that nothing says klash and the tests pass"
+//   [ ] `rename-project-klash-gnosh` "rename the project from klash to gnosh" (1/4 done · this session · just now · held by this session, just now)
+//     [x] `rename-project-klash-gnosh/rename-code-makefile` "rename it in the code and the Makefile" → go.mod, main.go and the Makefile say gnosh; the tests still expect klash
+//     [ ] `rename-project-klash-gnosh/rename-tests` "rename it in the tests"  ← next
+//     [ ] `rename-project-klash-gnosh/rename-readme-config-example` "rename it in the README and the config example"
+//     [ ] `rename-project-klash-gnosh/verify-nothing-says-klash` "verify that nothing says klash and the tests pass"
 mem.Next()
-// in `rename-project-klash-binetic-agent/rename-tests` "rename it in the tests": do it now, with your tools; once what they return shows it done, pop it with that and what the next todo needs. …
-mem.Pop("main_test.go expects binetic-agent in the usage line and the greeting")
+// in `rename-project-klash-gnosh/rename-tests` "rename it in the tests": do it now, with your tools; once what they return shows it done, pop it with that and what the next todo needs. …
+mem.Pop("main_test.go expects gnosh in the usage line and the greeting")
 mem.Next()
-// done `rename-project-klash-binetic-agent/rename-tests` "rename it in the tests" → main_test.go expects binetic-agent in the usage line and the greeting
-// in `rename-project-klash-binetic-agent/rename-readme-config-example` "rename it in the README and the config example": do it now, with your tools; once what they return shows it done, pop it with that and what the next todo needs. …
-mem.Pop("README says binetic-agent; klash.example.toml is now binetic-agent.example.toml")
+// done `rename-project-klash-gnosh/rename-tests` "rename it in the tests" → main_test.go expects gnosh in the usage line and the greeting
+// in `rename-project-klash-gnosh/rename-readme-config-example` "rename it in the README and the config example": do it now, with your tools; once what they return shows it done, pop it with that and what the next todo needs. …
+mem.Pop("README says gnosh; klash.example.toml is now gnosh.example.toml")
 mem.Next()
-// done `rename-project-klash-binetic-agent/rename-readme-config-example` "rename it in the README and the config example" → README says binetic-agent; klash.example.toml is now binetic-agent.example.toml
-// in `rename-project-klash-binetic-agent/verify-nothing-says-klash` "verify that nothing says klash and the tests pass": do it now, with your tools; once what they return shows it done, pop it with that and what the next todo needs. …
-mem.Pop("grep finds no klash; go test ./... → ok binetic-agent 0.004s")
+// done `rename-project-klash-gnosh/rename-readme-config-example` "rename it in the README and the config example" → README says gnosh; klash.example.toml is now gnosh.example.toml
+// in `rename-project-klash-gnosh/verify-nothing-says-klash` "verify that nothing says klash and the tests pass": do it now, with your tools; once what they return shows it done, pop it with that and what the next todo needs. …
+mem.Pop("grep finds no klash; go test ./... → ok gnosh 0.004s")
 mem.Next()
-// done `rename-project-klash-binetic-agent/verify-nothing-says-klash` "verify that nothing says klash and the tests pass" → grep finds no klash; go test ./... → ok binetic-agent 0.004s
-// no next todo: `rename-project-klash-binetic-agent` has no open todo: pop it with its result.
-mem.Pop("klash is binetic-agent everywhere: code, Makefile, tests, README, config; go test ./... → ok")
-// done `rename-project-klash-binetic-agent` "rename the project from klash to binetic-agent" → klash is binetic-agent everywhere: code, Makefile, tests, README, config; go test ./... → ok
-// That closes `rename-project-klash-binetic-agent`, the whole plan: its work is done and stays done, though it is out of your context now. Tell the user what came of it from the results above.
+// done `rename-project-klash-gnosh/verify-nothing-says-klash` "verify that nothing says klash and the tests pass" → grep finds no klash; go test ./... → ok gnosh 0.004s
+// no next todo: `rename-project-klash-gnosh` has no open todo: pop it with its result.
+mem.Pop("klash is gnosh everywhere: code, Makefile, tests, README, config; go test ./... → ok")
+// done `rename-project-klash-gnosh` "rename the project from klash to gnosh" → klash is gnosh everywhere: code, Makefile, tests, README, config; go test ./... → ok
+// That closes `rename-project-klash-gnosh`, the whole plan: its work is done and stays done, though it is out of your context now. Tell the user what came of it from the results above.
 ```
 
 The agent looked at mem, planned the task as a todo with the work under it,
@@ -399,14 +399,14 @@ Qwen thinking, as it does by default, it printed every wait in a machine and
 got 111 s every time; with its thinking turned off it was right in 4 runs of
 5, and the one miss ran its loop one wait short.
 
-Binetic Agent holds the model to its work: when a loop in the scratch machine prints
+Gnosh holds the model to its work: when a loop in the scratch machine prints
 only its result, a note under the output says so: "only the loop's result was
 printed: if your answer gives its terms or a breakdown, print them too, run it
 again, and give them as printed". Over 28 scored runs of this question on 30
 October, the answer was right in 18 of 18 when the machine printed every
 term, and in 2 of 10 when it showed one line.
 
-`mem` is one machine among many. Binetic Agent carries the GnoVM, gno.land's
+`mem` is one machine among many. Gnosh carries the GnoVM, gno.land's
 interpreter for its Go dialect, and runs named virtual machines in it for the
 agent:
 
@@ -419,15 +419,15 @@ agent:
   whole program; a program with `package main` and `func main` runs fresh each
   time, like `go run`.
 - **Persistence when you want it.** A persistent machine keeps its state on
-  disk across restarts of Binetic Agent, as a journal of the calls that succeeded,
-  which another Binetic Agent on the same project catches up with. Other machines last
-  as long as the Binetic Agent process.
-- **Memory, managed.** Binetic Agent reads how much memory the host can give, cgroup
+  disk across restarts of Gnosh, as a journal of the calls that succeeded,
+  which another Gnosh on the same project catches up with. Other machines last
+  as long as the Gnosh process.
+- **Memory, managed.** Gnosh reads how much memory the host can give, cgroup
   limits included, keeps the machines within a budget, and evicts the least
   recently used to make room for a large task, rebuilding them from their
   journals when they are next used.
 - **Out of harm's way.** The machines run in a worker process of their own,
-  which the out-of-memory killer takes first, and which Binetic Agent restarts if it
+  which the out-of-memory killer takes first, and which Gnosh restarts if it
   dies.
 
 The agent has four tools for them:
@@ -444,7 +444,7 @@ The agent has four tools for them:
 The design, and every review of it, is in
 [internal/gnovm/DESIGN.md](internal/gnovm/DESIGN.md).
 
-This part of Binetic Agent is under the GNO Network General Public License, with
+This part of Gnosh is under the GNO Network General Public License, with
 Additional Terms (Strong Attribution): see
 [internal/gnovm/LICENSE.md](internal/gnovm/LICENSE.md). Built on
 [gno.land](https://gno.land).
@@ -453,22 +453,22 @@ Additional Terms (Strong Attribution): see
 
 ### Nothing phones home
 
-Upstream Binetic Agent talks to Charm from its first start: usage metrics to its
+Upstream Crush talks to Charm from its first start: usage metrics to its
 analytics service, the provider catalog from its servers, and a release check
-on GitHub. Binetic Agent does none of that unless you ask. With a fresh config, the
+on GitHub. Gnosh does none of that unless you ask. With a fresh config, the
 only traffic is to the model provider you chose.
 
-| Upstream Binetic Agent does this unless switched off           | Binetic Agent does it only when turned on                                             |
+| Upstream Crush does this unless switched off           | Gnosh does it only when turned on                                             |
 | ------------------------------------------------------ | ----------------------------------------------------------------------------- |
-| Sends usage metrics to Charm                           | The first-run question, `option metrics true`, or `BINETIC_AGENT_DISABLE_METRICS=0` — and only ever to your own collector |
-| Fetches the provider catalog from Charm's servers      | `option provider-auto-update true`, or `BINETIC_AGENT_DISABLE_PROVIDER_AUTO_UPDATE=0` |
-| Checks GitHub for a newer release of upstream Binetic Agent    | `BINETIC_AGENT_DISABLE_UPDATE_CHECK=0`                                                |
+| Sends usage metrics to Charm                           | The first-run question, `option metrics true`, or `GNOSH_DISABLE_METRICS=0` — and only ever to your own collector |
+| Fetches the provider catalog from Charm's servers      | `option provider-auto-update true`, or `GNOSH_DISABLE_PROVIDER_AUTO_UPDATE=0` |
+| Checks GitHub for a newer release of upstream Crush    | `GNOSH_DISABLE_UPDATE_CHECK=0`                                                |
 
-The first time you run Binetic Agent on a machine it asks, once, whether to allow
+The first time you run Gnosh on a machine it asks, once, whether to allow
 anonymous analytics. Pressing Enter declines, and the answer is remembered, so
 nothing is sent until you say yes and nothing goes to Charm either way. Without
-the catalog fetch, Binetic Agent uses the list built into the binary, and
-`binetic-agent update-providers` refreshes it by hand. `DO_NOT_TRACK=1` keeps metrics
+the catalog fetch, Gnosh uses the list built into the binary, and
+`gnosh update-providers` refreshes it by hand. `DO_NOT_TRACK=1` keeps metrics
 off whatever else is set. [Metrics](#metrics) is the detail.
 
 Finding by meaning is off the same way: until you name an embedding server
@@ -477,20 +477,20 @@ mem's text and the prompts you type go to that server alone.
 
 ### A cloned repository runs nothing until you trust it
 
-A project's own settings can run code. Its `binetic-agentrc` is a shell script that
-runs as Binetic Agent starts, and its `binetic-agent.json` can add hooks, start MCP and LSP
+A project's own settings can run code. Its `gnoshrc` is a shell script that
+runs as Gnosh starts, and its `gnosh.json` can add hooks, start MCP and LSP
 servers, let tools run without asking, and point a provider's `base_url`, with
 your API key, at someone else's server. Even a plain-looking value can run
-code: Binetic Agent expands an `env` value, a provider's key and address and an MCP
+code: Gnosh expands an `env` value, a provider's key and address and an MCP
 server's address through the shell as it reads them, so a `$(...)` in one
-runs then. Upstream Binetic Agent used them all the moment it started, so starting it
+runs then. Upstream Crush used them all the moment it started, so starting it
 in a repository you had just cloned ran the stranger's code with your
 permissions.
 
-Binetic Agent asks first, as Claude Code does. The first time you start it in a folder
+Gnosh asks first, as Claude Code does. The first time you start it in a folder
 whose settings would do any of that, it asks "Do you trust the files in this
 folder?", names the folder and lists what its settings would do: the
-`binetic-agentrc` that would run, each hook, the servers, the tools let run without
+`gnoshrc` that would run, each hook, the servers, the tools let run without
 asking, the providers. Under that it says in plain words what could go wrong
 if whoever wrote them meant harm, naming only the harms these settings could
 do: that the code would run as you and could steal your SSH and wallet keys,
@@ -498,12 +498,12 @@ wipe your files or plant a program that stays; that a line hidden in a file
 could get the agent to run what the settings allow without asking you; that
 their model provider would see all the agent reads and could take your API
 key. Yes remembers the folder. No starts the session with your own settings
-only, and Binetic Agent asks again next time.
+only, and Gnosh asks again next time.
 
 Until you say yes:
 
-- None of the project's `binetic-agentrc` files runs.
-- Of its `binetic-agent.json` files, and the one in its `.binetic-agent/` folder, only what
+- None of the project's `gnoshrc` files runs.
+- Of its `gnosh.json` files, and the one in its `.gnosh/` folder, only what
   takes something away from the agent applies: `permissions.deny`,
   `options.disabled_tools` and `options.disabled_skills`. Everything else
   waits: hooks, MCP and LSP servers, `permissions.allowed_tools` and `allow`,
@@ -516,20 +516,20 @@ Until you say yes:
   clone) can name in its own git config a program that git runs whenever it
   merely reads the repository: `core.fsmonitor` runs on every `git status`,
   and a filter, a diff driver, a signature checker or a `post-index-change`
-  hook can too. Where it does, Binetic Agent shows the agent no git status, and the
+  hook can too. Where it does, Gnosh shows the agent no git status, and the
   agent's git commands ask first, saying why. Your own git config is not the
   repository's and is not looked at.
-- A sessions database in the project's own `.binetic-agent/` (a repository can carry
-  one) starts none of the MCP servers it turns on, which Binetic Agent would start
+- A sessions database in the project's own `.gnosh/` (a repository can carry
+  one) starts none of the MCP servers it turns on, which Gnosh would start
   even where your own config turns them off; the question lists them.
 - Its `AGENTS.md` and other context files, the skills inside it and its
   custom commands are still read, as text for the model. None of them runs
   anything.
 - Language servers still start as the agent opens files: yours, and those
-  Binetic Agent finds for the project's languages. A few build the project to read
+  Gnosh finds for the project's languages. A few build the project to read
   it, and building runs its code (rust-analyzer runs a Rust crate's build
-  scripts). `option auto-lsp false` in your own `binetic-agentrc` stops the ones
-  Binetic Agent finds.
+  scripts). `option auto-lsp false` in your own `gnoshrc` stops the ones
+  Gnosh finds.
 
 Trusted or not, the agent reads outside the folder only after asking:
 
@@ -544,12 +544,12 @@ Trusted or not, the agent reads outside the folder only after asking:
 
 How to trust a folder, and what counts as one:
 
-- `binetic-agent run` never asks. In a folder not trusted it leaves the project's
+- `gnosh run` never asks. In a folder not trusted it leaves the project's
   settings out and says so in one line on stderr, with how to trust it.
-- `binetic-agent trust [folder]` trusts a folder from the command line and says what
-  its settings now do; `binetic-agent trust --list` lists the trusted folders and
-  `binetic-agent trust --forget [folder]` forgets one. `--trust-folder`, on `binetic-agent` or
-  `binetic-agent run`, trusts the folder for that session without recording it, for
+- `gnosh trust [folder]` trusts a folder from the command line and says what
+  its settings now do; `gnosh trust --list` lists the trusted folders and
+  `gnosh trust --forget [folder]` forgets one. `--trust-folder`, on `gnosh` or
+  `gnosh run`, trusts the folder for that session without recording it, for
   scripts.
 - Trust is kept for a git repository's main checkout, so its worktrees share
   it, or outside a repository for the folder and the folders under it that are
@@ -557,7 +557,7 @@ How to trust a folder, and what counts as one:
   repository's trust by naming it in a `.git` of its own: a worktree shares
   it only when the repository lists that worktree as its own.
 - Your home directory is trusted for one session at a time. The record is
-  Binetic Agent's, in its data directory (`~/.local/share/binetic-agent/trusted-folders.json`),
+  Gnosh's, in its data directory (`~/.local/share/gnosh/trusted-folders.json`),
   never the project's.
 - A folder with no project settings, or none that wait for trust, is not asked
   about.
@@ -566,7 +566,7 @@ How to trust a folder, and what counts as one:
 
 Web pages, command output and server replies can carry a model's own control
 tokens, such as `<|im_start|>` or llama.cpp's media marker, to rewrite the
-conversation from inside a tool result. Binetic Agent defuses them before the model
+conversation from inside a tool result. Gnosh defuses them before the model
 reads them. Tool output is capped by its raw size, so a runaway command cannot
 flood the context.
 
@@ -579,7 +579,7 @@ you let it open cannot redirect it there.
 
 ### Mistakes fail closed
 
-- A hook with a misspelt event name, or a `binetic-agentrc` option Binetic Agent does not
+- A hook with a misspelt event name, or a `gnoshrc` option Gnosh does not
   know, stops it at startup with the names it does know. Upstream ignored
   such a hook, so a misspelt guard simply never ran.
 - A check that cannot run holds the work up instead of passing it. A hook
@@ -588,14 +588,14 @@ you let it open cannot redirect it there.
   "could not evaluate") blocks as a failed check does, and says why. A hook
   that only wants to warn says so with Claude Code's `systemMessage`. Upstream, and Claude Code, let such a hook pass,
   so a check that never ran read as one that passed. See
-  [Could not evaluate](docs/hooks/README.md#could-not-evaluate-binetic-agent-fails-closed).
-- A hook whose answer Binetic Agent cannot read, a misspelt `"Deny"` say, blocks too,
+  [Could not evaluate](docs/hooks/README.md#could-not-evaluate-gnosh-fails-closed).
+- A hook whose answer Gnosh cannot read, a misspelt `"Deny"` say, blocks too,
   and a deny it gave still holds.
 - Your hooks see a helper agent's tool calls too. Upstream did not run them on
   those calls, so a hook that refused to read a key file could be walked
   around by handing the read to a helper (the `agent` tool, or
   `agentic_fetch`).
-- A guard copied from Claude Code also covers the Binetic Agent tools Claude Code has
+- A guard copied from Claude Code also covers the Gnosh tools Claude Code has
   nothing like. A hook on `Edit|Write` also stops `multiedit`, `lsp_rename`
   and `lsp_replace_symbol`, which change files, and `download`, which writes
   one; a hook on `WebFetch` also stops `download` and `x402_fetch`. Before,
@@ -604,16 +604,16 @@ you let it open cannot redirect it there.
   let a download run without asking.
 - A hook that answers Claude Code's `"ask"` puts the call to you, with its
   reason, even when the call would run without asking (yolo, `--allowedTools`,
-  `acceptEdits`); in `binetic-agent run`, where no one can answer, the call is refused.
+  `acceptEdits`); in `gnosh run`, where no one can answer, the call is refused.
   Upstream read `"ask"` as no opinion, so the call ran unasked.
-- A project's `binetic-agent.json` written by another user, with sudo say, stops
-  Binetic Agent and says whose it is and what to do, instead of being skipped without
+- A project's `gnosh.json` written by another user, with sudo say, stops
+  Gnosh and says whose it is and what to do, instead of being skipped without
   a word along with any tools it turned off.
 
 ### What still leaves your machine
 
 - Your prompts, and the files the agent reads, go to the model provider you
-  choose. Point Binetic Agent at a [local model](#local-models) and nothing leaves.
+  choose. Point Gnosh at a [local model](#local-models) and nothing leaves.
 - `fetch`, `download`, `agentic_fetch` and `x402_fetch` reach the sites the
   agent asks for, after asking you. `x402_fetch` also reads the paying account
   from a node of the seller's chain.
@@ -625,30 +625,30 @@ you let it open cannot redirect it there.
 
 Claude Code's names work here too.
 
-| Claude Code                      | Binetic Agent                                              | What it does                                                |
+| Claude Code                      | Gnosh                                              | What it does                                                |
 | -------------------------------- | -------------------------------------------------- | ----------------------------------------------------------- |
-| `claude "…"`                     | `binetic-agent "…"`; `binetic-agent -r <id> "…"` in a session      | Start the TUI with this prompt sent, in a new session or the one resumed |
-| `claude -p "…"`                  | `binetic-agent run "…"`, or `binetic-agent -p "…"`                 | Answer one prompt without the TUI                           |
-| `-p --output-format json`        | `binetic-agent run --output-format json`                   | Print one JSON result at the end                            |
-| `-p --output-format stream-json` | `binetic-agent run --output-format stream-json`            | A JSON line per message and tool result, then the result    |
-| `claude -r <id>`                 | `binetic-agent -s <id>`, or `binetic-agent -r <id>`                | Continue a session by ID                                    |
-| `claude -r`                      | `binetic-agent -r`                                         | Pick a session to continue from a list                      |
-| `claude -c`                      | `binetic-agent -C`                                         | Continue the last session; `-c` sets the working directory |
+| `claude "…"`                     | `gnosh "…"`; `gnosh -r <id> "…"` in a session      | Start the TUI with this prompt sent, in a new session or the one resumed |
+| `claude -p "…"`                  | `gnosh run "…"`, or `gnosh -p "…"`                 | Answer one prompt without the TUI                           |
+| `-p --output-format json`        | `gnosh run --output-format json`                   | Print one JSON result at the end                            |
+| `-p --output-format stream-json` | `gnosh run --output-format stream-json`            | A JSON line per message and tool result, then the result    |
+| `claude -r <id>`                 | `gnosh -s <id>`, or `gnosh -r <id>`                | Continue a session by ID                                    |
+| `claude -r`                      | `gnosh -r`                                         | Pick a session to continue from a list                      |
+| `claude -c`                      | `gnosh -C`                                         | Continue the last session; `-c` sets the working directory |
 | `--fork-session`                 | `--fork-session`, with `-C`, `-r` or `-s`          | Go on in a copy of the session you resume, as `/branch` makes one, and leave the session as it was |
 | `-n "nightly check"`             | `-n "nightly check"`, or `--name`                  | Name the session as `/rename` does: a new one from its start (no title is made for it), the one you resume, or the `--fork-session` copy |
 | `--model sonnet`                 | `-m qwen3.8-27b`, or `--model` (`provider/model` too) | Use this model for the session without saving it; a session you resume does not switch it back to the model it last used |
 | `--dangerously-skip-permissions` | `--yolo`, or `--dangerously-skip-permissions`      | Skip every permission prompt                                |
-| `--permission-mode plan`         | `--permission-mode plan` (or `acceptEdits`, `dontAsk`, `bypassPermissions`) | Start in plan mode; or let edits in the project (not `.git`, shell or tool settings) run without asking; or deny, instead of asking, whatever is not read-only or allowed (`binetic-agent run` then approves nothing else, for scripts and CI); or run everything without asking |
+| `--permission-mode plan`         | `--permission-mode plan` (or `acceptEdits`, `dontAsk`, `bypassPermissions`) | Start in plan mode; or let edits in the project (not `.git`, shell or tool settings) run without asking; or deny, instead of asking, whatever is not read-only or allowed (`gnosh run` then approves nothing else, for scripts and CI); or run everything without asking |
 | `--safe-mode`                    | `--safe-mode`, or `CLAUDE_CODE_SAFE_MODE=1`        | Start with the config's hooks, MCP servers, context files, skills and custom commands off, to troubleshoot a broken one |
 | `--add-dir ../other`            | `--add-dir ../other` (repeatable), or `/add-dir ../other` in a session | Let the agent read another directory without asking         |
 | `--mcp-config ./mcp.json`        | `--mcp-config ./mcp.json` (repeatable), `--strict-mcp-config` | Load MCP servers from a file in `.mcp.json`'s shape, or its JSON; with the second flag, only those |
 | `--allowedTools Read Grep`       | `--allowedTools "Read Grep"`, or `Read,Grep`       | Let these tools run without asking; the file tools still ask before changing `.git`, shell or tool settings, or keys; `"Bash(git diff *)"` lets the commands it matches run, as `permissions.allow` does |
 | `--disallowedTools Bash Edit`    | `--disallowedTools "Bash Edit"`, or `Bash,Edit`    | Do not give the agent these tools; `"Bash(git push *)"` refuses the commands it matches, as `permissions.deny` does |
 | `--tools "Read,Grep"`            | `--tools "Read,Grep"` (`""`: none)                 | Give the agent only these built-in tools                    |
-| `--system-prompt "…"`            | `--system-prompt "…"`, or `--system-prompt-file`   | Use these instructions in place of Binetic Agent's own              |
+| `--system-prompt "…"`            | `--system-prompt "…"`, or `--system-prompt-file`   | Use these instructions in place of Gnosh's own              |
 | `--append-system-prompt "…"`     | `--append-system-prompt "…"`, or its `-file` form  | Add this text at the end of the system prompt               |
-| `claude doctor`                  | `binetic-agent doctor`, or `/doctor` in a session          | Check config, providers, models, hooks and tools            |
-| The workspace trust dialog       | "Do you trust the files in this folder?"; `binetic-agent trust`, `--trust-folder` | Ask before a folder's own settings run or apply: its `binetic-agentrc`, hooks, MCP servers, tools allowed without asking, providers. No starts the session with your settings only. See [A cloned repository runs nothing until you trust it](#a-cloned-repository-runs-nothing-until-you-trust-it) |
+| `claude doctor`                  | `gnosh doctor`, or `/doctor` in a session          | Check config, providers, models, hooks and tools            |
+| The workspace trust dialog       | "Do you trust the files in this folder?"; `gnosh trust`, `--trust-folder` | Ask before a folder's own settings run or apply: its `gnoshrc`, hooks, MCP servers, tools allowed without asking, providers. No starts the session with your settings only. See [A cloned repository runs nothing until you trust it](#a-cloned-repository-runs-nothing-until-you-trust-it) |
 
 - **Hooks** take Claude Code's events and answers: `PreToolUse`,
   `PostToolUse`, `PostToolUseFailure`, `UserPromptSubmit`, `SessionStart`,
@@ -660,7 +660,7 @@ Claude Code's names work here too.
   `hook_event_name`, `permission_mode`, `continue: false`, `systemMessage` and
   `hookSpecificOutput`. Matchers know Claude Code's tool names (`Bash`,
   `Edit|Write`, `mcp__github__.*`), so the `hooks` block of your
-  `~/.claude/settings.json` can be pasted into `binetic-agent.json`; an entry Binetic Agent
+  `~/.claude/settings.json` can be pasted into `gnosh.json`; an entry Gnosh
   cannot run the same way stops it with an error that says so. A
   UserPromptSubmit hook can add context to every prompt or block one, a
   SessionStart hook can add context when a session starts and set the
@@ -668,8 +668,8 @@ Claude Code's names work here too.
   keep the agent working until your tests pass. One difference: a hook that
   could not check blocks here, where Claude Code lets it pass. See
   [docs/hooks](docs/hooks/README.md).
-- **Context and skills.** Binetic Agent reads `CLAUDE.md` and `CLAUDE.local.md`
-  alongside `BINETIC_AGENT.md` and `AGENTS.md`, from the working directory and the
+- **Context and skills.** Gnosh reads `CLAUDE.md` and `CLAUDE.local.md`
+  alongside `GNOSH.md` and `AGENTS.md`, from the working directory and the
   directories above it (and a subdirectory's own, the first time the agent
   reads, writes or edits a file there; one over 40,000 characters comes cut,
   with a note to read the rest), and follows their `@path` imports, as Claude
@@ -678,7 +678,7 @@ Claude Code's names work here too.
   only files you or root own, so a repository or a shared directory cannot put
   your keys or its instructions in the prompt. Skills load from
   `~/.claude/skills` and a project's `.claude/skills`. `--system-prompt` keeps
-  them and the environment, as Claude Code keeps `CLAUDE.md`: only Binetic Agent's own
+  them and the environment, as Claude Code keeps `CLAUDE.md`: only Gnosh's own
   instructions give way. Plan mode keeps its own, with `--append-system-prompt`
   added.
 - **Tools take Claude Code's parameters.** `grep` takes `-A`, `-B` and `-C`
@@ -689,7 +689,7 @@ Claude Code's names work here too.
   background (2 minutes unless set, as in Claude Code), the most a call's
   `timeout` can ask for, and how much of its output the model reads;
   `CLAUDE_CODE_GLOB_TIMEOUT_SECONDS` how long a `glob` may search, and
-  `CLAUDE_CODE_MAX_OUTPUT_TOKENS` how long a reply may run. Binetic Agent
+  `CLAUDE_CODE_MAX_OUTPUT_TOKENS` how long a reply may run. Gnosh
   used to drop these without a word, so a model asking for context
   lines, a list of files or a ten-minute test run got none of them, and one
   viewing from line 120 started at line 121. A file the agent looked at in
@@ -706,7 +706,7 @@ Claude Code's names work here too.
   holds of it: met, the goal is cleared; not met, the todo is reopened with
   the reason as a note, you are told, and the agent goes back to it, or asks
   you when what is missing is yours. `/goal` shows the condition, the todo's
-  name and the last check, and `/goal clear` clears it. `binetic-agent run --goal` does the same in one
+  name and the last check, and `/goal clear` clears it. `gnosh run --goal` does the same in one
   run, says on stderr whether the goal was met, and exits non-zero while it
   is still set.
 - **`/rewind`** (or `/checkpoint`, `/undo`, or Esc twice on an empty prompt)
@@ -715,7 +715,7 @@ Claude Code's names work here too.
   conversation, or both, and keeps the whole conversation as a session of its
   own. Changes made with `bash` are not undone.
 
-## What else changed from Binetic Agent
+## What else changed from Crush
 
 Over a hundred commits, most of them fixing things that broke, hung, lost work
 or failed without saying so. The ones you will notice:
@@ -741,7 +741,7 @@ or failed without saying so. The ones you will notice:
   kept as if it were whole.
 - A helper agent no longer pushes the main conversation out of a local model
   server's cache, which cost minutes each time one finished. One started by
-  `binetic-agent run` gets the run's permission to act, where it used to wait forever
+  `gnosh run` gets the run's permission to act, where it used to wait forever
   for an answer nobody could give.
 - A request to Anthropic is never refused for carrying one cache marker more
   than Anthropic accepts.
@@ -750,7 +750,7 @@ or failed without saying so. The ones you will notice:
 
 **It tells you what happened.**
 
-- `binetic-agent run --verbose` shows every tool call, a sub-agent's included, and
+- `gnosh run --verbose` shows every tool call, a sub-agent's included, and
   marks the ones that failed. Bash results carry their exit code.
 - When an edit is refused because the file changed, when a multi-edit fails,
   or when a grep for code with brackets finds nothing, the agent is told why
@@ -762,9 +762,9 @@ or failed without saying so. The ones you will notice:
   changes it has not seen; any looser match is refused, with word to view the
   file again. `git stash` and `pop`, which put the same content back, do not
   count as a change.
-- A Binetic Agent tool typed as a shell command, `job_kill 077` say, is answered with
+- A Gnosh tool typed as a shell command, `job_kill 077` say, is answered with
   the tool to call.
-- With your model server out of reach, Binetic Agent still starts and says which
+- With your model server out of reach, Gnosh still starts and says which
   provider it could not use and why, instead of claiming that none is
   configured.
 - A language server that is not installed is reported once, and one that
@@ -773,12 +773,12 @@ or failed without saying so. The ones you will notice:
 **It is yours to change.**
 
 - The system prompt and every tool description are files you can edit:
-  `binetic-agent prompt export`, `show`, `path` and `tools`.
-- `binetic-agent session web` serves a local page to read and edit a session's
+  `gnosh prompt export`, `show`, `path` and `tools`.
+- `gnosh session web` serves a local page to read and edit a session's
   messages.
 - `/think` and `/no_think` switch a model's thinking on or off, and it sticks.
 - Prompts typed while the agent works are queued, and <kbd>Up</kbd> edits
-  them in place. A prompt a hook refused, or one typed while Binetic Agent was
+  them in place. A prompt a hook refused, or one typed while Gnosh was
   starting, comes back into the editor, attachments and all.
 
 **The sidebar tracks what you make.**
@@ -787,9 +787,9 @@ or failed without saying so. The ones you will notice:
   deliverables the agent produced — a rendered video to open, a report, a URL
   to share. The agent tags one with the `artifact` tool; re-using a label
   replaces the old entry, so the sidebar shows the latest version of a thing,
-  not every version it went through. Binetic Agent serves each one at a URL on
+  not every version it went through. Gnosh serves each one at a URL on
   `127.0.0.1:7777` (the `artifact_server` option moves it or turns it off).
-  When Binetic Agent runs on another machine, `LocalForward 7777 127.0.0.1:7777` in
+  When Gnosh runs on another machine, `LocalForward 7777 127.0.0.1:7777` in
   your `~/.ssh/config` entry for it brings those URLs to yours.
 - Click an artifact to copy its URL and paste it into your browser. In a
   terminal that shows hyperlinks every line of it is also a link, opened the
@@ -813,7 +813,7 @@ file work, since they keep track of what it has read.
 ## Built for gno.land
 
 [gno.land](https://gno.land) is a smart-contract platform whose contracts,
-called realms, are written in Gno, an interpreted and deterministic Go. Binetic Agent
+called realms, are written in Gno, an interpreted and deterministic Go. Gnosh
 knows it the way it knows Go.
 
 **The gno skill.** A built-in skill loads itself whenever a task touches
@@ -840,7 +840,7 @@ it:
   feed a password in by another door.
 - Key management (`gnokey add`, `delete`, `export` and the rest) is refused
   outright and stays in your own terminal.
-- A run with nobody there to type, such as `binetic-agent run`, has no signing tool at
+- A run with nobody there to type, such as `gnosh run`, has no signing tool at
   all, so the agent prints the command for you to run yourself.
 
 So every signature is one you saw and typed for.
@@ -857,7 +857,7 @@ key, a session, within limits the chain itself enforces:
   sessions, and never add a package.
 
 Realms see the master as the caller, so nothing on the realm side changes.
-Binetic Agent's `gnokey` tool creates and revokes sessions (`gnokey maketx session
+Gnosh's `gnokey` tool creates and revokes sessions (`gnokey maketx session
 create`, `revoke`, `revokeall`) through the same masked prompt. Sign with a
 session key instead of your master key, and the chain bounds the damage when a
 confused or hijacked agent gets you to approve the wrong transaction, or the
@@ -872,23 +872,23 @@ price on a gno.land chain. When you tell the agent to pay, its `x402_fetch`
 tool shows you the price, the payee, the chain and the network fee, and asks
 for the key's password in the masked prompt above. gnokey signs one bank send
 of exactly that price, the seller's facilitator settles it, and the agent gets
-the resource and the transaction hash. Binetic Agent checks the signature before the
+the resource and the transaction hash. Gnosh checks the signature before the
 payment leaves, pays only in ugnot, at most 1 GNOT at a time plus a network
 fee of at most 1 GNOT, and only on local and test chains: x402 on gno.land is
 unaudited, testnet-only work, so mainnet is refused. Pay from a session key and
 the chain caps what it can spend as well. Nothing is paid without you at the
-prompt: a run with nobody there to type has no paying tool. Binetic Agent signs these
+prompt: a run with nobody there to type has no paying tool. Gnosh signs these
 payments with the Go x402 client from
 [gnolang/x402](https://github.com/gnolang/x402).
 
 **gnopls.** Install the [Gno language server](https://github.com/gnoverse/gnopls)
-and Binetic Agent starts it for `.gno` files on its own, as it does gopls for Go.
+and Gnosh starts it for `.gno` files on its own, as it does gopls for Go.
 
 **gno-mcp.** The gno team's MCP server, [gno-mcp](https://mcp.gno.dev), runs in
-Binetic Agent like any other:
+Gnosh like any other:
 
 ```bash
-# binetic-agentrc
+# gnoshrc
 mcp add gnomcp --command gnomcp
 ```
 
@@ -899,28 +899,28 @@ that you sign with gnokey yourself.
 
 ## Installation
 
-Binetic Agent is built from source, with Go 1.27 or newer. From a checkout of this
+Gnosh is built from source, with Go 1.27 or newer. From a checkout of this
 repository:
 
 ```bash
-go build -o binetic-agent .
+go build -o gnosh .
 mkdir -p ~/.local/bin
-install -m 755 binetic-agent ~/.local/bin/binetic-agent   # or anywhere on your PATH
+install -m 755 gnosh ~/.local/bin/gnosh   # or anywhere on your PATH
 ```
 
 On Oracle Solaris, add `-tags sqlite3_dotlk` so the local database uses
 dot-file locking.
 
-Everything named `klash` or `binetic_agent`, Binetic Agent's names before, keeps working. An
-existing `~/.config/binetic_agent`, a project's `.klash/` or `.binetic-agent/`, a `klashrc` or
-`binetic-agentrc`, a `klash.json` or `binetic-agent.json`, `BINETIC_AGENT.md`, and `KLASH_*` and
-`BINETIC_AGENT_*` variables are all still read, and where a `binetic-agent` one exists it wins.
-`binetic-agent dirs` shows which directories are in use.
+Everything named `klash` or `crush`, Gnosh's names before, keeps working. An
+existing `~/.config/crush`, a project's `.klash/` or `.crush/`, a `klashrc` or
+`crushrc`, a `klash.json` or `crush.json`, `CRUSH.md`, and `KLASH_*` and
+`CRUSH_*` variables are all still read, and where a `gnosh` one exists it wins.
+`gnosh dirs` shows which directories are in use.
 
 ## Getting started
 
-Run `binetic-agent` in a project directory and press <kbd>ctrl+l</kbd> to pick a
-model. Binetic Agent works with Anthropic, OpenAI, Google, OpenRouter, Groq and many
+Run `gnosh` in a project directory and press <kbd>ctrl+l</kbd> to pick a
+model. Gnosh works with Anthropic, OpenAI, Google, OpenRouter, Groq and many
 more hosted providers, with any OpenAI- or Anthropic-compatible endpoint, and
 with models on your own machine through llama.cpp, Ollama or LM Studio (see
 [Local Models](#local-models)). Charm's own provider, [Hyper][hyper], is there
@@ -928,7 +928,7 @@ too.
 
 ## API Keys
 
-You can also use Binetic Agent with many other providers such as Anthropic, OpenAI,
+You can also use Gnosh with many other providers such as Anthropic, OpenAI,
 Gemini, OpenRouter and so on. Press <kbd>ctrl+l</kbd> to open the model picker,
 choose the provider of your choice, and paste your API key.
 
@@ -967,21 +967,21 @@ That said, you can also set environment variables for preferred providers:
 
 [hyper]: https://hyper.charm.land
 
-Also note that Binetic Agent can support nearly any provider, including
+Also note that Gnosh can support nearly any provider, including
 [Local Models](#local-models). For more info see
 [Custom Providers](#custom-providers) below.
 
 ## Configuration
 
 > [!TIP]
-> Binetic Agent ships with a builtin skill for configuring itself. Most of the time
+> Gnosh ships with a builtin skill for configuring itself. Most of the time
 > you can just tell what you want it to configure and it will get the job done.
 
-Binetic Agent runs great with no configuration. That said, if you do need or want to
-customize Binetic Agent, you can, with a `binetic-agentrc`.
+Gnosh runs great with no configuration. That said, if you do need or want to
+customize Gnosh, you can, with a `gnoshrc`.
 
-A `binetic-agentrc` is just Bash with some Binetic Agent-specific builtins. It’s a lot like
-a `.bashrc`, just for your Binetic Agent. Because Binetic Agent has a native, built-in Bash
+A `gnoshrc` is just Bash with some Gnosh-specific builtins. It’s a lot like
+a `.bashrc`, just for your Gnosh. Because Gnosh has a native, built-in Bash
 interpreter, Bash-based config works identically across all platforms, including
 Windows.
 
@@ -1014,26 +1014,26 @@ with the following priority:
 
 | Priority | Unix-like                 | Windows                               |
 | -------- | ------------------------- | ------------------------------------- |
-| 1        | `./.binetic-agentrc`              | `.\.binetic-agentrc`                          |
-| 2        | `./binetic-agentrc`               | `.\binetic-agentrc`                           |
-| 3        | `~/.config/binetic-agent/binetic-agentrc` | `%USERPROFILE%\.config\binetic-agent\binetic-agentrc` |
+| 1        | `./.gnoshrc`              | `.\.gnoshrc`                          |
+| 2        | `./gnoshrc`               | `.\gnoshrc`                           |
+| 3        | `~/.config/gnosh/gnoshrc` | `%USERPROFILE%\.config\gnosh\gnoshrc` |
 
-(Binetic Agent respects the [XDG Base Directory Specification][xdg], so your paths
+(Gnosh respects the [XDG Base Directory Specification][xdg], so your paths
 may differ depending on your `XDG_CONFIG_HOME` value. Data directories such as
-`~/.local/share/binetic-agent` and `%LOCALAPPDATA%\binetic-agent` contain JSON state only; Binetic Agent
-does not execute a `binetic-agentrc` from them.)
+`~/.local/share/gnosh` and `%LOCALAPPDATA%\gnosh` contain JSON state only; Gnosh
+does not execute a `gnoshrc` from them.)
 
-Binetic Agent was called Klash, and before that Binetic Agent, and every klash and binetic_agent name
-still works: `~/.config/klash` and `~/.config/binetic_agent`, the same under
-`~/.local/share` and `~/.cache`, a project's `.klash/` or `.binetic-agent/` data
-directory with its `klash.db` or `binetic_agent.db`, and `klash.json`, `klashrc`,
-`.klashignore` and `KLASH.md` with their binetic_agent twins. Wherever only an old one
+Gnosh was called Klash, and before that Crush, and every klash and crush name
+still works: `~/.config/klash` and `~/.config/crush`, the same under
+`~/.local/share` and `~/.cache`, a project's `.klash/` or `.crush/` data
+directory with its `klash.db` or `crush.db`, and `klash.json`, `klashrc`,
+`.klashignore` and `KLASH.md` with their crush twins. Wherever only an old one
 exists, that one is used, so an existing setup and its sessions keep working
-without being moved; where several exist, the newest name wins. `~/.config/binetic-agent`
-and `~/.local/share/binetic-agent` count only once they hold a config file
-(`binetic-agent.json` or `binetic-agentrc`, or the klash or binetic_agent one), so a `binetic-agent` folder
+without being moved; where several exist, the newest name wins. `~/.config/gnosh`
+and `~/.local/share/gnosh` count only once they hold a config file
+(`gnosh.json` or `gnoshrc`, or the klash or crush one), so a `gnosh` folder
 made for something else doesn't hide an older one in use. A project uses the
-closest `.binetic-agent/`, `.klash/` or `.binetic-agent/` on the way up to its root.
+closest `.gnosh/`, `.klash/` or `.crush/` on the way up to its root.
 
 [xdg]: https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
 
@@ -1043,29 +1043,29 @@ considered deprecated. See: [the config docs](./docs/config/) for details.
 > [!TIP]
 > You can override the user and data config locations by setting:
 >
-> - `BINETIC_AGENT_GLOBAL_CONFIG`
-> - `BINETIC_AGENT_GLOBAL_DATA`
+> - `GNOSH_GLOBAL_CONFIG`
+> - `GNOSH_GLOBAL_DATA`
 >
-> Every `BINETIC_AGENT_` environment variable in this document also works under its
-> `KLASH_` and `BINETIC_AGENT_` names, from before the renames; when several are set,
+> Every `GNOSH_` environment variable in this document also works under its
+> `KLASH_` and `CRUSH_` names, from before the renames; when several are set,
 > the newest wins.
 
-As an additional note, Binetic Agent also stores ephemeral data, such as application
+As an additional note, Gnosh also stores ephemeral data, such as application
 state, in one additional location. This is state and should not be edited by
 hand, nor should it be considered configuration.
 
 ```bash
 # Unix
-$HOME/.local/share/binetic-agent/binetic-agent.json
+$HOME/.local/share/gnosh/gnosh.json
 
 # Windows
-%LOCALAPPDATA%\binetic-agent\binetic-agent.json
+%LOCALAPPDATA%\gnosh\gnosh.json
 ```
 
 #### A note on security
 
-Both `binetic-agentrc` and `binetic-agent.json` are trusted code; `binetic-agentrc` runs in a full
-shell, and any `$(...)` in `binetic-agent.json` runs at load time. A project's own
+Both `gnoshrc` and `gnosh.json` are trusted code; `gnoshrc` runs in a full
+shell, and any `$(...)` in `gnosh.json` runs at load time. A project's own
 are used only once you trust its folder (see
 [A cloned repository runs nothing until you trust it](#a-cloned-repository-runs-nothing-until-you-trust-it)),
 so don't trust a folder whose config you haven't read, and don't randomly
@@ -1076,11 +1076,11 @@ so don't trust a folder whose config you haven't read, and don't randomly
 The top-level `env` field sets environment variables at startup, before
 providers are configured. This is useful for variables that affect provider
 authentication (e.g. the AWS SDK credential chain) without wrapping the
-`binetic-agent` command in a shell script or exporting them in your shell profile:
+`gnosh` command in a shell script or exporting them in your shell profile:
 
 ```json
 {
-  "$schema": "https://charm.land/binetic-agent.json",
+  "$schema": "https://charm.land/crush.json",
   "env": {
     "AWS_PROFILE": "my-sso-profile"
   }
@@ -1093,7 +1093,7 @@ a value.
 
 ### Themes
 
-Binetic Agent ships with built-in color themes.
+Gnosh ships with built-in color themes.
 
 #### Switching Themes
 
@@ -1105,14 +1105,14 @@ confirms the selection. Press `esc` to cancel and revert.
 
 Open **Themes**, highlight the theme to customize, and press `ctrl+e`.
 Changes preview live as you type. Press `enter` or `ctrl+s` to save, or `esc`
-to cancel and revert. User themes are stored globally in the Binetic Agent config
+to cancel and revert. User themes are stored globally in the Gnosh config
 directory under `themes/`.
 
 You can also select a theme directly in your config with `active_theme`:
 
 ```json
 {
-  "$schema": "https://charm.land/binetic-agent.json",
+  "$schema": "https://charm.land/crush.json",
   "options": {
     "tui": {
       "active_theme": "gruvbox-dark"
@@ -1122,7 +1122,7 @@ You can also select a theme directly in your config with `active_theme`:
 ```
 
 Custom theme palettes are stored as JSON files in the global theme directory.
-For example, `~/.config/binetic-agent/themes/my-theme.json`:
+For example, `~/.config/gnosh/themes/my-theme.json`:
 
 ```json
 {
@@ -1139,17 +1139,17 @@ dialog.
 
 | Theme | Name |
 | --- | --- |
-| Binetic Agent Cosmos | `binetic-agent-cosmos` (default) |
-| Charmtone Pantera | `charmtone-panther`, upstream Binetic Agent's default |
+| Gnosh Cosmos | `gnosh-cosmos` (default) |
+| Charmtone Pantera | `charmtone-panther`, upstream Crush's default |
 | Gruvbox Dark | `gruvbox-dark` |
 
 ### LSPs
 
-Binetic Agent can use LSPs for additional context to help inform its decisions, just
+Gnosh can use LSPs for additional context to help inform its decisions, just
 like you would. LSPs can be added manually like so:
 
 ```bash
-# binetic-agentrc
+# gnoshrc
 
 lsp add go --command "gopls" --env "GOTOOLCHAIN go1.24.5"
 lsp add typescript --command "typescript-language-server" --args --stdio
@@ -1158,12 +1158,12 @@ lsp add nix --command "nil"
 
 ### MCPs
 
-Binetic Agent also supports Model Context Protocol (MCP) servers through three transport
+Gnosh also supports Model Context Protocol (MCP) servers through three transport
 types: `stdio` for command-line servers, `http` for HTTP endpoints, and `sse`
 for Server-Sent Events.
 
 ```bash
-# binetic-agentrc
+# gnoshrc
 
 # Add a local MCP server that runs a Node.js script.
 mcp add filesystem --command node --args /path/to/mcp-server.js \
@@ -1181,7 +1181,7 @@ mcp add streaming-service --type sse --url "https://example.com/mcp/sse" \
 
 #### MCP OAuth
 
-HTTP and SSE MCP servers that require OAuth can use Binetic Agent's built-in
+HTTP and SSE MCP servers that require OAuth can use Gnosh's built-in
 authorization-code flow instead of a static `Authorization` header. Set
 `"oauth": true` to enable it:
 
@@ -1218,28 +1218,28 @@ credentials directly. All values support shell expansion:
 }
 ```
 
-When `oauth_client_id` is set, Binetic Agent skips dynamic client registration
-and authenticates as the specified client. When omitted, Binetic Agent attempts
+When `oauth_client_id` is set, Gnosh skips dynamic client registration
+and authenticates as the specified client. When omitted, Gnosh attempts
 dynamic registration automatically (works with Linear, Notion, and other
 servers that support RFC 7591).
 
 #### Sessionless servers
 
 Some HTTP MCP servers are sessionless — they never issue a
-`Mcp-Session-Id` and reject the `subscriptions/listen` stream Binetic Agent opens
+`Mcp-Session-Id` and reject the `subscriptions/listen` stream Gnosh opens
 for list-changed notifications, which would otherwise break the
-connection. Binetic Agent auto-detects known sessionless servers (GitHub MCP,
+connection. Gnosh auto-detects known sessionless servers (GitHub MCP,
 `api.githubcopilot.com/mcp`), so those need no extra configuration.
 
 For other sessionless servers, mark them explicitly with
-`"sessionless": true` (or `--sessionless true` in `binetic-agentrc`); set it to
+`"sessionless": true` (or `--sessionless true` in `gnoshrc`); set it to
 `false` to force the default behavior for an auto-detected URL. The
 tradeoff is that a sessionless server won't push live
 tool/prompt/resource list-changed notifications.
 
 ### Hosts
 
-A command runs on the machine Binetic Agent is on unless the call names another
+A command runs on the machine Gnosh is on unless the call names another
 one. Declare the other machines once, and the model runs commands on them
 by name, through ssh, with every result stamped with where it ran:
 
@@ -1267,14 +1267,14 @@ permission (the safe-command shortcut is for this machine only), and
 
 ### Hooks
 
-Binetic Agent has preliminary support for hooks.
+Gnosh has preliminary support for hooks.
  For details, see
 [the hook guide](./docs/hooks/).
 
 ### Sharing a workspace across clients
 
-When Binetic Agent is run against a shared backend (for example two TUIs talking to
-the same `binetic-agent serve`), clients are grouped into **workspaces** keyed by
+When Gnosh is run against a shared backend (for example two TUIs talking to
+the same `gnosh serve`), clients are grouped into **workspaces** keyed by
 their resolved `--cwd`. Two clients with the same `--cwd` join the same
 underlying workspace, so they share the session list, message history,
 permission queue, LSP, and MCP state.
@@ -1307,14 +1307,14 @@ does not get reaped before it can attach.
 
 ### Global context files
 
-Binetic Agent automatically includes two files for cross-project instructions. Think of
+Gnosh automatically includes two files for cross-project instructions. Think of
 these are personal additions to the system prompt.
 
-- `~/.config/binetic-agent/BINETIC_AGENT.md`: Binetic Agent-specific rules that would confuse other
-  agentic coding tools. If you only use Binetic Agent, this is the only one you need to
+- `~/.config/gnosh/GNOSH.md`: Gnosh-specific rules that would confuse other
+  agentic coding tools. If you only use Gnosh, this is the only one you need to
   edit.
 - `~/.config/AGENTS.md`: generic instructions that other coding tools might
-  read. Avoid referring to Binetic Agent-specific features or workflows here. You
+  read. Avoid referring to Gnosh-specific features or workflows here. You
   probably only care about this if you use multiple agentic coding tools and
   want to share instructions between them.
 
@@ -1331,17 +1331,17 @@ option global-context-path "/full/path/to/folder/of/files/"
 
 ### Ignoring Files
 
-Binetic Agent respects `.gitignore` files by default, but you can also create a
-`.binetic-agentignore` file to specify additional files and directories that Binetic Agent
+Gnosh respects `.gitignore` files by default, but you can also create a
+`.gnoshignore` file to specify additional files and directories that Gnosh
 should ignore. This is useful for excluding files that you want in version
-control but don't want Binetic Agent to consider when providing context.
+control but don't want Gnosh to consider when providing context.
 
-The `.binetic-agentignore` file uses the same syntax as `.gitignore` and can be placed
+The `.gnoshignore` file uses the same syntax as `.gitignore` and can be placed
 in the root of your project or in subdirectories.
 
 ### Allowing Tools
 
-By default, Binetic Agent will ask you for permission before running tool calls. If
+By default, Gnosh will ask you for permission before running tool calls. If
 you'd like, you can allow tools to be executed without prompting you for
 permissions. Use this with care.
 
@@ -1365,7 +1365,7 @@ Code strips (`timeout`, `nice`, `nohup`, `stdbuf`, `time`, `command`, a bare
 `xargs`) come off first. A command line runs without asking only when each
 command in it matches a rule or only reads, so `Bash(git diff *)` does not let
 `git diff && rm -rf ~` through, and a rule with a `*` never approves `watch`,
-`setsid`, `ionice`, `flock` or a `find` that runs, deletes or writes. Binetic Agent
+`setsid`, `ionice`, `flock` or a `find` that runs, deletes or writes. Gnosh
 asks where Claude Code would look further: at a command substitution, a
 variable assignment, a background job, a subshell or loop, or a redirect to a
 file.
@@ -1382,44 +1382,44 @@ To disable tools from MCP servers, see the [MCP config section](#mcps).
 
 ### You only live once
 
-You can also skip all permission prompts completely by running Binetic Agent with the
+You can also skip all permission prompts completely by running Gnosh with the
 `--yolo` flag (or `--dangerously-skip-permissions`, as Claude Code calls it).
 Be very, very careful with this feature.
 
 ### Disabling Skills
 
-You can prevent Binetic Agent from using certain skills entirely. Disabled skills are
+You can prevent Gnosh from using certain skills entirely. Disabled skills are
 hidden from the agent, including builtin skills and skills discovered from
 disk.
 
 ```bash
-option disable-skill binetic-agent-config
+option disable-skill gnosh-config
 ```
 
 ### Agent Skills
 
-Binetic Agent supports the [Agent Skills](https://agentskills.io) open standard for
+Gnosh supports the [Agent Skills](https://agentskills.io) open standard for
 extending agent capabilities with reusable skill packages. Skills are folders
-containing a `SKILL.md` file with instructions that Binetic Agent can discover and
+containing a `SKILL.md` file with instructions that Gnosh can discover and
 activate on demand.
 
 The global paths we looks for skills are:
 
-- `$BINETIC_AGENT_SKILLS_DIR`
+- `$GNOSH_SKILLS_DIR`
 - `$XDG_CONFIG_HOME/agents/skills` or `~/.config/agents/skills/`
-- `$XDG_CONFIG_HOME/binetic-agent/skills` or `~/.config/binetic-agent/skills/`
+- `$XDG_CONFIG_HOME/gnosh/skills` or `~/.config/gnosh/skills/`
 - `~/.agents/skills/`
 - `~/.claude/skills/`
 - On Windows, we _also_ look at
   - `%LOCALAPPDATA%\agents\skills\` or `%USERPROFILE%\AppData\Local\agents\skills\`
-  - `%LOCALAPPDATA%\binetic-agent\skills\` or `%USERPROFILE%\AppData\Local\binetic-agent\skills\`
+  - `%LOCALAPPDATA%\gnosh\skills\` or `%USERPROFILE%\AppData\Local\gnosh\skills\`
 - Additional paths configured via `options.skills_paths`
 
 On top of that, we _also_ load skills in your project from the following
 relative paths:
 
 - `.agents/skills`
-- `.binetic-agent/skills`
+- `.gnosh/skills`
 - `.claude/skills`
 - `.cursor/skills`
 
@@ -1433,16 +1433,16 @@ You can get started with example skills from [anthropics/skills](https://github.
 
 ```bash
 # Unix
-mkdir -p ~/.config/binetic-agent/skills
-cd ~/.config/binetic-agent/skills
+mkdir -p ~/.config/gnosh/skills
+cd ~/.config/gnosh/skills
 git clone https://github.com/anthropics/skills.git _temp
 mv _temp/skills/* . && rm -rf _temp
 ```
 
 ```powershell
 # Windows (PowerShell)
-mkdir -Force "$env:LOCALAPPDATA\binetic-agent\skills"
-cd "$env:LOCALAPPDATA\binetic-agent\skills"
+mkdir -Force "$env:LOCALAPPDATA\gnosh\skills"
+cd "$env:LOCALAPPDATA\gnosh\skills"
 git clone https://github.com/anthropics/skills.git _temp
 mv _temp/skills/* . ; rm -r -force _temp
 ```
@@ -1483,7 +1483,7 @@ Skills with `disable-model-invocation` won't appear in the model's available ski
 
 ### Desktop notifications
 
-Binetic Agent sends desktop notifications when a tool call requires permission and when
+Gnosh sends desktop notifications when a tool call requires permission and when
 the agent finishes its turn. They're only sent when the terminal window isn't
 focused _and_ your terminal supports reporting the focus state.
 
@@ -1497,24 +1497,24 @@ supported.
 
 ### Initialization
 
-When you initialize a project, Binetic Agent analyzes your codebase and creates
+When you initialize a project, Gnosh analyzes your codebase and creates
 a context file that helps it work more effectively in future sessions. By
 default, this file is named `AGENTS.md`, but you can customize the name and
 location with the `initialize-as` option:
 
 ```bash
-# binetic-agentrc
+# gnoshrc
 option initialize-as AGENTS.md
 ```
 
 This is useful if you prefer a different naming convention or want to place the
-file in a specific directory (e.g., `BINETIC_AGENT.md` or `docs/LLMs.md`). Binetic Agent will
+file in a specific directory (e.g., `GNOSH.md` or `docs/LLMs.md`). Gnosh will
 fill the file with project-specific context like build commands, code patterns,
 and conventions it discovered during initialization.
 
 ### Attribution Settings
 
-By default, Binetic Agent adds attribution information to Git commits and pull requests
+By default, Gnosh adds attribution information to Git commits and pull requests
 it creates. You can customize this behavior with `option` commands:
 
 ```bash
@@ -1524,15 +1524,15 @@ option attribution-generated-with true
 
 - `trailer_style`: Controls the attribution trailer added to commit messages
   (default: `assisted-by`)
-  - `assisted-by`: Adds `Assisted-by: Binetic Agent:[ModelID]` as specified in [the convention](https://docs.kernel.org/process/coding-assistants.html#attribution)
-  - `co-authored-by`: Adds `Co-Authored-By: Binetic Agent <binetic-agent@charm.land>`
+  - `assisted-by`: Adds `Assisted-by: Gnosh:[ModelID]` as specified in [the convention](https://docs.kernel.org/process/coding-assistants.html#attribution)
+  - `co-authored-by`: Adds `Co-Authored-By: Gnosh <gnosh@charm.land>`
   - `none`: No attribution trailer
-- `generated_with`: When true (default), adds `💘 Generated with Binetic Agent` line to
+- `generated_with`: When true (default), adds `💘 Generated with Gnosh` line to
   commit messages and PR descriptions
 
 ### Custom Providers
 
-Binetic Agent supports custom provider configurations for both OpenAI-compatible and
+Gnosh supports custom provider configurations for both OpenAI-compatible and
 Anthropic-compatible APIs.
 
 > [!NOTE]
@@ -1587,29 +1587,29 @@ model add custom-anthropic/claude-sonnet-4-20250514 \
 
 ### Amazon Bedrock
 
-Binetic Agent currently supports running Anthropic models through Bedrock, with caching disabled.
+Gnosh currently supports running Anthropic models through Bedrock, with caching disabled.
 
-A Bedrock provider appears once Binetic Agent can find AWS credentials. You can
+A Bedrock provider appears once Gnosh can find AWS credentials. You can
 authenticate in one of two ways:
 
 **API key.** Set `AWS_BEARER_TOKEN_BEDROCK` to a Bedrock API key. This is the
 simplest option and never expires mid-session.
 
 **AWS credential chain (SSO, profiles, access keys).** Configure AWS the usual
-way with `aws configure` or `aws configure sso`. Binetic Agent picks up whatever the
+way with `aws configure` or `aws configure sso`. Gnosh picks up whatever the
 AWS SDK credential chain resolves, including `AWS_PROFILE`, `AWS_ACCESS_KEY_ID`
 / `AWS_SECRET_ACCESS_KEY`, or an SSO session. To select a specific profile,
-set `AWS_PROFILE` in your shell (`AWS_PROFILE=myprofile binetic-agent`) or in the
+set `AWS_PROFILE` in your shell (`AWS_PROFILE=myprofile gnosh`) or in the
 top-level [`env`](#environment-variables) config.
 
 If you authenticate via AWS SSO, your session expires periodically. Set
 `aws_auth_refresh` to a command that refreshes it. When Bedrock returns a
-credential error, Binetic Agent runs the command, then retries the request in place
+credential error, Gnosh runs the command, then retries the request in place
 (no duplicate messages, no manual restart):
 
 ```json
 {
-  "$schema": "https://charm.land/binetic-agent.json",
+  "$schema": "https://charm.land/crush.json",
   "env": {
     "AWS_PROFILE": "my-sso-profile"
   },
@@ -1637,7 +1637,7 @@ $ gcloud auth application-default login
 To add specific models to the configuration, configure as such:
 
 ```bash
-# binetic-agentrc — authentication still comes from gcloud and the VERTEXAI_* env vars.
+# gnoshrc — authentication still comes from gcloud and the VERTEXAI_* env vars.
 provider add vertexai --type google-vertex
 
 model add vertexai/claude-sonnet-4@20250514 \
@@ -1654,9 +1654,9 @@ model add vertexai/claude-sonnet-4@20250514 \
 
 ### Local Models
 
-Binetic Agent can auto-discovers models from local providers. Add a custom provider
+Gnosh can auto-discovers models from local providers. Add a custom provider
 with `type` set to `llamacpp`, `omlx`, `lmstudio`, `litellm`, or `ollama`
-and leave out the models list. Binetic Agent will populate the model list
+and leave out the models list. Gnosh will populate the model list
 automatically.
 
 ```bash
@@ -1695,7 +1695,7 @@ server, unless `"discover_models"` is `false`: an unknown window is taken for
 32,768 tokens, and the conversation is compacted long before it needs to be.
 
 ```bash
-# binetic-agentrc
+# gnoshrc
 provider add ollama \
   --name Ollama \
   --type ollama \
@@ -1713,7 +1713,7 @@ your explicit model fields win on conflicts.
 
 #### Compacting earlier
 
-Binetic Agent summarizes a long conversation when it comes within 20k tokens of the
+Gnosh summarizes a long conversation when it comes within 20k tokens of the
 model's context window (within a fifth of a small one). Claude Code's
 `CLAUDE_CODE_AUTO_COMPACT_WINDOW`, how full the context may get (`100k` to
 `1M`), and `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`, the percentage of that at which
@@ -1741,10 +1741,10 @@ than while you wait. It applies from 200k tokens
 
 #### Waiting for a local model
 
-Binetic Agent waits as long as a model on your machine or local network takes to
+Gnosh waits as long as a model on your machine or local network takes to
 start answering. Such a server can send nothing for more than ten minutes
 while it reads a long conversation or works through another request first;
-Binetic Agent used to give up after ten and show "Provider Error". A model API
+Gnosh used to give up after ten and show "Provider Error". A model API
 elsewhere still gets ten minutes, as in Claude Code, and `API_TIMEOUT_MS`
 sets the wait in milliseconds for the Anthropic, OpenAI and OpenAI-compatible
 providers, as it does there, with `0` for no limit. Local means `localhost`, a loopback, private,
@@ -1754,100 +1754,100 @@ link-local or Tailscale address, a host name of one label, or a name under
 A server that was answering and stops, as when it restarts, is waited for up
 to five minutes before the error is shown. One that has not answered since
 you picked the model, because it is not running, gets fifteen seconds before
-each of the retries, so Binetic Agent says so in about a minute and a half rather
+each of the retries, so Gnosh says so in about a minute and a half rather
 than twenty.
 
 ## Logging
 
-Sometimes you need to look at logs. Luckily, Binetic Agent logs all sorts of
-stuff. Logs are stored in `./.binetic-agent/logs/binetic-agent.log` relative to the project
-(or `./.klash/logs/klash.log` or `./.binetic-agent/logs/binetic_agent.log` in a project from
+Sometimes you need to look at logs. Luckily, Gnosh logs all sorts of
+stuff. Logs are stored in `./.gnosh/logs/gnosh.log` relative to the project
+(or `./.klash/logs/klash.log` or `./.crush/logs/crush.log` in a project from
 before the renames).
 
 The CLI also contains some helper commands to make perusing recent logs easier:
 
 ```bash
 # Print the last 1000 lines
-binetic-agent logs
+gnosh logs
 
 # Print the last 500 lines
-binetic-agent logs --tail 500
+gnosh logs --tail 500
 
 # Follow logs in real time
-binetic-agent logs --follow
+gnosh logs --follow
 ```
 
-Want more logging? Run `binetic-agent` with the `--debug` flag, or enable it in your
-`binetic-agentrc`:
+Want more logging? Run `gnosh` with the `--debug` flag, or enable it in your
+`gnoshrc`:
 
 ```bash
-# binetic-agentrc
+# gnoshrc
 option debug true
 option debug-lsp true
 ```
 
 ## The provider catalog
 
-Binetic Agent's list of providers and models comes from
+Gnosh's list of providers and models comes from
 [Catwalk](https://github.com/charmbracelet/catwalk), Charm's open source
-catalog, and a copy is built into the binary. Upstream Binetic Agent fetches a fresh
-one from Charm's servers on every start. Binetic Agent uses the built-in copy unless
+catalog, and a copy is built into the binary. Upstream Crush fetches a fresh
+one from Charm's servers on every start. Gnosh uses the built-in copy unless
 you ask for the fetch:
 
 ```bash
-# binetic-agentrc
+# gnoshrc
 option provider-auto-update true
 ```
 
-Or set `BINETIC_AGENT_DISABLE_PROVIDER_AUTO_UPDATE=0`. To point the fetch at another
+Or set `GNOSH_DISABLE_PROVIDER_AUTO_UPDATE=0`. To point the fetch at another
 catalog, for testing or a fork of Catwalk, set `CATWALK_URL`
 (`export CATWALK_URL=http://localhost:8000`).
 
-To refresh the catalog once, by hand, use `binetic-agent update-providers`:
+To refresh the catalog once, by hand, use `gnosh update-providers`:
 
 ```bash
 # Update providers remotely from Catwalk.
-binetic-agent update-providers
+gnosh update-providers
 
 # Update providers from a custom Catwalk base URL.
-binetic-agent update-providers https://example.com/
+gnosh update-providers https://example.com/
 
 # Update providers from a local file.
-binetic-agent update-providers /path/to/local-providers.json
+gnosh update-providers /path/to/local-providers.json
 
-# Reset providers to the copy built into binetic-agent.
-binetic-agent update-providers embedded
+# Reset providers to the copy built into gnosh.
+gnosh update-providers embedded
 
 # For more info:
-binetic-agent update-providers --help
+gnosh update-providers --help
 ```
 
 ## Metrics
 
-Binetic Agent sends no usage metrics unless you allow them, and never to Charm. The
-first time you run Binetic Agent on a machine, it asks once:
+Gnosh sends no usage metrics unless you allow them, and never to Charm. The
+first time you run Gnosh on a machine, it asks once:
 
 > Allow anonymous analytics? [y/N] (press Enter to decline)
 
 Pressing Enter, or anything but yes, declines, and the answer is stored per
-machine so you are not asked again. A run with no terminal (a pipe, `binetic-agent
+machine so you are not asked again. A run with no terminal (a pipe, `gnosh
 run`) never asks and sends nothing. You can change the answer any time with
 `option metrics true` or `false`, and `DO_NOT_TRACK=1` or
-`BINETIC_AGENT_DISABLE_METRICS=1` force it off.
+`GNOSH_DISABLE_METRICS=1` force it off.
 
-When allowed, Binetic Agent sends pseudonymous events keyed to a hash of your machine's
+When allowed, Gnosh sends pseudonymous events keyed to a hash of your machine's
 ID:
 
 - when it starts and exits, and how long it ran;
 - sessions created, switched and deleted;
 - for each prompt and reply, the session ID, provider, model, reasoning effort,
   whether yolo mode is on, and the tokens used;
-- errors, your OS and CPU architecture, terminal, shell and Binetic Agent's version.
+- errors, your OS and CPU architecture, terminal, shell and Gnosh's version.
 
-Prompts, replies and code are never sent. The events go to Binetic Agent's own
+Prompts, replies and code are never sent. The events go to Gnosh's own
 collector, `https://metrics.klash.pro`, or to a `metrics-url` you set instead;
 Charm's analytics is not a destination. The collector is a small open service
-(a small Go service, binetic-agent-metrics); run your own and point `metrics-url` at it to keep the
+(a small Go service, gnosh-metrics); run your own and point `metrics-url` at it to keep the
 data yourself. The events are defined in [internal/event](internal/event) and
 [internal/agent/event.go](internal/agent/event.go).
 
@@ -1864,16 +1864,16 @@ Installing an extra tool might be needed on Unix-like environments.
 | Linux/BSD + Wayland | `wl-copy` and `wl-paste` |
 | Linux/BSD + X11     | `xclip` or `xsel`        |
 
-When Binetic Agent runs on another machine, over ssh, a copy reaches your clipboard
-through your terminal: Binetic Agent asks the terminal to set it with an escape
+When Gnosh runs on another machine, over ssh, a copy reaches your clipboard
+through your terminal: Gnosh asks the terminal to set it with an escape
 code, OSC 52. Many terminals do (Ghostty, kitty and WezTerm among them), but
-Apple's Terminal ignores it, so Binetic Agent says the text was copied and it never
-arrives. Connect with `binetic-agent ssh` instead of `ssh`, from a Binetic Agent installed
+Apple's Terminal ignores it, so Gnosh says the text was copied and it never
+arrives. Connect with `gnosh ssh` instead of `ssh`, from a Gnosh installed
 on your own computer, and it puts the copies on your clipboard itself. This
 line in `~/.zshrc` makes every `ssh` typed in Apple's Terminal do that:
 
 ```sh
-[[ $TERM_PROGRAM == Apple_Terminal ]] && ssh() { binetic-agent ssh "$@"; }
+[[ $TERM_PROGRAM == Apple_Terminal ]] && ssh() { gnosh ssh "$@"; }
 ```
 
 Inside tmux on the far side, `set -g set-clipboard on` in `~/.tmux.conf`
@@ -1883,18 +1883,18 @@ lets the copies out of tmux.
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md). A contribution is licensed to
 NewTendermint, LLC and to Charm, so that work you do here can go upstream to
-Binetic Agent without coming back to you; contributions under `internal/gnovm/` are
+Crush without coming back to you; contributions under `internal/gnovm/` are
 licensed to NewTendermint only, and work that belongs, or is to be assigned,
 to Jae Kwon or a company he controls is not licensed to Charm. You keep
 every right to your own work.
 
 ## License
 
-Binetic Agent's primary licence is the [GNO Network General Public License, version
+Gnosh's primary licence is the [GNO Network General Public License, version
 6](./LICENSE.md), with Additional Terms (Strong Attribution) that run to
 NewTendermint, LLC. It covers the work written for this fork.
 
-It does not cover the files that came from Binetic Agent: those are Charmbracelet,
+It does not cover the files that came from Crush: those are Charmbracelet,
 Inc.'s, under FSL-1.1-MIT, and each becomes MIT two years after Charm released
 it. The two licences conflict in a combined binary, which is recorded in
 [LICENSE.md](./LICENSE.md) under "Known licence interactions" and is being
@@ -1902,10 +1902,10 @@ worked out, not papered over. `internal/gnovm/`, the GnoVM machines, carries
 its own copy of the same License: see
 [internal/gnovm/LICENSE.md](./internal/gnovm/LICENSE.md).
 
-Binetic Agent is a fork of [Binetic Agent](https://github.com/charmbracelet/binetic_agent) by
-[Charm](https://charm.land). Binetic Agent and Charm are Charmbracelet's names; this
+Gnosh is a fork of [Crush](https://github.com/charmbracelet/crush) by
+[Charm](https://charm.land). Crush and Charm are Charmbracelet's names; this
 fork is not affiliated with or endorsed by them.
 
 <p align="center">
-  <a href="https://binetic-agent.local"><img src="docs/brand/signoff.svg" width="100%" alt="Binetic Agent, binetic-agent.local: an AI harness that thinks in Gno"></a>
+  <a href="https://gnosh.ai"><img src="docs/brand/signoff.svg" width="100%" alt="Gnosh, gnosh.ai: an AI harness that thinks in Gno"></a>
 </p>

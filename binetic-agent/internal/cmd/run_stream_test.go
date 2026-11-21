@@ -6,15 +6,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/format"
-	"github.com/charmbracelet/binetic_agent/internal/proto"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/format"
+	"github.com/charmbracelet/crush/internal/proto"
+	"github.com/charmbracelet/crush/internal/pubsub"
 	"github.com/stretchr/testify/require"
 )
 
 // TestRunStream_ToolUseDoesNotTerminate is the regression test for
 // the original bug: a tool-call assistant message has a Finish part
-// with reason=tool_use and used to terminate `binetic_agent run` early via
+// with reason=tool_use and used to terminate `crush run` early via
 // the discarded `msg.IsFinished()` exit condition. With the new
 // RunComplete-driven loop, tool_use finishes must keep the stream
 // alive so the post-tool final text still reaches stdout.
@@ -130,7 +130,7 @@ func TestRunStream_ReconcilesPartialStream(t *testing.T) {
 }
 
 // TestRunStream_IgnoresOtherSessions ensures multi-session
-// subscribers (e.g. a TUI watching workspace events while `binetic_agent
+// subscribers (e.g. a TUI watching workspace events while `crush
 // run` is in flight against the same workspace) do not cause
 // premature exit on RunComplete for a different session.
 func TestRunStream_IgnoresOtherSessions(t *testing.T) {
@@ -147,7 +147,7 @@ func TestRunStream_IgnoresOtherSessions(t *testing.T) {
 }
 
 // TestRunStream_ErrorRunComplete surfaces a failing run as a
-// non-nil error from `binetic_agent run` so shells and CI catch it via
+// non-nil error from `crush run` so shells and CI catch it via
 // exit status.
 func TestRunStream_ErrorRunComplete(t *testing.T) {
 	t.Parallel()
@@ -163,7 +163,7 @@ func TestRunStream_ErrorRunComplete(t *testing.T) {
 }
 
 // TestRunStream_CancelledRunCompleteIsClean ensures a cancelled
-// run (e.g. Ctrl+C while `binetic_agent run` waits) exits cleanly rather
+// run (e.g. Ctrl+C while `crush run` waits) exits cleanly rather
 // than reporting the cancellation as a failure.
 func TestRunStream_CancelledRunCompleteIsClean(t *testing.T) {
 	t.Parallel()
@@ -218,7 +218,7 @@ func TestRunStream_StopSpinnerInvokedOnFirstOutput(t *testing.T) {
 }
 
 // TestRunStream_RunIDFiltersForeignTurns covers the busy-session
-// queue scenario: `binetic_agent run --continue` attaches to a session
+// queue scenario: `crush run --continue` attaches to a session
 // whose currently running turn finishes first, publishing its
 // RunComplete on the same session ID. Without per-run correlation
 // the stream would exit on that foreign event and drop our own
@@ -535,7 +535,7 @@ func TestRunOutputFlags(t *testing.T) {
 }
 
 // A warning arrives with its text in Error, like a failure, but the turn
-// goes on or ends normally: binetic-agent run prints it on stderr and keeps
+// goes on or ends normally: gnosh run prints it on stderr and keeps
 // going. It used to end the run as "agent error".
 func TestRunStream_WarningIsNotAFailure(t *testing.T) {
 	t.Parallel()

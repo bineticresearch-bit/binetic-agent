@@ -9,7 +9,7 @@ import (
 
 func TestMetricsConsentRoundTrip(t *testing.T) {
 	// Point the global data dir at a temp dir so the real one is untouched.
-	t.Setenv("BINETIC_AGENT_GLOBAL_DATA", filepath.Join(t.TempDir(), "binetic-agent"))
+	t.Setenv("GNOSH_GLOBAL_DATA", filepath.Join(t.TempDir(), "gnosh"))
 
 	decided, _ := MetricsConsent()
 	require.False(t, decided, "a fresh machine has not answered, so metrics stay off")

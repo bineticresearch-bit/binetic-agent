@@ -6,10 +6,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/charmbracelet/binetic_agent/internal/artifacts"
+	"github.com/charmbracelet/crush/internal/artifacts"
 )
 
-// `binetic-agent session web` builds the app before it listens, and the app
+// `gnosh session web` builds the app before it listens, and the app
 // starts the artifact server at its default address. The page's default
 // port must still be free once that server holds its own.
 func TestSessionWebDefaultPortIsNotTheArtifactServers(t *testing.T) {

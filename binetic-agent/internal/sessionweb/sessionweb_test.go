@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/session"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/session"
 )
 
 type memStore struct {
@@ -114,7 +114,7 @@ func TestSessionWeb(t *testing.T) {
 	srv, store := newTestServer(t)
 
 	resp, body := do(t, "GET", srv.URL+"/", nil)
-	if resp.StatusCode != 200 || !strings.Contains(string(body), "<title>Binetic Agent sessions</title>") {
+	if resp.StatusCode != 200 || !strings.Contains(string(body), "<title>Crush sessions</title>") {
 		t.Fatalf("page: %d %q", resp.StatusCode, body[:40])
 	}
 

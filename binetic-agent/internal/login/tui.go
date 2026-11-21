@@ -17,7 +17,7 @@ import (
 	"github.com/charmbracelet/x/exp/charmtone"
 	"github.com/pkg/browser"
 
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
+	"github.com/charmbracelet/crush/internal/oauth"
 )
 
 // authState represents the state of the OAuth TUI flow.

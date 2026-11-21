@@ -7,14 +7,14 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/client"
-	"github.com/charmbracelet/binetic_agent/internal/db"
-	"github.com/charmbracelet/binetic_agent/internal/proto"
-	"github.com/charmbracelet/binetic_agent/internal/session"
+	"github.com/charmbracelet/crush/internal/client"
+	"github.com/charmbracelet/crush/internal/db"
+	"github.com/charmbracelet/crush/internal/proto"
+	"github.com/charmbracelet/crush/internal/session"
 	"github.com/stretchr/testify/require"
 )
 
-// `binetic-agent run -r <name>`, as Claude Code's `claude -p --resume <title>`:
+// `gnosh run -r <name>`, as Claude Code's `claude -p --resume <title>`:
 // the one session with that name, ignoring case; several are an error
 // that lists their IDs; none is the ID lookup's error. An ID still
 // works, and --session (byName false) takes IDs only.

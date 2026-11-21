@@ -7,15 +7,15 @@ import (
 	"testing"
 
 	"charm.land/catwalk/pkg/catwalk"
-	"github.com/charmbracelet/binetic_agent/internal/backend"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/csync"
-	"github.com/charmbracelet/binetic_agent/internal/proto"
+	"github.com/charmbracelet/crush/internal/backend"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/csync"
+	"github.com/charmbracelet/crush/internal/proto"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
 
-// GET .../doctor answers the check of the workspace's setup that binetic-agent
+// GET .../doctor answers the check of the workspace's setup that gnosh
 // doctor prints: here a provider it can use and a model none was chosen
 // for. A workspace with no config yet is refused.
 func TestGetDoctorReport(t *testing.T) {

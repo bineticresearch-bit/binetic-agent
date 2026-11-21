@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/stretchr/testify/require"
 )
 
@@ -37,7 +37,7 @@ func TestRunSessionEndPayload(t *testing.T) {
 	dir := t.TempDir()
 	payloadPath := filepath.Join(dir, "payload.json")
 	envPath := filepath.Join(dir, "env")
-	r := sessionEndRunner(t, "", `cat > `+payloadPath+`; echo "$BINETIC_AGENT_EVENT $BINETIC_AGENT_SESSION_ID" > `+envPath)
+	r := sessionEndRunner(t, "", `cat > `+payloadPath+`; echo "$GNOSH_EVENT $GNOSH_SESSION_ID" > `+envPath)
 	_, err := r.RunSessionEnd(context.Background(), "sess", SessionEndReasonPromptInputExit)
 	require.NoError(t, err)
 
@@ -148,7 +148,7 @@ func TestRunSessionEndFailedHookIsLogged(t *testing.T) {
 
 // SessionEnd's default timeout is Claude Code's 1.5 seconds, and a
 // hook's own timeout is honored up to a cap of 60 seconds, so that
-// exiting Binetic Agent is not held up for long.
+// exiting Gnosh is not held up for long.
 func TestSessionEndTimeoutDefaults(t *testing.T) {
 	t.Parallel()
 

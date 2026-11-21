@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -34,7 +34,7 @@ func TestMemErasureScrub(t *testing.T) {
 	require.Equal(t, []string{"sk-live-4f\"9c"}, e.Secrets())
 }
 
-// A forget and a redact say what they erased, for binetic-agent's own copies.
+// A forget and a redact say what they erased, for gnosh's own copies.
 func TestMemHostSaysWhatItErased(t *testing.T) {
 	t.Parallel()
 	h := newTestMemHost(t, t.TempDir())

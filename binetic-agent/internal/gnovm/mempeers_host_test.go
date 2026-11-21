@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/lock"
+	"github.com/charmbracelet/crush/internal/lock"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sys/unix"
 )
@@ -253,7 +253,7 @@ func TestPeersHostLoop(t *testing.T) {
 	require.Equal(t, "0b", rec.Pipe, "a waiting Next's record names its pipe")
 }
 
-// binetic-agent's own reads for a session, the goal's at a turn's end, carry no
+// gnosh's own reads for a session, the goal's at a turn's end, carry no
 // stack: they leave the session's peers record alone and ring nothing.
 func TestPeersGoalReadsKeepTheRecord(t *testing.T) {
 	t.Parallel()

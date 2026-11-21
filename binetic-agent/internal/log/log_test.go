@@ -25,7 +25,7 @@ func TestReopenFile(t *testing.T) {
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
 			dir := filepath.Join(t.TempDir(), "logs")
-			path := filepath.Join(dir, "binetic-agent.log")
+			path := filepath.Join(dir, "gnosh.log")
 			l := &lumberjack.Logger{Filename: path}
 			t.Cleanup(func() { _ = l.Close() })
 			fileLogger.Store(l)

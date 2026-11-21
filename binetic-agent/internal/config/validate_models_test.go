@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// A `models` key Binetic Agent never reads would sit in the config looking
-// configured while Binetic Agent quietly used its default model, so it is a load
+// A `models` key Crush never reads would sit in the config looking
+// configured while Crush quietly used its default model, so it is a load
 // error rather than a silent fallback.
 func TestValidateModelsRejectsUnknownTypes(t *testing.T) {
 	t.Parallel()
@@ -47,7 +47,7 @@ func TestValidateModelsEmpty(t *testing.T) {
 	require.NoError(t, (&Config{Models: map[SelectedModelType]SelectedModel{}}).ValidateModels())
 }
 
-// recent_models lives in the data directory and is written by Binetic Agent, not
+// recent_models lives in the data directory and is written by Crush, not
 // hand-edited, so a stale entry there must not block startup.
 func TestValidateModelsIgnoresRecentModels(t *testing.T) {
 	t.Parallel()
@@ -91,7 +91,7 @@ func TestIsKnownModelType(t *testing.T) {
 }
 
 // KnownModelTypes hands out a copy; a caller mutating it must not be
-// able to change what Binetic Agent accepts.
+// able to change what Crush accepts.
 func TestKnownModelTypesIsACopy(t *testing.T) {
 	t.Parallel()
 

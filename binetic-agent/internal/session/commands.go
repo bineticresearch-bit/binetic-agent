@@ -132,7 +132,7 @@ func ParseExportCommand(line string) (filename string, ok bool) {
 	return parseCommand(line, "export")
 }
 
-// ParseMemCommand reports whether line is binetic-agent's /mem command, with or
+// ParseMemCommand reports whether line is gnosh's /mem command, with or
 // without the slash, and what follows it ("" to show mem).
 func ParseMemCommand(line string) (args string, ok bool) {
 	return parseCommand(line, "mem")

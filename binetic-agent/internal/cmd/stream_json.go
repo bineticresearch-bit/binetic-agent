@@ -6,8 +6,8 @@ import (
 	"io"
 	"slices"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools/mcp"
-	"github.com/charmbracelet/binetic_agent/internal/message"
+	"github.com/charmbracelet/crush/internal/agent/tools/mcp"
+	"github.com/charmbracelet/crush/internal/message"
 )
 
 // streamJSON writes a run as Claude Code's -p --output-format stream-json
@@ -106,7 +106,7 @@ func nonNil[T any](list []T) []T {
 // message takes one update of a message of the run. A row a pop marks as
 // cut (message.Popped) comes as an update, and is no news: written by this
 // run, it was written already; made in an earlier run of the session, as
-// when each turn is its own `binetic-agent run`, it is old work, not this turn's.
+// when each turn is its own `gnosh run`, it is old work, not this turn's.
 func (s *streamJSON) message(msg message.Message) {
 	if msg.SessionID != s.sessionID || msg.IsSummaryMessage || msg.Popped != "" {
 		return

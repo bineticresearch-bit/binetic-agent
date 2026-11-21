@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"charm.land/glamour/v2"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/ui/styles"
 	"github.com/stretchr/testify/require"
 )
 
@@ -618,11 +618,11 @@ func TestStreamingMarkdown_NoSafeBoundaryAlwaysFullRenders(t *testing.T) {
 		"stable prefix must remain empty when no safe boundary ever exists")
 }
 
-// TestStreamingMarkdown_NoSafeBoundaryDoesNotBinetic Agent is the
+// TestStreamingMarkdown_NoSafeBoundaryDoesNotGnosh is the
 // minimum-viability assertion of T4: even when boundary
 // detection fails on every flush the streaming path must not
-// binetic-agent and must produce non-empty output for non-empty input.
-func TestStreamingMarkdown_NoSafeBoundaryDoesNotBinetic Agent(t *testing.T) {
+// gnosh and must produce non-empty output for non-empty input.
+func TestStreamingMarkdown_NoSafeBoundaryDoesNotGnosh(t *testing.T) {
 	t.Parallel()
 
 	const width = 80

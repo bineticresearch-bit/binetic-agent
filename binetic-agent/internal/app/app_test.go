@@ -8,8 +8,8 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/pubsub"
 	"github.com/stretchr/testify/require"
 )
 
@@ -185,7 +185,7 @@ func testNConsumers(t *testing.T, n int) {
 	wg.Wait()
 }
 
-// binetic-agent run prints a warning, or a goal found met, for its own session as
+// gnosh run prints a warning, or a goal found met, for its own session as
 // a stderr line, and nothing for any other notification.
 func TestWarningLine(t *testing.T) {
 	t.Parallel()

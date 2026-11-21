@@ -15,20 +15,20 @@ import (
 	"unicode/utf8"
 
 	"charm.land/log/v2"
-	"github.com/charmbracelet/binetic_agent/internal/agent"
-	"github.com/charmbracelet/binetic_agent/internal/client"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/event"
-	"github.com/charmbracelet/binetic_agent/internal/format"
-	"github.com/charmbracelet/binetic_agent/internal/herdr"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/proto"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/ui/anim"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
-	"github.com/charmbracelet/binetic_agent/internal/version"
-	"github.com/charmbracelet/binetic_agent/internal/workspace"
+	"github.com/charmbracelet/crush/internal/agent"
+	"github.com/charmbracelet/crush/internal/client"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/event"
+	"github.com/charmbracelet/crush/internal/format"
+	"github.com/charmbracelet/crush/internal/herdr"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/proto"
+	"github.com/charmbracelet/crush/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/ui/anim"
+	"github.com/charmbracelet/crush/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/version"
+	"github.com/charmbracelet/crush/internal/workspace"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/charmbracelet/x/term"
 	"github.com/google/uuid"
@@ -43,33 +43,33 @@ var runCmd = &cobra.Command{
 The prompt can be provided as arguments or piped from stdin.`,
 	Example: `
 # Run a simple prompt
-binetic-agent run "Guess my 5 favorite Pokémon"
+gnosh run "Guess my 5 favorite Pokémon"
 
 # Pipe input from stdin
-curl https://charm.land | binetic-agent run "Summarize this website"
+curl https://charm.land | gnosh run "Summarize this website"
 
 # Read from a file
-binetic-agent run "What is this code doing?" <<< prrr.go
+gnosh run "What is this code doing?" <<< prrr.go
 
 # Redirect output to a file
-binetic-agent run "Generate a hot README for this project" > MY_HOT_README.md
+gnosh run "Generate a hot README for this project" > MY_HOT_README.md
 
 # Run in quiet mode (hide the spinner)
-binetic-agent run --quiet "Generate a README for this project"
+gnosh run --quiet "Generate a README for this project"
 
 # Run in verbose mode (show logs)
-binetic-agent run --verbose "Generate a README for this project"
+gnosh run --verbose "Generate a README for this project"
 
 # Use a specific reasoning effort
 # Levels depend on the model, unsupported values are rejected
 # with the accepted values listed
-binetic-agent run --reasoning-effort high "What is the meaning of life?"
+gnosh run --reasoning-effort high "What is the meaning of life?"
 
 # Continue a previous session
-binetic-agent run --session {session-id} "Follow up on your last response"
+gnosh run --session {session-id} "Follow up on your last response"
 
 # Continue the most recent session
-binetic-agent run --continue "Follow up on your last response"
+gnosh run --continue "Follow up on your last response"
 
   `,
 	RunE: stopsOnSignal(func(ctx context.Context, cmd *cobra.Command, args []string) error {
@@ -89,7 +89,7 @@ binetic-agent run --continue "Follow up on your last response"
 		// takes a session's name.
 		sessionID := sessionFlag(cmd)
 		if sessionID == pickSession {
-			return errors.New("a session ID or name must follow -r in binetic-agent run; `binetic-agent -r` on its own lists the sessions to pick from")
+			return errors.New("a session ID or name must follow -r in gnosh run; `gnosh -r` on its own lists the sessions to pick from")
 		}
 		if err := forkAlone(cmd); err != nil {
 			return err
@@ -118,7 +118,7 @@ binetic-agent run --continue "Follow up on your last response"
 		}
 
 		if output.stream != nil && useClientServer() {
-			return fmt.Errorf("--output-format stream-json is not supported with %s=1 yet; use text or json", "BINETIC_AGENT_CLIENT_SERVER")
+			return fmt.Errorf("--output-format stream-json is not supported with %s=1 yet; use text or json", "GNOSH_CLIENT_SERVER")
 		}
 
 		event.SetNonInteractive(true)
@@ -141,7 +141,7 @@ binetic-agent run --continue "Follow up on your last response"
 			defer cleanup()
 
 			event.AppInitialized()
-			// binetic-agent run never asks: an untrusted folder's settings stay
+			// gnosh run never asks: an untrusted folder's settings stay
 			// out, and it says so.
 			noteUntrusted(cmd, scanUntrusted(cmd))
 
@@ -182,7 +182,7 @@ binetic-agent run --continue "Follow up on your last response"
 		defer cleanup()
 
 		event.AppInitialized()
-		// binetic-agent run never asks: an untrusted folder's settings stay out,
+		// gnosh run never asks: an untrusted folder's settings stay out,
 		// and it says so.
 		noteUntrusted(cmd, ws.Config().HeldProject)
 
@@ -251,7 +251,7 @@ func init() {
 	addRunFlags(runCmd)
 }
 
-// addRunFlags adds binetic-agent run's flags to cmd.
+// addRunFlags adds gnosh run's flags to cmd.
 func addRunFlags(cmd *cobra.Command) {
 	cmd.Flags().BoolP("quiet", "q", false, "Hide spinner")
 	cmd.Flags().BoolP("verbose", "v", false, "Show logs and a line per tool call on stderr")
@@ -278,7 +278,7 @@ func addRunFlags(cmd *cobra.Command) {
 	addPermissionModeFlag(cmd)
 	addAddDirFlag(cmd)
 	addMCPConfigFlags(cmd)
-	cmd.Flags().Lookup("yolo").Usage = "Accepted for Claude Code's sake; changes nothing, as binetic-agent run already accepts its session's permission requests"
+	cmd.Flags().Lookup("yolo").Usage = "Accepted for Claude Code's sake; changes nothing, as gnosh run already accepts its session's permission requests"
 	cmd.Flags().Lookup("dangerously-skip-permissions").Usage = "Same as --yolo"
 }
 
@@ -560,7 +560,7 @@ func runGoalOutcome(ctx context.Context, c *client.Client, workspaceID, sessionI
 
 // runStream tracks the per-message stdout cursor and the
 // reconciliation state used by [runNonInteractive] to translate
-// streaming SSE events into a final, complete stdout for `binetic_agent run`.
+// streaming SSE events into a final, complete stdout for `crush run`.
 // It is split out so the state machine can be exercised in unit tests
 // without spinning up the full server/client harness.
 //
@@ -646,7 +646,7 @@ func (s *runStream) handle(ev any, stopSpinner func()) (done bool, err error) {
 		// RunComplete is the authoritative end-of-run signal. We
 		// exit on it instead of guessing from message finish parts,
 		// which fire on every tool-call step too and were the
-		// source of the regression where `binetic_agent run` exited
+		// source of the regression where `crush run` exited
 		// mid-turn on finish.reason == tool_use.
 		//
 		// Correlation:
@@ -1006,7 +1006,7 @@ func resolveSession(ctx context.Context, c *client.Client, wsID, continueSession
 }
 
 // resolveSessionByID resolves a session ID that may be a full UUID or a hash
-// prefix returned by binetic_agent session list.
+// prefix returned by crush session list.
 func resolveSessionByID(ctx context.Context, c *client.Client, wsID, id string) (*proto.Session, error) {
 	if sess, err := c.GetSession(ctx, wsID, id); err == nil {
 		return sess, nil
@@ -1075,7 +1075,7 @@ func localSessionID(ctx context.Context, svc session.Service, ref string, byName
 	return named.ID, err
 }
 
-// namedSession is the session `binetic-agent run -r <name>` names when name is no
+// namedSession is the session `gnosh run -r <name>` names when name is no
 // session's ID (idErr says why), as Claude Code's print mode takes a
 // title: the one session with that name, ignoring case. Several are an
 // error listing their IDs, as Claude Code's is; none is idErr.
@@ -1118,7 +1118,7 @@ func setThinking(ws workspace.Workspace, enabled bool, out io.Writer) error {
 	return err
 }
 
-// runOutput is where binetic-agent run writes its answer, by --output-format:
+// runOutput is where gnosh run writes its answer, by --output-format:
 // streamed as it comes for text, or collected and printed as one result
 // object at the end for json, as Claude Code's -p --output-format json
 // does, for scripts that read the answer and the session to resume;
@@ -1242,7 +1242,7 @@ func (o *runOutput) finish(runErr error) error {
 	return runErr
 }
 
-// noProviderError says why binetic-agent run has no provider to use. When the
+// noProviderError says why gnosh run has no provider to use. When the
 // config names providers that loading had to leave out, such as one whose
 // model server did not answer, it says which and why; "no providers
 // configured" sent a user whose server was down to set one up again.

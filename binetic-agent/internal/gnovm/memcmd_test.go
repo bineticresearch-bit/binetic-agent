@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -19,7 +19,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// binetic-agent mem's reads name binetic-agent mem where a session's name /mem, say when
+// gnosh mem's reads name gnosh mem where a session's name /mem, say when
 // mem refused them, so the command can exit 1, and take nothing but
 // reads (QA, 2026-10-30).
 func TestMemRead(t *testing.T) {
@@ -32,7 +32,7 @@ func TestMemRead(t *testing.T) {
 
 	read := func(args string) (string, bool) {
 		t.Helper()
-		text, refused, err := h.MemRead(ctx, "/proj", "binetic-agent mem", args, nil)
+		text, refused, err := h.MemRead(ctx, "/proj", "gnosh mem", args, nil)
 		require.NoError(t, err, args)
 		return text, refused
 	}
@@ -41,15 +41,15 @@ func TestMemRead(t *testing.T) {
 	require.Contains(t, text, `"build"`)
 	text, refused = read("show nope")
 	require.True(t, refused)
-	require.Equal(t, "no item `nope`; binetic-agent mem lists them", text)
+	require.Equal(t, "no item `nope`; gnosh mem lists them", text)
 	text, refused = read("find")
 	require.True(t, refused)
-	require.Equal(t, "binetic-agent mem find takes words: binetic-agent mem find release key", text)
+	require.Equal(t, "gnosh mem find takes words: gnosh mem find release key", text)
 	text, refused = read("find nothing-like-it")
 	require.False(t, refused, text)
 	text, refused = read("forget ship-release")
 	require.True(t, refused)
-	require.Equal(t, "binetic-agent mem only reads mem: show, find and log", text)
+	require.Equal(t, "gnosh mem only reads mem: show, find and log", text)
 	text, _ = read("show ship-release")
 	require.Contains(t, text, `"build"`, "forget took nothing")
 }

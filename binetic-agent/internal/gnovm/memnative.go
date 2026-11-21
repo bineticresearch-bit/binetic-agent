@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -23,13 +23,13 @@ import (
 )
 
 // memContext is the context a mem call runs in: gno's own, which its natives
-// read through the interface ExecContext answers, and what binetic-agent's mem
+// read through the interface ExecContext answers, and what gnosh's mem
 // natives read.
 type memContext struct {
 	stdlibs.ExecContext
 	caller string
 	ops    *[]memOp
-	// pending is the Ops binetic-agent hands Apply, and pendingAt each one's call's
+	// pending is the Ops gnosh hands Apply, and pendingAt each one's call's
 	// time.
 	pending   []memOp
 	pendingAt []int64
@@ -38,7 +38,7 @@ type memContext struct {
 	// bound is the goal the user's /goal binds the caller's session to.
 	bound string
 	// stack is the caller's session's stack of frames, bottom to top, as
-	// binetic-agent derived it before the call; frames is where the call's pushes
+	// gnosh derived it before the call; frames is where the call's pushes
 	// and pops go (memCall.Frames), so frames() answers the stack as it
 	// stands.
 	stack  []string
@@ -50,7 +50,7 @@ type memContext struct {
 	// nilPush is how many events the call had made when it last pushed
 	// nil; -1 for never. A pop that a nil push followed gets no hint.
 	nilPush *int
-	// names are the names binetic-agent made for the texts the input keeps without
+	// names are the names gnosh made for the texts the input keeps without
 	// naming them (mem.Think(text), mem.Fact(text)), by text; the realm
 	// asks for them with nameMade().
 	names map[string]string
@@ -69,7 +69,7 @@ type memContext struct {
 	// subAgent is set for a sub-agent's session: it is not told of peers
 	// or sent on to other todos, since it works for its parent.
 	subAgent bool
-	// checkCloses has closing() hand binetic-agent each close it has not approved
+	// checkCloses has closing() hand gnosh each close it has not approved
 	// (checked holds MemClose.Checked of those it has), in closes; pushedAt
 	// is how many Ops the call had made when it entered each todo it
 	// entered.
@@ -79,7 +79,7 @@ type memContext struct {
 	pushedAt    map[string]int
 }
 
-// memOp is one change to a mem, as gnomem's do hands it to binetic-agent and the
+// memOp is one change to a mem, as gnomem's do hands it to gnosh and the
 // journal keeps it (gnomem's Op).
 type memOp struct {
 	Kind  string `json:"kind"`

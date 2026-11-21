@@ -8,8 +8,8 @@ import (
 
 	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/colorprofile"
-	"github.com/charmbracelet/binetic_agent/internal/ui/logo"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/ui/logo"
+	"github.com/charmbracelet/crush/internal/ui/styles"
 	"github.com/charmbracelet/x/term"
 )
 
@@ -19,7 +19,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Could not get terminal size: %s", err)
 	}
 
-	s := styles.Binetic AgentCosmos()
+	s := styles.GnoshCosmos()
 	gno, from, to := s.Wordmark(colorprofile.Detect(os.Stdout, os.Environ()) == colorprofile.TrueColor, s.Logo.TitleColorA, s.Logo.TitleColorB)
 	opts := logo.Opts{
 		FieldColor:   s.Logo.FieldColor,

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Waits until a binetic-agent session has made a plan in mem: a gnovm_run call on
+"""Waits until a gnosh session has made a plan in mem: a gnovm_run call on
 mem whose code plans todos (mem.Todo) and whose result is not an error.
 
 Usage: waitplan.py <data dir> [timeout seconds] [pid]
   exit 0 = planned; 1 = timed out, or process pid (the planning session) ended first
 
-Reads the session store (<data dir>/binetic-agent.db) read-only while binetic-agent writes
+Reads the session store (<data dir>/gnosh.db) read-only while gnosh writes
 it, every second.
 """
 import json
@@ -54,7 +54,7 @@ def alive(pid):
 
 
 def main():
-    db = os.path.join(sys.argv[1], "binetic-agent.db")
+    db = os.path.join(sys.argv[1], "gnosh.db")
     deadline = time.time() + (float(sys.argv[2]) if len(sys.argv) > 2 else 900)
     pid = int(sys.argv[3]) if len(sys.argv) > 3 else 0
     while time.time() < deadline:

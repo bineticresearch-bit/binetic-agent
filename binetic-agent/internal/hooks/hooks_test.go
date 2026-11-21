@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/shell"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/shell"
 	"github.com/stretchr/testify/require"
 )
 
@@ -191,9 +191,9 @@ func TestBuildEnv(t *testing.T) {
 		}
 	}
 
-	// Each variable is set under its BINETIC_AGENT_ name and under the BINETIC_AGENT_ name
+	// Each variable is set under its GNOSH_ name and under the CRUSH_ name
 	// that hooks written before the rename read.
-	for _, prefix := range []string{"BINETIC_AGENT_", "BINETIC_AGENT_"} {
+	for _, prefix := range []string{"GNOSH_", "CRUSH_"} {
 		require.Equal(t, EventPreToolUse, envMap[prefix+"EVENT"])
 		require.Equal(t, "bash", envMap[prefix+"TOOL_NAME"])
 		require.Equal(t, "sess-1", envMap[prefix+"SESSION_ID"])
@@ -203,13 +203,13 @@ func TestBuildEnv(t *testing.T) {
 		require.Equal(t, "/tmp/f.txt", envMap[prefix+"TOOL_INPUT_FILE_PATH"])
 	}
 
-	// Shared Binetic Agent markers must be present so hook-authored scripts can
-	// detect they're running under Binetic Agent the same way bash-tool-invoked
+	// Shared Crush markers must be present so hook-authored scripts can
+	// detect they're running under Crush the same way bash-tool-invoked
 	// scripts can.
-	require.Equal(t, "1", envMap["BINETIC_AGENT"])
-	require.Equal(t, "1", envMap["BINETIC_AGENT"])
-	require.Equal(t, "binetic_agent", envMap["AGENT"])
-	require.Equal(t, "binetic_agent", envMap["AI_AGENT"])
+	require.Equal(t, "1", envMap["GNOSH"])
+	require.Equal(t, "1", envMap["CRUSH"])
+	require.Equal(t, "crush", envMap["AGENT"])
+	require.Equal(t, "crush", envMap["AI_AGENT"])
 }
 
 func splitFirst(s, sep string) []string {
@@ -507,7 +507,7 @@ func TestValidateHooksRejectsUnknownEventNames(t *testing.T) {
 				},
 			}
 			err := cfg.ValidateHooks()
-			require.Error(t, err, "an event name Binetic Agent does not fire must be a load error")
+			require.Error(t, err, "an event name Crush does not fire must be a load error")
 			require.Contains(t, err.Error(), "unknown event name")
 			require.Contains(t, err.Error(), EventPreToolUse,
 				"the error must list the names that do work")
@@ -676,7 +676,7 @@ func TestRunnerParallelExecution(t *testing.T) {
 func TestRunnerEnvVarsPropagated(t *testing.T) {
 	t.Parallel()
 	hookCfg := config.HookConfig{
-		Command: `printf '{"decision":"allow","context":"%s"}' "$BINETIC_AGENT_TOOL_NAME"`,
+		Command: `printf '{"decision":"allow","context":"%s"}' "$CRUSH_TOOL_NAME"`,
 	}
 	r := NewRunner([]config.HookConfig{hookCfg}, t.TempDir(), t.TempDir())
 	result, err := r.Run(context.Background(), EventPreToolUse, "sess", "bash", `{}`)
@@ -918,7 +918,7 @@ func TestParseStdoutClaudeCodeFormat(t *testing.T) {
 		require.Equal(t, DecisionNone, r.Decision)
 	})
 
-	t.Run("binetic_agent format still works", func(t *testing.T) {
+	t.Run("crush format still works", func(t *testing.T) {
 		t.Parallel()
 		r := parseStdout(`{"decision":"allow","context":"hello"}`)
 		require.Equal(t, DecisionAllow, r.Decision)
@@ -926,13 +926,13 @@ func TestParseStdoutClaudeCodeFormat(t *testing.T) {
 	})
 }
 
-// A matcher written for a tool's name from before the rename to Binetic Agent
+// A matcher written for a tool's name from before the rename to Gnosh
 // still matches the tool under its new name.
 func TestMatcherMatchesALegacyToolName(t *testing.T) {
 	t.Parallel()
 
-	r := NewRunner([]config.HookConfig{{Command: "true", Matcher: "^binetic_agent_logs$"}}, t.TempDir(), t.TempDir())
-	require.Len(t, r.matchingHooks("binetic-agent_logs", "binetic_agent_logs"), 1)
+	r := NewRunner([]config.HookConfig{{Command: "true", Matcher: "^crush_logs$"}}, t.TempDir(), t.TempDir())
+	require.Len(t, r.matchingHooks("gnosh_logs", "crush_logs"), 1)
 	require.Empty(t, r.matchingHooks("bash", ""))
 }
 

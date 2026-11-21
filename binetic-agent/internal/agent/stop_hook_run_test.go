@@ -11,9 +11,9 @@ import (
 
 	"charm.land/catwalk/pkg/catwalk"
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/hooks"
-	"github.com/charmbracelet/binetic_agent/internal/message"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/hooks"
+	"github.com/charmbracelet/crush/internal/message"
 	"github.com/stretchr/testify/require"
 )
 
@@ -163,7 +163,7 @@ func TestRun_StopHookAllowEndsAfterOneTurn(t *testing.T) {
 // to work exactly once, then lets the turn end.
 func TestRun_StopHookBlockOnceCostsOneMoreTurn(t *testing.T) {
 	r := runTurnWithStopHook(t,
-		`[ "$BINETIC_AGENT_STOP_HOOK_ACTIVE" = "1" ] && exit 0; echo "you forgot the tests" >&2; exit 2`)
+		`[ "$CRUSH_STOP_HOOK_ACTIVE" = "1" ] && exit 0; echo "you forgot the tests" >&2; exit 2`)
 
 	require.Equal(t, int64(2), r.turns.Load(),
 		"the agent must answer again after the block, then be allowed to stop")
@@ -271,12 +271,12 @@ func requireQueueEmpty(t *testing.T, r stopHookRun) {
 }
 
 // A Claude Code Stop hook blocks with JSON, not an exit code. Before
-// Binetic Agent understood "block", this hook was read as no opinion and the
+// Crush understood "block", this hook was read as no opinion and the
 // turn ended at once — the Stop hook feature silently did nothing for
 // the hooks people were most likely to bring with them.
 func TestRun_ClaudeCodeStyleStopHookKeepsTheAgentWorking(t *testing.T) {
 	r := runTurnWithStopHook(t,
-		`[ "$BINETIC_AGENT_STOP_HOOK_ACTIVE" = "1" ] && exit 0; echo '{"decision":"block","reason":"run the tests first"}'`)
+		`[ "$CRUSH_STOP_HOOK_ACTIVE" = "1" ] && exit 0; echo '{"decision":"block","reason":"run the tests first"}'`)
 
 	require.Equal(t, int64(2), r.turns.Load(),
 		"the JSON block must cost exactly one more turn, like exit 2 does")

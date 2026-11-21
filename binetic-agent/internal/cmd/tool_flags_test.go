@@ -3,7 +3,7 @@ package cmd
 import (
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/require"
 )
@@ -15,7 +15,7 @@ func TestToolFlags(t *testing.T) {
 	t.Parallel()
 
 	parse := func(args ...string) ([]string, []string, error) {
-		cmd := &cobra.Command{Use: "binetic-agent", RunE: func(*cobra.Command, []string) error { return nil }}
+		cmd := &cobra.Command{Use: "gnosh", RunE: func(*cobra.Command, []string) error { return nil }}
 		cmd.SilenceErrors, cmd.SilenceUsage = true, true
 		addToolFlags(cmd)
 		cmd.SetArgs(args)
@@ -38,9 +38,9 @@ func TestToolFlags(t *testing.T) {
 	require.Equal(t, []string{"write", "multiedit", "bash", "edit"}, disallowed)
 	require.Equal(t, []string{"mcp_github_search", "view", "grep"}, allowed)
 
-	_, disallowed, err = parse("--disallowed-tools", "BASH,binetic_agent_logs")
+	_, disallowed, err = parse("--disallowed-tools", "BASH,crush_logs")
 	require.NoError(t, err)
-	require.Equal(t, []string{"bash", "binetic-agent_logs"}, disallowed, "any case, and the names from before the rename")
+	require.Equal(t, []string{"bash", "gnosh_logs"}, disallowed, "any case, and the names from before the rename")
 
 	_, _, err = parse("--disallowedTools", "Bsh")
 	require.ErrorContains(t, err, `unknown tool "Bsh"`)
@@ -52,7 +52,7 @@ func TestToolFlags(t *testing.T) {
 func TestToolFlagsWithoutTheFlags(t *testing.T) {
 	t.Parallel()
 
-	allowed, allowRules, disallowed, denyRules, err := toolFlags(&cobra.Command{Use: "binetic-agent"})
+	allowed, allowRules, disallowed, denyRules, err := toolFlags(&cobra.Command{Use: "gnosh"})
 	require.NoError(t, err)
 	require.Empty(t, allowed)
 	require.Empty(t, allowRules)
@@ -67,7 +67,7 @@ func TestToolsFlag(t *testing.T) {
 	t.Parallel()
 
 	parse := func(args ...string) ([]string, error) {
-		cmd := &cobra.Command{Use: "binetic-agent", RunE: func(*cobra.Command, []string) error { return nil }}
+		cmd := &cobra.Command{Use: "gnosh", RunE: func(*cobra.Command, []string) error { return nil }}
 		cmd.SilenceErrors, cmd.SilenceUsage = true, true
 		addToolFlags(cmd)
 		cmd.SetArgs(args)
@@ -118,7 +118,7 @@ func TestToolFlagsDenyRules(t *testing.T) {
 	t.Parallel()
 
 	parse := func(args ...string) ([]string, []string, error) {
-		cmd := &cobra.Command{Use: "binetic-agent", RunE: func(*cobra.Command, []string) error { return nil }}
+		cmd := &cobra.Command{Use: "gnosh", RunE: func(*cobra.Command, []string) error { return nil }}
 		cmd.SilenceErrors, cmd.SilenceUsage = true, true
 		addToolFlags(cmd)
 		cmd.SetArgs(args)
@@ -140,7 +140,7 @@ func TestToolFlagsDenyRules(t *testing.T) {
 	require.ErrorContains(t, err, `not a rule like "Edit(src/**)"`)
 
 	allowArgs := func(args ...string) ([]string, []string, error) {
-		cmd := &cobra.Command{Use: "binetic-agent", RunE: func(*cobra.Command, []string) error { return nil }}
+		cmd := &cobra.Command{Use: "gnosh", RunE: func(*cobra.Command, []string) error { return nil }}
 		cmd.SilenceErrors, cmd.SilenceUsage = true, true
 		addToolFlags(cmd)
 		cmd.SetArgs(args)

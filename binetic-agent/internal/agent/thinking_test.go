@@ -7,7 +7,7 @@ import (
 	"charm.land/fantasy"
 	"charm.land/fantasy/providers/openaicompat"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 )
 
 func thinkingKwargs(t *testing.T, opts fantasy.ProviderOptions) (map[string]any, bool) {

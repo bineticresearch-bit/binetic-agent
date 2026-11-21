@@ -6,9 +6,9 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/catwalk/pkg/catwalk"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/oauth/openai"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/oauth/openai"
+	"github.com/charmbracelet/crush/internal/ui/common"
 )
 
 // NewOAuthOpenAI creates an OAuth dialog for signing in with a ChatGPT

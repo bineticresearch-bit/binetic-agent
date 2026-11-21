@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/session"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/session"
 )
 
 // BranchSession copies the conversation of session sourceID into a new

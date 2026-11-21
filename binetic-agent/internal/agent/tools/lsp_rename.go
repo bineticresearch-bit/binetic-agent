@@ -11,11 +11,11 @@ import (
 
 	"charm.land/fantasy"
 
-	"github.com/charmbracelet/binetic_agent/internal/filetracker"
-	"github.com/charmbracelet/binetic_agent/internal/history"
-	"github.com/charmbracelet/binetic_agent/internal/lsp"
-	lsputil "github.com/charmbracelet/binetic_agent/internal/lsp/util"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
+	"github.com/charmbracelet/crush/internal/filetracker"
+	"github.com/charmbracelet/crush/internal/history"
+	"github.com/charmbracelet/crush/internal/lsp"
+	lsputil "github.com/charmbracelet/crush/internal/lsp/util"
+	"github.com/charmbracelet/crush/internal/permission"
 )
 
 type RenameParams struct {

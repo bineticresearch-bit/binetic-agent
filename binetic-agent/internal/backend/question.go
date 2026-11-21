@@ -1,8 +1,8 @@
 package backend
 
 import (
-	"github.com/charmbracelet/binetic_agent/internal/proto"
-	"github.com/charmbracelet/binetic_agent/internal/question"
+	"github.com/charmbracelet/crush/internal/proto"
+	"github.com/charmbracelet/crush/internal/question"
 )
 
 // AnswerQuestion submits answers for a question. The returned bool

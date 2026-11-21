@@ -14,7 +14,7 @@ import (
 	"charm.land/fantasy/providers/anthropic"
 	"charm.land/fantasy/providers/google"
 	"charm.land/fantasy/providers/openai"
-	"github.com/charmbracelet/binetic_agent/internal/stringext"
+	"github.com/charmbracelet/crush/internal/stringext"
 	"github.com/charmbracelet/x/ansi"
 )
 
@@ -73,7 +73,7 @@ type TextContent struct {
 	// Hidden marks generated user continuations that remain in model history.
 	Hidden bool `json:"hidden,omitempty"`
 	// Notice marks a hidden continuation the chat shows as a notice from
-	// binetic-agent, such as a background job's end, as Claude Code shows its
+	// gnosh, such as a background job's end, as Claude Code shows its
 	// task notifications; other hidden text the chat leaves out.
 	Notice bool `json:"notice,omitempty"`
 }

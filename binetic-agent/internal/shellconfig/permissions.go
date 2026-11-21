@@ -7,9 +7,9 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/tooldefs"
+	"github.com/charmbracelet/crush/internal/tooldefs"
 
-	"github.com/charmbracelet/binetic_agent/internal/shell"
+	"github.com/charmbracelet/crush/internal/shell"
 )
 
 // handlePermissions implements the `permissions` builtin.
@@ -49,7 +49,7 @@ func handlePermissions(ctx context.Context, args []string, stdin io.Reader, stdo
 }
 
 // checkToolNames rejects names the loader will refuse, so a typo fails
-// on the binetic-agentrc line that is wrong rather than at the next launch.
+// on the crushrc line that is wrong rather than at the next launch.
 // allowMCP is set for lists that also accept MCP tool names, which are
 // only discovered when a server connects.
 func checkToolNames(names []string, allowMCP bool, what string, stderr io.Writer) error {

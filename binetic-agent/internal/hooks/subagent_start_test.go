@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/stretchr/testify/require"
 )
 
@@ -19,7 +19,7 @@ func TestRunSubagentStart(t *testing.T) {
 	dir := t.TempDir()
 	envPath := filepath.Join(dir, "env")
 	cfg := &config.Config{Hooks: map[string][]config.HookConfig{EventSubagentStart: {
-		{Matcher: "task", Command: `echo "$BINETIC_AGENT_AGENT_ID $BINETIC_AGENT_AGENT_TYPE" > ` + envPath + `; echo '{"hookSpecificOutput":{"hookEventName":"SubagentStart","additionalContext":"be brief"}}'`},
+		{Matcher: "task", Command: `echo "$GNOSH_AGENT_ID $GNOSH_AGENT_TYPE" > ` + envPath + `; echo '{"hookSpecificOutput":{"hookEventName":"SubagentStart","additionalContext":"be brief"}}'`},
 	}}}
 	require.NoError(t, cfg.ValidateHooks())
 	r := NewRunner(cfg.Hooks[EventSubagentStart], dir, dir)

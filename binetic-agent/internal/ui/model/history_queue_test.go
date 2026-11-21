@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/charmbracelet/binetic_agent/internal/message"
+	"github.com/charmbracelet/crush/internal/message"
 )
 
 // TestHistoryEntries_LeavesQueuedPromptsOut pins that history recall offers

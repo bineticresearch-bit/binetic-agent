@@ -10,8 +10,8 @@ import (
 	"strings"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/gnovm"
-	gnovmtools "github.com/charmbracelet/binetic_agent/internal/gnovm/tools"
+	"github.com/charmbracelet/crush/internal/gnovm"
+	gnovmtools "github.com/charmbracelet/crush/internal/gnovm/tools"
 )
 
 const (

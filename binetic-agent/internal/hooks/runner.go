@@ -11,9 +11,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/shell"
-	"github.com/charmbracelet/binetic_agent/internal/tooldefs"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/shell"
+	"github.com/charmbracelet/crush/internal/tooldefs"
 )
 
 // abandonGrace is how long runOne waits after ctx cancellation for the
@@ -494,7 +494,7 @@ func toolNames(ctx context.Context, toolName string) []string {
 
 // runOne executes a single hook command and returns its result.
 //
-// Execution goes through Binetic Agent's embedded POSIX shell (shell.Run) so the
+// Execution goes through Crush's embedded POSIX shell (shell.Run) so the
 // same interpreter, builtins, and coreutils are visible to hooks as to
 // the bash tool. BlockFuncs are intentionally omitted: hooks are
 // user-authored config that carry the same trust as a shell alias.
@@ -648,7 +648,7 @@ func (r *Runner) runOne(parentCtx context.Context, hook config.HookConfig, event
 	if result.Error != "" {
 		// An answer that cannot be read is no answer: a hook that wrote
 		// "decision": "Deny" meant to deny.
-		reason := fmt.Sprintf("hook %q gave an answer Binetic Agent could not read (%s)", hook.DisplayName(), result.Error)
+		reason := fmt.Sprintf("hook %q gave an answer Gnosh could not read (%s)", hook.DisplayName(), result.Error)
 		if result.Reason != "" {
 			reason += "; its reason: " + result.Reason
 		}
@@ -673,7 +673,7 @@ const checkDidNotPass = "A check that could not run does not pass."
 
 // couldNotRun is the result of a hook that could not run to a verdict:
 // it never started, it or a command it runs was not found or not
-// executable, or it timed out. It checked nothing, so it blocks: Binetic Agent
+// executable, or it timed out. It checked nothing, so it blocks: Gnosh
 // fails closed, where Claude Code lets such a hook pass.
 func couldNotRun(hook config.HookConfig, failure string) HookResult {
 	return HookResult{

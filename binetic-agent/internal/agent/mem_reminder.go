@@ -8,10 +8,10 @@ import (
 	"strings"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/gnovm"
-	gnovmtools "github.com/charmbracelet/binetic_agent/internal/gnovm/tools"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/session"
+	"github.com/charmbracelet/crush/internal/gnovm"
+	gnovmtools "github.com/charmbracelet/crush/internal/gnovm/tools"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/session"
 )
 
 // memReminderTurns is how many of the model's replies may go by without a
@@ -62,7 +62,7 @@ func memReminderDue(msgs []message.Message) bool {
 	return sinceMem >= memReminderTurns && sinceReminder >= memReminderTurns
 }
 
-// isMemReminder reports whether msg is a mem reminder binetic-agent put in.
+// isMemReminder reports whether msg is a mem reminder gnosh put in.
 func isMemReminder(msg message.Message) bool {
 	text := msg.Content()
 	return text.Hidden && strings.Contains(text.Text, memReminderOpening)

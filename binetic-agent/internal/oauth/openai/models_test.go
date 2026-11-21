@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
+	"github.com/charmbracelet/crush/internal/oauth"
 	"github.com/stretchr/testify/require"
 )
 
@@ -14,7 +14,7 @@ func TestModels(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		require.Equal(t, "Bearer at-models", r.Header.Get("Authorization"))
 		require.Equal(t, "acct-9", r.Header.Get("chatgpt-account-id"))
-		require.Equal(t, "binetic_agent", r.Header.Get("originator"))
+		require.Equal(t, "crush", r.Header.Get("originator"))
 
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{

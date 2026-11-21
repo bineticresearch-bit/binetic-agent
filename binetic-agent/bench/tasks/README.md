@@ -10,7 +10,7 @@ Each task is a directory with:
 - `prompt.txt` is the prompt for the harness, given as is.
 - `prompt2.txt`, only in `continue`, is the prompt for a second session in
   the same directory and HOME, started with the harness's continue flag
-  (`run --continue` for binetic-agent and binetic_agent).
+  (`run --continue` for gnosh and crush).
 - `check.sh DIR` exits 0 when the task is done and 1 when it is not, and
   prints one line saying why. It uses `$GO` (default `go`) and sets
   GOTOOLCHAIN=local, so it never downloads a toolchain.

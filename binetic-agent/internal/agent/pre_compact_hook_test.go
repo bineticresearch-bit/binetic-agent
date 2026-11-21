@@ -11,9 +11,9 @@ import (
 
 	"charm.land/catwalk/pkg/catwalk"
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/hooks"
-	"github.com/charmbracelet/binetic_agent/internal/message"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/hooks"
+	"github.com/charmbracelet/crush/internal/message"
 	"github.com/stretchr/testify/require"
 )
 
@@ -135,7 +135,7 @@ func TestSummarize_PreCompactFiresWithTheTrigger(t *testing.T) {
 			dir := t.TempDir()
 			out := filepath.Join(dir, "trigger")
 			r := preCompactAgent(t, false,
-				preCompactHooks("", `echo "$BINETIC_AGENT_PRE_COMPACT_TRIGGER" > `+out)...)
+				preCompactHooks("", `echo "$GNOSH_PRE_COMPACT_TRIGGER" > `+out)...)
 			summarized, _, err := r.summarize(t, tc.trigger)
 			require.NoError(t, err)
 			require.Equal(t, 1, summarized, "the summary goes ahead")

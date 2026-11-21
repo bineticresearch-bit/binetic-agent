@@ -3,7 +3,7 @@ package agent
 import (
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/message"
+	"github.com/charmbracelet/crush/internal/message"
 )
 
 // emptyAnswerMaxTries is how many times in a row a turn is continued

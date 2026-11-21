@@ -27,27 +27,27 @@ import (
 	fang "charm.land/fang/v2"
 	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/colorprofile"
-	"github.com/charmbracelet/binetic_agent/internal/app"
-	"github.com/charmbracelet/binetic_agent/internal/client"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/db"
-	"github.com/charmbracelet/binetic_agent/internal/env"
-	"github.com/charmbracelet/binetic_agent/internal/event"
-	"github.com/charmbracelet/binetic_agent/internal/gnovm"
-	"github.com/charmbracelet/binetic_agent/internal/lock"
-	binetic_agentlog "github.com/charmbracelet/binetic_agent/internal/log"
-	"github.com/charmbracelet/binetic_agent/internal/projects"
-	"github.com/charmbracelet/binetic_agent/internal/proto"
-	"github.com/charmbracelet/binetic_agent/internal/server"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/skills"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
-	"github.com/charmbracelet/binetic_agent/internal/ui/exitbanner"
-	"github.com/charmbracelet/binetic_agent/internal/ui/logo"
-	ui "github.com/charmbracelet/binetic_agent/internal/ui/model"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
-	"github.com/charmbracelet/binetic_agent/internal/version"
-	"github.com/charmbracelet/binetic_agent/internal/workspace"
+	"github.com/charmbracelet/crush/internal/app"
+	"github.com/charmbracelet/crush/internal/client"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/db"
+	"github.com/charmbracelet/crush/internal/env"
+	"github.com/charmbracelet/crush/internal/event"
+	"github.com/charmbracelet/crush/internal/gnovm"
+	"github.com/charmbracelet/crush/internal/lock"
+	crushlog "github.com/charmbracelet/crush/internal/log"
+	"github.com/charmbracelet/crush/internal/projects"
+	"github.com/charmbracelet/crush/internal/proto"
+	"github.com/charmbracelet/crush/internal/server"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/skills"
+	"github.com/charmbracelet/crush/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/ui/exitbanner"
+	"github.com/charmbracelet/crush/internal/ui/logo"
+	ui "github.com/charmbracelet/crush/internal/ui/model"
+	"github.com/charmbracelet/crush/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/version"
+	"github.com/charmbracelet/crush/internal/workspace"
 	uv "github.com/charmbracelet/ultraviolet"
 	"github.com/charmbracelet/x/ansi"
 	xstrings "github.com/charmbracelet/x/exp/strings"
@@ -61,7 +61,7 @@ func init() {
 	rootCmd.PersistentFlags().StringP("cwd", "c", "", "Current working directory")
 	rootCmd.PersistentFlags().StringP("data-dir", "D", "", "Custom data directory")
 	rootCmd.PersistentFlags().BoolP("debug", "d", false, "Debug")
-	rootCmd.PersistentFlags().StringVarP(&clientHost, "host", "H", server.DefaultHost(), "Connect to a specific Binetic Agent server host (for advanced users)")
+	rootCmd.PersistentFlags().StringVarP(&clientHost, "host", "H", server.DefaultHost(), "Connect to a specific Gnosh server host (for advanced users)")
 	rootCmd.Flags().BoolP("help", "h", false, "Help")
 	addYoloFlags(rootCmd)
 	addToolFlags(rootCmd)
@@ -74,7 +74,7 @@ func init() {
 	addSessionFlags(rootCmd)
 	addSafeModeFlag(rootCmd)
 	addTrustFolderFlag(rootCmd)
-	rootCmd.Flags().StringP("model", "m", "", "Model for this session, in memory only, as Claude Code's --model: 'model' or 'provider/model', as binetic-agent run's -m takes; /model still switches and saves as before")
+	rootCmd.Flags().StringP("model", "m", "", "Model for this session, in memory only, as Claude Code's --model: 'model' or 'provider/model', as gnosh run's -m takes; /model still switches and saves as before")
 
 	rootCmd.AddCommand(
 		promptCmd,
@@ -101,33 +101,33 @@ var rootCmd = &cobra.Command{
 	Long:  "A security-first harness for coding agents, in your terminal.",
 	Example: `
 # Run in interactive mode
-binetic-agent
+gnosh
 
-# Run non-interactively (Claude Code's -p works too: binetic-agent -p "...")
-binetic-agent run "Guess my 5 favorite Pokémon"
+# Run non-interactively (Claude Code's -p works too: gnosh -p "...")
+gnosh run "Guess my 5 favorite Pokémon"
 
 # Run a non-interactively with pipes and redirection
-cat README.md | binetic-agent run "make this more glamorous" > GLAMOROUS_README.md
+cat README.md | gnosh run "make this more glamorous" > GLAMOROUS_README.md
 
 # Run with debug logging in a specific directory
-binetic-agent --debug --cwd /path/to/project
+gnosh --debug --cwd /path/to/project
 
 # Run in yolo mode (auto-accept all permissions; use with care)
-binetic-agent --yolo
+gnosh --yolo
 
 # Run with custom data directory
-binetic-agent --data-dir /path/to/custom/.binetic-agent
+gnosh --data-dir /path/to/custom/.gnosh
 
 # Continue a previous session
-binetic-agent --session {session-id}
+gnosh --session {session-id}
 
 # Continue the most recent session
-binetic-agent --continue
+gnosh --continue
 
 # Start with a prompt, as Claude Code's claude "query" does, or resume a
 # session with one
-binetic-agent "explain this project"
-binetic-agent -r auth-refactor "finish this PR"
+gnosh "explain this project"
+gnosh -r auth-refactor "finish this PR"
   `,
 	// A prompt may follow the flags, as in Claude Code; a first word that
 	// names a subcommand is that subcommand.
@@ -149,7 +149,7 @@ binetic-agent -r auth-refactor "finish this PR"
 		}
 
 		// Ask before the config loads: whether the folder is trusted
-		// decides whether its binetic-agentrc runs and its settings apply.
+		// decides whether its gnoshrc runs and its settings apply.
 		if err := askFolderTrust(cmd); err != nil {
 			return err
 		}
@@ -229,7 +229,7 @@ binetic-agent -r auth-refactor "finish this PR"
 			}
 			event.Error(err)
 			slog.Error("TUI run error", "error", err)
-			return errors.New(version.Name + " hit an internal error. If metrics are enabled, we were notified about it. If you'd like to report it, please copy the stacktrace above and open an issue at https://github.com/charmbracelet/binetic_agent/issues/new?template=bug.yml") //nolint:staticcheck
+			return errors.New(version.Name + " hit an internal error. If metrics are enabled, we were notified about it. If you'd like to report it, please copy the stacktrace above and open an issue at https://github.com/charmbracelet/crush/issues/new?template=bug.yml") //nolint:staticcheck
 		}
 		var banner config.ExitBanner
 		if cfg := com.Config(); cfg != nil {
@@ -240,10 +240,10 @@ binetic-agent -r auth-refactor "finish this PR"
 	}),
 }
 
-// versionArt is the compact BINETIC_AGENT wordmark printed above `binetic-agent --version`,
+// versionArt is the compact GNOSH wordmark printed above `gnosh --version`,
 // in the default theme's colors.
 func versionArt() string {
-	t := styles.Binetic AgentCosmos()
+	t := styles.GnoshCosmos()
 	return logo.Render(t.Logo.GradCanvas, "", true, logo.Opts{
 		FieldColor:   t.Logo.FieldColor,
 		FieldColorB:  t.Logo.FieldColorB,
@@ -254,16 +254,16 @@ func versionArt() string {
 	})
 }
 
-// colorScheme is fang's own, Charm's colors, with one of Binetic Agent's: the
+// colorScheme is fang's own, Charm's colors, with one of Gnosh's: the
 // program's name in gold.
 func colorScheme(c lipgloss.LightDarkFunc) fang.ColorScheme {
 	s := fang.DefaultColorScheme(c)
-	s.Program = c(lipgloss.Color("#8A6400"), styles.Binetic AgentGold)
+	s.Program = c(lipgloss.Color("#8A6400"), styles.GnoshGold)
 	return s
 }
 
 // printSessionResume prints the exit banner after the TUI exits, including the
-// session title and the hint to resume it with `binetic_agent -s <id>`. The banner
+// session title and the hint to resume it with `crush -s <id>`. The banner
 // style decides how much of that is shown; see config.ExitBanner.
 func printSessionResume(model *ui.UI, banner config.ExitBanner) {
 	tw, _, _ := term.GetSize(os.Stdout.Fd())
@@ -279,8 +279,8 @@ const defaultVersionTemplate = `{{with .DisplayName}}{{printf "%s " .}}{{end}}{{
 ` + gnovm.AttributionNotice + "\n"
 
 // printAsRun maps Claude Code's way of asking one question without the
-// TUI, -p/--print, onto binetic-agent run: `binetic-agent -p "question"`, with any flags
-// after it, runs as `binetic-agent run "question"`. Only a leading -p/--print is
+// TUI, -p/--print, onto gnosh run: `gnosh -p "question"`, with any flags
+// after it, runs as `gnosh run "question"`. Only a leading -p/--print is
 // rewritten, the form Claude Code users type.
 func printAsRun(args []string) ([]string, bool) {
 	if len(args) == 0 || (args[0] != "-p" && args[0] != "--print") {
@@ -294,9 +294,9 @@ func Execute() {
 	// logger isn't set up until after config is loaded (the log path
 	// depends on the data directory from config). Until then, records are
 	// kept rather than written to stderr, where they would land on the
-	// TUI, and binetic_agentlog.Setup writes them to the log file. They used to
+	// TUI, and crushlog.Setup writes them to the log file. They used to
 	// be discarded, so config warnings were never seen.
-	slog.SetDefault(slog.New(binetic_agentlog.Early()))
+	slog.SetDefault(slog.New(crushlog.Early()))
 
 	// NOTE: very hacky: we create a colorprofile writer with STDOUT, then make
 	// it forward to a bytes.Buffer, write the colored wordmark to it, and then
@@ -331,11 +331,11 @@ func Execute() {
 
 // errorHandler prints a command's error as fang does, but capitalizes only
 // its first letter, and prints nothing for an exitStatus, which only sets
-// the status binetic-agent exits with. fang title-cases the whole first word,
+// the status gnosh exits with. fang title-cases the whole first word,
 // capitalizing after every - or ( and lowercasing the rest, so an error
 // that starts with a flag, a quoted name, an environment variable or a
 // path showed it changed: --Disallowed-Tools, "Bash(Git:*)",
-// Binetic Agent_client_server.
+// Gnosh_client_server.
 func errorHandler(w io.Writer, styles fang.Styles, err error) {
 	if _, ok := errors.AsType[exitStatus](err); ok {
 		return
@@ -367,9 +367,9 @@ func supportsProgressBar() bool {
 }
 
 // useClientServer returns true when the client/server architecture is
-// enabled via the BINETIC_AGENT_CLIENT_SERVER environment variable.
+// enabled via the GNOSH_CLIENT_SERVER environment variable.
 func useClientServer() bool {
-	v, _ := strconv.ParseBool(env.Getenv("BINETIC_AGENT_CLIENT_SERVER"))
+	v, _ := strconv.ParseBool(env.Getenv("GNOSH_CLIENT_SERVER"))
 	return v
 }
 
@@ -391,7 +391,7 @@ func setupWorkspaceWithProgressBar(cmd *cobra.Command) (workspace.Workspace, fun
 }
 
 // setupWorkspace returns a Workspace and cleanup function. When
-// BINETIC_AGENT_CLIENT_SERVER=1, it connects to a server process and returns a
+// GNOSH_CLIENT_SERVER=1, it connects to a server process and returns a
 // ClientWorkspace. Otherwise it creates an in-process app.App and
 // returns an AppWorkspace.
 func setupWorkspace(cmd *cobra.Command) (workspace.Workspace, func(), error) {
@@ -416,7 +416,7 @@ func yoloFlag(cmd *cobra.Command) bool {
 }
 
 // workspaceYolo reports whether the workspace cmd sets up accepts every
-// permission request. binetic-agent run takes the yolo flags but keeps them to
+// permission request. gnosh run takes the yolo flags but keeps them to
 // itself: it already accepts its own session's requests, and a yolo
 // workspace it created on a shared server would hand yolo to a TUI that
 // joined it later, since the first client's flags win.
@@ -435,22 +435,22 @@ func addSessionFlags(cmd *cobra.Command) {
 	cmd.Flags().StringP("name", "n", "", nameUsage)
 }
 
-// nameUsage is the help of Claude Code's -n/--name, in binetic-agent and binetic-agent
+// nameUsage is the help of Claude Code's -n/--name, in gnosh and gnosh
 // run.
 const nameUsage = "A name for the session, as /rename gives one: the new session, the one resumed, or with --fork-session its copy"
 
 // addSafeModeFlag adds Claude Code's --safe-mode to cmd.
 func addSafeModeFlag(cmd *cobra.Command) {
-	cmd.Flags().Bool("safe-mode", false, "Start with the config's customizations off, to troubleshoot a broken one: hooks, MCP servers (but --mcp-config's), context files (BINETIC_AGENT.md, AGENTS.md, CLAUDE.md), skills (but the built-in ones) and custom commands; providers, models and permissions work as before. CLAUDE_CODE_SAFE_MODE=1 does the same")
+	cmd.Flags().Bool("safe-mode", false, "Start with the config's customizations off, to troubleshoot a broken one: hooks, MCP servers (but --mcp-config's), context files (GNOSH.md, AGENTS.md, CLAUDE.md), skills (but the built-in ones) and custom commands; providers, models and permissions work as before. CLAUDE_CODE_SAFE_MODE=1 does the same")
 }
 
 // safeModeOn reports whether Claude Code's --safe-mode is asked for, by
-// the flag or by CLAUDE_CODE_SAFE_MODE (or BINETIC_AGENT_SAFE_MODE) set true.
+// the flag or by CLAUDE_CODE_SAFE_MODE (or GNOSH_SAFE_MODE) set true.
 func safeModeOn(cmd *cobra.Command) bool {
 	if on, _ := cmd.Flags().GetBool("safe-mode"); on {
 		return true
 	}
-	for _, name := range []string{"CLAUDE_CODE_SAFE_MODE", "BINETIC_AGENT_SAFE_MODE"} {
+	for _, name := range []string{"CLAUDE_CODE_SAFE_MODE", "GNOSH_SAFE_MODE"} {
 		if on, _ := strconv.ParseBool(os.Getenv(name)); on {
 			return true
 		}
@@ -460,7 +460,7 @@ func safeModeOn(cmd *cobra.Command) bool {
 
 // errSafeModeServer is --safe-mode through a server, whose config every
 // client of a workspace shares.
-var errSafeModeServer = errors.New("--safe-mode is not supported with BINETIC_AGENT_CLIENT_SERVER=1 yet")
+var errSafeModeServer = errors.New("--safe-mode is not supported with GNOSH_CLIENT_SERVER=1 yet")
 
 // nameFlag is the name -n/--name gives the session, as /rename keeps one;
 // "" for none.
@@ -476,13 +476,13 @@ func nameFlag(cmd *cobra.Command) string {
 func overrideTUIModel(ctx context.Context, ws workspace.Workspace, model string) error {
 	appWs, ok := ws.(*workspace.AppWorkspace)
 	if !ok {
-		return fmt.Errorf("--model is not supported with %s=1 yet; pick the model with /model", "BINETIC_AGENT_CLIENT_SERVER")
+		return fmt.Errorf("--model is not supported with %s=1 yet; pick the model with /model", "GNOSH_CLIENT_SERVER")
 	}
 	return appWs.App().OverrideModels(ctx, model, "")
 }
 
-// forkSessionUsage is the help of Claude Code's --fork-session, in binetic-agent
-// and binetic-agent run.
+// forkSessionUsage is the help of Claude Code's --fork-session, in gnosh
+// and gnosh run.
 const forkSessionUsage = "When resuming, go on in a copy of the session, as /branch makes one, and leave the session as it was (with --continue, --resume or --session)"
 
 // errForkAlone is --fork-session with no session to go back to.
@@ -612,7 +612,7 @@ func setupLocalWorkspace(cmd *cobra.Command) (workspace.Workspace, func(), error
 	}
 
 	logFile := config.LogFile(filepath.Join(cfg.Options.DataDirectory, "logs"))
-	binetic_agentlog.Setup(logFile, debug)
+	crushlog.Setup(logFile, debug)
 
 	// Discover skills once before app.New. Local mode hosts a single
 	// workspace per process, so WithGlobalMirror keeps the package
@@ -697,27 +697,27 @@ func connectToServer(cmd *cobra.Command) (*client.Client, *proto.Workspace, func
 	if allowed, allowRules, disallowed, denyRules, err := toolFlags(cmd); err != nil {
 		return nil, nil, nil, err
 	} else if len(allowed) > 0 || len(allowRules) > 0 || len(disallowed) > 0 || len(denyRules) > 0 {
-		return nil, nil, nil, fmt.Errorf("tools named with --allowed-tools or --disallowed-tools cannot reach the server's config with %s=1 yet; set options.disabled_tools, permissions.allow or permissions.deny in the project's binetic-agent.json instead", "BINETIC_AGENT_CLIENT_SERVER")
+		return nil, nil, nil, fmt.Errorf("tools named with --allowed-tools or --disallowed-tools cannot reach the server's config with %s=1 yet; set options.disabled_tools, permissions.allow or permissions.deny in the project's gnosh.json instead", "GNOSH_CLIENT_SERVER")
 	}
 	if dirs, err := addDirFlag(cmd); err != nil {
 		return nil, nil, nil, err
 	} else if len(dirs) > 0 {
-		return nil, nil, nil, fmt.Errorf("--add-dir cannot reach the server's permissions with %s=1 yet", "BINETIC_AGENT_CLIENT_SERVER")
+		return nil, nil, nil, fmt.Errorf("--add-dir cannot reach the server's permissions with %s=1 yet", "GNOSH_CLIENT_SERVER")
 	}
 	if servers, strict, err := mcpConfigFlags(cmd); err != nil {
 		return nil, nil, nil, err
 	} else if len(servers) > 0 || strict {
-		return nil, nil, nil, fmt.Errorf("--mcp-config cannot reach the server's MCP clients with %s=1 yet", "BINETIC_AGENT_CLIENT_SERVER")
+		return nil, nil, nil, fmt.Errorf("--mcp-config cannot reach the server's MCP clients with %s=1 yet", "GNOSH_CLIENT_SERVER")
 	}
 	if mode, err := permissionModeFlag(cmd); err != nil {
 		return nil, nil, nil, err
 	} else if mode == config.PermissionModeAcceptEdits || mode == config.PermissionModePlan {
-		return nil, nil, nil, fmt.Errorf("--permission-mode %s cannot reach the server's agent with %s=1 yet", mode, "BINETIC_AGENT_CLIENT_SERVER")
+		return nil, nil, nil, fmt.Errorf("--permission-mode %s cannot reach the server's agent with %s=1 yet", mode, "GNOSH_CLIENT_SERVER")
 	}
 	if replace, appended, err := systemPromptFlags(cmd); err != nil {
 		return nil, nil, nil, err
 	} else if replace != "" || appended != "" {
-		return nil, nil, nil, fmt.Errorf("--system-prompt and --append-system-prompt cannot reach the server's agent with %s=1 yet", "BINETIC_AGENT_CLIENT_SERVER")
+		return nil, nil, nil, fmt.Errorf("--system-prompt and --append-system-prompt cannot reach the server's agent with %s=1 yet", "GNOSH_CLIENT_SERVER")
 	}
 
 	hostURL, err := server.ParseHostURL(clientHost)
@@ -768,7 +768,7 @@ func connectToServer(cmd *cobra.Command) (*client.Client, *proto.Workspace, func
 
 	if ws.Config != nil {
 		logFile := config.LogFile(filepath.Join(ws.Config.Options.DataDirectory, "logs"))
-		binetic_agentlog.Setup(logFile, debug)
+		crushlog.Setup(logFile, debug)
 	}
 
 	// Retiring the client releases every claim it holds, so it covers
@@ -825,7 +825,7 @@ func replaceExitingServer(cmd *cobra.Command, hostURL *url.URL) error {
 		}
 	}
 	if err := spawnAndWaitReady(cmd, hostURL); err != nil {
-		return fmt.Errorf("failed to initialize the Binetic Agent server: %v", err)
+		return fmt.Errorf("failed to initialize the Gnosh server: %v", err)
 	}
 	return nil
 }
@@ -837,11 +837,11 @@ func replaceExitingServer(cmd *cobra.Command, hostURL *url.URL) error {
 func ensureServer(cmd *cobra.Command, hostURL *url.URL) error {
 	// Initialize the persistent log here so stale-socket diagnostics
 	// emitted before connectToServer runs are captured in the per-host
-	// server log file. binetic_agentlog.Setup uses sync.Once internally, so the
+	// server log file. crushlog.Setup uses sync.Once internally, so the
 	// later call from connectToServer becomes a no-op.
 	debug, _ := cmd.Flags().GetBool("debug")
 	logFile := config.LogFile(filepath.Join(config.GlobalCacheDir(), "server-"+safeHostName(hostURL)))
-	binetic_agentlog.Setup(logFile, debug)
+	crushlog.Setup(logFile, debug)
 
 	switch hostURL.Scheme {
 	case "unix", "npipe":
@@ -889,13 +889,13 @@ func ensureServer(cmd *cobra.Command, hostURL *url.URL) error {
 
 		if needsStart {
 			if err := spawnAndWaitReady(cmd, hostURL); err != nil {
-				return fmt.Errorf("failed to initialize the Binetic Agent server: %v", err)
+				return fmt.Errorf("failed to initialize the Gnosh server: %v", err)
 			}
 			return nil
 		}
 
 		if err := waitForServerReady(cmd.Context(), hostURL); err != nil {
-			return fmt.Errorf("failed to initialize the Binetic Agent server: %v", err)
+			return fmt.Errorf("failed to initialize the Gnosh server: %v", err)
 		}
 	}
 
@@ -904,7 +904,7 @@ func ensureServer(cmd *cobra.Command, hostURL *url.URL) error {
 
 // spawnAndWaitReady serializes the spawn-and-wait-for-readiness sequence
 // across concurrent clients via an exclusive flock on
-// $XDG_CACHE_HOME/binetic_agent/server-<safeHost>/start.lock.
+// $XDG_CACHE_HOME/crush/server-<safeHost>/start.lock.
 //
 // After acquiring the lock it re-probes readiness so that a client that
 // blocked while another client was spawning can skip its own spawn and
@@ -976,10 +976,10 @@ func safeHostName(hostURL *url.URL) string {
 }
 
 // serverReadyTimeout returns the total budget for the readiness probe.
-// Overridable via BINETIC_AGENT_SERVER_READY_TIMEOUT (parsed as a Go duration).
+// Overridable via GNOSH_SERVER_READY_TIMEOUT (parsed as a Go duration).
 func serverReadyTimeout() time.Duration {
 	const def = 10 * time.Second
-	v := env.Getenv("BINETIC_AGENT_SERVER_READY_TIMEOUT")
+	v := env.Getenv("GNOSH_SERVER_READY_TIMEOUT")
 	if v == "" {
 		return def
 	}
@@ -1227,25 +1227,25 @@ func startDetachedServer(cmd *cobra.Command, hostURL *url.URL) error {
 	c.Stderr = stderr
 
 	if err := c.Start(); err != nil {
-		return fmt.Errorf("failed to start the Binetic Agent server: %v", err)
+		return fmt.Errorf("failed to start the Gnosh server: %v", err)
 	}
 
 	if err := c.Process.Release(); err != nil {
-		return fmt.Errorf("failed to detach the Binetic Agent server process: %v", err)
+		return fmt.Errorf("failed to detach the Gnosh server process: %v", err)
 	}
 
 	return nil
 }
 
-// shouldEnableMetrics reports whether to send usage metrics at all. Upstream Binetic Agent sends them unless told not to; this fork sends
+// shouldEnableMetrics reports whether to send usage metrics at all. Upstream Crush sends them unless told not to; this fork sends
 // none unless asked, and only to the configured metrics_url, never to Charm.
 // DO_NOT_TRACK=1 always wins, then
-// BINETIC_AGENT_DISABLE_METRICS when it holds a value, then option metrics.
+// GNOSH_DISABLE_METRICS when it holds a value, then option metrics.
 func shouldEnableMetrics(cfg *config.Config) bool {
 	if v, _ := strconv.ParseBool(os.Getenv("DO_NOT_TRACK")); v {
 		return false
 	}
-	if disable, ok := env.LookupBool("BINETIC_AGENT_DISABLE_METRICS"); ok {
+	if disable, ok := env.LookupBool("GNOSH_DISABLE_METRICS"); ok {
 		return !disable
 	}
 	// An explicit option metrics in the config wins over the machine's
@@ -1262,10 +1262,10 @@ func shouldEnableMetrics(cfg *config.Config) bool {
 // machine on an interactive run. It is cookie-style: off unless the person
 // turns it on, and pressing Enter declines.
 const metricsConsentPrompt = `
-Binetic Agent can send anonymous usage analytics to help improve it: which models and
+Gnosh can send anonymous usage analytics to help improve it: which models and
 commands you use, token counts and timings, your OS and terminal, under a
 hashed machine id. Never your prompts, your code, or the model's replies. It
-is off unless you turn it on, goes only to binetic-agent's own collector, and you can
+is off unless you turn it on, goes only to gnosh's own collector, and you can
 change it any time with ` + "`option metrics true|false`" + `.
 
 Allow anonymous analytics? [y/N] (press Enter to decline) `
@@ -1273,7 +1273,7 @@ Allow anonymous analytics? [y/N] (press Enter to decline) `
 // maybeAskMetricsConsent asks the first-run analytics question once per
 // machine, before the TUI starts, and records the answer so it is never asked
 // again. It does nothing when the machine has already answered, when metrics
-// are already settled by DO_NOT_TRACK/BINETIC_AGENT_DISABLE_METRICS/option, or when
+// are already settled by DO_NOT_TRACK/GNOSH_DISABLE_METRICS/option, or when
 // input or output is not a terminal (a piped or non-interactive run never
 // prompts and sends nothing).
 func maybeAskMetricsConsent() {
@@ -1283,7 +1283,7 @@ func maybeAskMetricsConsent() {
 	if v, _ := strconv.ParseBool(os.Getenv("DO_NOT_TRACK")); v {
 		return
 	}
-	if _, ok := env.LookupBool("BINETIC_AGENT_DISABLE_METRICS"); ok {
+	if _, ok := env.LookupBool("GNOSH_DISABLE_METRICS"); ok {
 		return
 	}
 	if !term.IsTerminal(os.Stdin.Fd()) || !term.IsTerminal(os.Stdout.Fd()) {
@@ -1303,7 +1303,7 @@ func maybeAskMetricsConsent() {
 	}
 }
 
-// stdinWait is how long a piped stdin may stay silent before binetic-agent run
+// stdinWait is how long a piped stdin may stay silent before gnosh run
 // goes on without it, as Claude Code's -p does. A pipe that is open but
 // never written to, as an ssh session without -n gives, otherwise kept
 // the run waiting forever with nothing on the screen to say why. It is a
@@ -1311,7 +1311,7 @@ func maybeAskMetricsConsent() {
 var stdinWait = 3 * time.Second
 
 // MaybePrependStdin puts what is piped or redirected into stdin before
-// the prompt: `cat log | binetic-agent run "why does this fail?"`.
+// the prompt: `cat log | gnosh run "why does this fail?"`.
 func MaybePrependStdin(prompt string) (string, error) {
 	return prependInput(os.Stdin, os.Stderr, prompt)
 }

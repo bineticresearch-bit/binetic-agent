@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/agenttest"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/home"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
+	"github.com/charmbracelet/crush/internal/agent/agenttest"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/home"
+	"github.com/charmbracelet/crush/internal/permission"
 	"github.com/stretchr/testify/require"
 )
 
@@ -64,7 +64,7 @@ func TestAddDir(t *testing.T) {
 		"":                              "Please provide a directory path.",
 		"  ":                            "Please provide a directory path.",
 		"../missing":                    "Path " + filepath.Join(root, "missing") + " was not found.",
-		"~/no-such-dir-for-binetic-agent-tests": "Path " + filepath.Join(home.Dir(), "no-such-dir-for-binetic-agent-tests") + " was not found.",
+		"~/no-such-dir-for-gnosh-tests": "Path " + filepath.Join(home.Dir(), "no-such-dir-for-gnosh-tests") + " was not found.",
 		file:                            file + " is not a directory. Did you mean to add the parent directory " + root + "?",
 		".":                             ". is already the current working directory.",
 		"sub":                           "sub is already accessible within the current working directory " + workingDir + ".",

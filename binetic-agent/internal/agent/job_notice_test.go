@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/shell"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/shell"
 	"github.com/stretchr/testify/require"
 )
 
@@ -49,9 +49,9 @@ func startJob(t *testing.T, dir, command string) *shell.BackgroundShell {
 // When a background job ends, the session whose bash call started it is
 // sent the notice, as a hidden prompt the chat shows as a notice, as
 // Claude Code tells the agent. A
-// job whose end something took first (job_output, job_kill, binetic-agent's
+// job whose end something took first (job_output, job_kill, gnosh's
 // exit) is not told of, nor one started with no session, nor one that
-// ends once binetic-agent is shutting down.
+// ends once gnosh is shutting down.
 func TestJobWatcherTellsTheSessionOfAJobsEnd(t *testing.T) {
 	w, sent := recordingJobWatcher(t)
 	dir := t.TempDir()
@@ -88,7 +88,7 @@ func TestJobWatcherTellsTheSessionOfAJobsEnd(t *testing.T) {
 	require.True(t, late.ClaimEnd(), "a closing watcher leaves the end untaken")
 }
 
-// CancelAll, which binetic-agent calls as it shuts down, stops the job watcher:
+// CancelAll, which gnosh calls as it shuts down, stops the job watcher:
 // the jobs stopped on the way out start no turn.
 func TestCancelAllClosesTheJobWatcher(t *testing.T) {
 	t.Parallel()
@@ -99,12 +99,12 @@ func TestCancelAllClosesTheJobWatcher(t *testing.T) {
 	require.True(t, coord.jobs.closing.Load())
 }
 
-// The main agent of an interactive binetic-agent gets a bash tool that hands its
+// The main agent of an interactive gnosh gets a bash tool that hands its
 // background jobs to the watcher; a sub-agent, whose turn is over when
-// its job ends, and `binetic-agent run`, which exits with its turn, do not.
+// its job ends, and `gnosh run`, which exits with its turn, do not.
 func TestBuildToolsWatchesTheMainAgentsJobs(t *testing.T) {
 	// No user tool descriptions, which wrap a tool again.
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", t.TempDir())
+	t.Setenv("GNOSH_GLOBAL_CONFIG", t.TempDir())
 	w, _ := recordingJobWatcher(t)
 	const providerID = "test-provider"
 	env := testEnv(t)
@@ -128,7 +128,7 @@ func TestBuildToolsWatchesTheMainAgentsJobs(t *testing.T) {
 	require.Contains(t, bashResult(false), "You will be told when it ends")
 	require.NotContains(t, bashResult(true), "You will be told", "a sub-agent's")
 	coord.interactive = false
-	require.NotContains(t, bashResult(false), "You will be told", "binetic-agent run's")
+	require.NotContains(t, bashResult(false), "You will be told", "gnosh run's")
 
 	bg := shell.GetBackgroundShellManager()
 	for _, job := range bg.Jobs(env.workingDir) {

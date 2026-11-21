@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/charmbracelet/binetic_agent/internal/db"
+	"github.com/charmbracelet/crush/internal/db"
 )
 
-func createDotBinetic AgentDir(dir string) error {
+func createDotCrushDir(dir string) error {
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return fmt.Errorf("failed to create data directory: %q %w", dir, err)
 	}

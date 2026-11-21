@@ -35,7 +35,7 @@ func TestEarlyRecordsReachTheFinalHandler(t *testing.T) {
 	logger := slog.New(h)
 	logger.Warn("Skipping provider due to missing API key", "provider", "openai")
 	logger.Debug("resolving providers")
-	logger.With("path", "/p/binetic-agentrc").WithGroup("merge").Info("Found both a JSON config and a binetic-agentrc", "keys", 2)
+	logger.With("path", "/p/crushrc").WithGroup("merge").Info("Found both a JSON config and a crushrc", "keys", 2)
 
 	var buf bytes.Buffer
 	h.buf.drainTo(slog.NewJSONHandler(&buf, &slog.HandlerOptions{Level: slog.LevelInfo}))
@@ -45,8 +45,8 @@ func TestEarlyRecordsReachTheFinalHandler(t *testing.T) {
 	require.Equal(t, "Skipping provider due to missing API key", got[0]["msg"])
 	require.Equal(t, "WARN", got[0]["level"])
 	require.Equal(t, "openai", got[0]["provider"])
-	require.Equal(t, "Found both a JSON config and a binetic-agentrc", got[1]["msg"])
-	require.Equal(t, "/p/binetic-agentrc", got[1]["path"])
+	require.Equal(t, "Found both a JSON config and a crushrc", got[1]["msg"])
+	require.Equal(t, "/p/crushrc", got[1]["path"])
 	require.Equal(t, map[string]any{"keys": float64(2)}, got[1]["merge"])
 }
 

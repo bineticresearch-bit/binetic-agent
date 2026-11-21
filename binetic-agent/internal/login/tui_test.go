@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
+	"github.com/charmbracelet/crush/internal/oauth"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/stretchr/testify/require"
 )

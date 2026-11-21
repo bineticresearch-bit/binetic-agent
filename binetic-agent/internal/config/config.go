@@ -16,26 +16,26 @@ import (
 	"time"
 
 	"charm.land/catwalk/pkg/catwalk"
-	"github.com/charmbracelet/binetic_agent/internal/csync"
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
-	"github.com/charmbracelet/binetic_agent/internal/oauth/copilot"
-	"github.com/charmbracelet/binetic_agent/internal/tooldefs"
+	"github.com/charmbracelet/crush/internal/csync"
+	"github.com/charmbracelet/crush/internal/oauth"
+	"github.com/charmbracelet/crush/internal/oauth/copilot"
+	"github.com/charmbracelet/crush/internal/tooldefs"
 	"github.com/invopop/jsonschema"
 )
 
-// The program has been renamed twice, from Binetic Agent to Klash and then to Binetic Agent.
+// The program has been renamed twice, from Crush to Klash and then to Gnosh.
 // Its directories and config files take the newest name, but where only one
 // from before a rename exists, that one is used (see fsext.FirstExisting), so
 // existing setups and their sessions keep working without being moved.
 const (
-	appName              = "binetic-agent"
+	appName              = "gnosh"
 	defaultDataDirectory = "." + appName
 	defaultInitializeAs  = "AGENTS.md"
 )
 
 // appNames are the program's name and its names from before the renames,
 // newest first: the order every lookup prefers them in.
-var appNames = []string{appName, "klash", "binetic_agent"}
+var appNames = []string{appName, "klash", "crush"}
 
 var defaultContextPaths = []string{
 	".github/copilot-instructions.md",
@@ -45,24 +45,24 @@ var defaultContextPaths = []string{
 	"CLAUDE.local.md",
 	"GEMINI.md",
 	"gemini.md",
-	"binetic-agent.md",
-	"binetic-agent.local.md",
-	"Binetic Agent.md",
-	"Binetic Agent.local.md",
-	"BINETIC_AGENT.md",
-	"BINETIC_AGENT.local.md",
+	"gnosh.md",
+	"gnosh.local.md",
+	"Gnosh.md",
+	"Gnosh.local.md",
+	"GNOSH.md",
+	"GNOSH.local.md",
 	"klash.md",
 	"klash.local.md",
 	"Klash.md",
 	"Klash.local.md",
 	"KLASH.md",
 	"KLASH.local.md",
-	"binetic_agent.md",
-	"binetic_agent.local.md",
-	"Binetic Agent.md",
-	"Binetic Agent.local.md",
-	"BINETIC_AGENT.md",
-	"BINETIC_AGENT.local.md",
+	"crush.md",
+	"crush.local.md",
+	"Crush.md",
+	"Crush.local.md",
+	"CRUSH.md",
+	"CRUSH.local.md",
 	"AGENTS.md",
 	"agents.md",
 	"Agents.md",
@@ -80,7 +80,7 @@ const (
 	SelectedModelTypeSmall SelectedModelType = "small"
 )
 
-// knownModelTypes lists every model type Binetic Agent selects, in the order
+// knownModelTypes lists every model type Crush selects, in the order
 // they are reported to the user.
 var knownModelTypes = []SelectedModelType{SelectedModelTypeLarge, SelectedModelTypeSmall}
 
@@ -89,7 +89,7 @@ func KnownModelTypes() []SelectedModelType {
 	return slices.Clone(knownModelTypes)
 }
 
-// IsKnownModelType reports whether t is a model type Binetic Agent actually uses.
+// IsKnownModelType reports whether t is a model type Crush actually uses.
 func IsKnownModelType(t SelectedModelType) bool {
 	return slices.Contains(knownModelTypes, t)
 }
@@ -187,7 +187,7 @@ type ProviderConfig struct {
 	FlatRate bool `json:"flat_rate,omitempty" jsonschema:"description=Flat-rate mode for this provider"`
 
 	// AutoDiscoverModels controls model discovery via /v1/models endpoint.
-	// When Models is empty and this is nil or true, Binetic Agent auto-discovers
+	// When Models is empty and this is nil or true, Crush auto-discovers
 	// models. When true and Models is non-empty, discovered models are
 	// merged in (user-specified models take precedence). When false,
 	// only explicitly listed models are used.
@@ -261,7 +261,7 @@ const (
 	MCPHttp  MCPType = "http"
 )
 
-// knownMCPTypes lists every MCP connection type Binetic Agent can open, in the
+// knownMCPTypes lists every MCP connection type Crush can open, in the
 // order they are reported to the user.
 var knownMCPTypes = []MCPType{MCPStdio, MCPSSE, MCPHttp}
 
@@ -270,7 +270,7 @@ func KnownMCPTypes() []MCPType {
 	return slices.Clone(knownMCPTypes)
 }
 
-// IsKnownMCPType reports whether t is a connection type Binetic Agent can open.
+// IsKnownMCPType reports whether t is a connection type Crush can open.
 func IsKnownMCPType(t MCPType) bool {
 	return slices.Contains(knownMCPTypes, t)
 }
@@ -287,7 +287,7 @@ type MCPConfig struct {
 	Timeout       int               `json:"timeout,omitempty" jsonschema:"description=Timeout in seconds for MCP server connections,default=10,example=30,example=60,example=120"`
 
 	// Sessionless marks a server that does not maintain an MCP session (it
-	// never issues a Mcp-Session-Id). When true, Binetic Agent omits the
+	// never issues a Mcp-Session-Id). When true, Crush omits the
 	// tools/prompts/resources list-changed handlers: the go-sdk opens a
 	// SEP-2575 "subscriptions/listen" stream whenever any of those handlers
 	// is set, and sessionless streamable-HTTP servers (e.g. GitHub MCP)
@@ -295,9 +295,9 @@ type MCPConfig struct {
 	// as fatal. The cost is no live list-changed notifications from this
 	// server.
 	//
-	// When nil, Binetic Agent auto-detects a set of known sessionless servers (see
+	// When nil, Crush auto-detects a set of known sessionless servers (see
 	// IsSessionless); set it explicitly to override that detection.
-	Sessionless *bool `json:"sessionless,omitempty" jsonschema:"description=Mark a sessionless MCP server (no Mcp-Session-Id) so Binetic Agent skips the subscriptions/listen stream it would otherwise reject. Leave unset to auto-detect known sessionless servers (e.g. GitHub MCP),default=false"`
+	Sessionless *bool `json:"sessionless,omitempty" jsonschema:"description=Mark a sessionless MCP server (no Mcp-Session-Id) so Gnosh skips the subscriptions/listen stream it would otherwise reject. Leave unset to auto-detect known sessionless servers (e.g. GitHub MCP),default=false"`
 
 	// Headers are HTTP headers for HTTP/SSE MCP servers. Values run
 	// through shell expansion at MCP startup, so $VAR and $(cmd)
@@ -328,7 +328,7 @@ type MCPConfig struct {
 	// OAuthCallbackPort pins the localhost port used for the OAuth
 	// redirect listener. Set this when the OAuth provider requires an
 	// exact-match callback URL (e.g. GitHub OAuth Apps). When omitted,
-	// Binetic Agent picks the first free port from its default range.
+	// Crush picks the first free port from its default range.
 	OAuthCallbackPort int `json:"oauth_callback_port,omitempty" jsonschema:"description=Fixed localhost port for the OAuth callback, required by providers that enforce exact-match redirect URIs"`
 
 	// OAuthToken is the persisted OAuth token for this server. It is
@@ -337,11 +337,11 @@ type MCPConfig struct {
 
 	// ChannelEnabled enables an MCP server as a channel directly from config,
 	// equivalent to passing its name via --channels on the CLI. This lets
-	// channels be declared persistently in binetic-agent.json without needing a CLI
+	// channels be declared persistently in crush.json without needing a CLI
 	// flag on every launch.
 	ChannelEnabled bool `json:"channel_enabled,omitempty" jsonschema:"description=Enable this MCP server as a channel (equivalent to --channels),default=false"`
 
-	// ChannelReply, when set on a server enabled as a channel, makes Binetic Agent
+	// ChannelReply, when set on a server enabled as a channel, makes Crush
 	// route the final assistant response of every turn that originated from
 	// this channel back through one of the server's own tools, so a message
 	// received on the channel gets a reply on the channel even when the
@@ -403,12 +403,12 @@ type LSPConfig struct {
 type TUIOptions struct {
 	CompactMode bool        `json:"compact_mode,omitempty" jsonschema:"description=Enable compact mode for the TUI interface,default=false"`
 	DiffMode    string      `json:"diff_mode,omitempty" jsonschema:"description=Diff mode for the TUI interface,enum=unified,enum=split"`
-	ActiveTheme string      `json:"active_theme,omitempty" jsonschema:"description=Name of the currently active theme,default=binetic-agent-cosmos,example=binetic-agent-cosmos,example=charmtone-panther,example=gruvbox-dark"`
+	ActiveTheme string      `json:"active_theme,omitempty" jsonschema:"description=Name of the currently active theme,default=gnosh-cosmos,example=gnosh-cosmos,example=charmtone-panther,example=gruvbox-dark"`
 	Completions Completions `json:"completions,omitzero" jsonschema:"description=Completions UI options"`
 	Transparent *bool       `json:"transparent,omitempty" jsonschema:"description=Enable transparent background for the TUI interface,default=false"`
 	Scrollbar   string      `json:"scrollbar,omitempty" jsonschema:"description=Chat scrollbar visibility,enum=default,enum=always,enum=never,default=default"`
 	Mouse       *bool       `json:"mouse,omitempty" jsonschema:"description=Enable terminal mouse capture for selection\\, clicks\\, and scrolling in the TUI. Disable to let the terminal emulator or tmux handle text selection and copy/paste,default=true"`
-	ExitBanner  ExitBanner  `json:"exit_banner,omitempty" jsonschema:"description=Exit banner style after quitting Binetic Agent,enum=default,enum=compact,enum=none,default=default"`
+	ExitBanner  ExitBanner  `json:"exit_banner,omitempty" jsonschema:"description=Exit banner style after quitting Gnosh,enum=default,enum=compact,enum=none,default=default"`
 }
 
 // IsTransparent reports whether the TUI draws a transparent background. The
@@ -419,7 +419,7 @@ func (t *TUIOptions) IsTransparent() bool {
 }
 
 // UnmarshalJSON tolerates the legacy string form of the "theme" field.
-// Older Binetic Agent builds stored the selected theme as `"theme":
+// Older Crush builds stored the selected theme as `"theme":
 // "gruvbox-dark"`. When that string is encountered it is promoted to the
 // active theme name so existing configs keep loading.
 func (t *TUIOptions) UnmarshalJSON(data []byte) error {
@@ -474,7 +474,7 @@ const (
 	ScrollbarNever   = "never"   // Never show scrollbar
 )
 
-// ExitBanner selects what Binetic Agent prints after the TUI exits.
+// ExitBanner selects what Crush prints after the TUI exits.
 type ExitBanner string
 
 const (
@@ -483,7 +483,7 @@ const (
 	ExitBannerDefault ExitBanner = "default"
 	// ExitBannerCompact renders only the session and resume lines, with no
 	// logo and no padding. With no active session it renders nothing at all,
-	// so Binetic Agent exits silently.
+	// so Crush exits silently.
 	ExitBannerCompact ExitBanner = "compact"
 	// ExitBannerNone renders nothing.
 	ExitBannerNone ExitBanner = "none"
@@ -492,12 +492,12 @@ const (
 type Permissions struct {
 	AllowedTools []string `json:"allowed_tools,omitempty" jsonschema:"description=List of tools that don't require permission prompts,example=bash,example=view"`
 	// Allow are Claude Code's permissions.allow rules of the two kinds
-	// binetic-agent applies: a tool's name, which lets the tool run without
+	// gnosh applies: a tool's name, which lets the tool run without
 	// asking as allowed_tools does, and Bash(pattern), which lets the
 	// commands the pattern matches run without asking (see
 	// shell.CommandRule). Another kind of rule is refused at load.
 	Allow []string `json:"allow,omitempty" jsonschema:"description=Claude Code's allow rules: a tool's name to let it run without asking or Bash(pattern) to let the commands the pattern matches run without asking,example=Bash(git diff *),example=Read"`
-	// Deny are Claude Code's permissions.deny rules of the two kinds binetic-agent
+	// Deny are Claude Code's permissions.deny rules of the two kinds gnosh
 	// applies: a tool's name, which takes the tool from the agent as
 	// options.disabled_tools does, and Bash(pattern), which stops every
 	// command the pattern matches (shell.CommandRuleBlocker). Another kind
@@ -538,7 +538,7 @@ func (p *Permissions) BashAllowPatterns() []string {
 }
 
 // BashRulePattern is the pattern of rule when it is a Bash(pattern) rule,
-// in Claude Code's spelling or binetic-agent's (bash).
+// in Claude Code's spelling or gnosh's (bash).
 func BashRulePattern(rule string) (string, bool) {
 	tool, rest, ok := strings.Cut(rule, "(")
 	if !ok || !strings.EqualFold(tool, "bash") {
@@ -558,7 +558,7 @@ const (
 type Attribution struct {
 	TrailerStyle  TrailerStyle `json:"trailer_style,omitempty" jsonschema:"description=Style of attribution trailer to add to commits,enum=none,enum=co-authored-by,enum=assisted-by,default=assisted-by"`
 	CoAuthoredBy  *bool        `json:"co_authored_by,omitempty" jsonschema:"description=Deprecated: use trailer_style instead"`
-	GeneratedWith bool         `json:"generated_with,omitempty" jsonschema:"description=Add Generated with Binetic Agent line to commit messages and issues and PRs,default=true"`
+	GeneratedWith bool         `json:"generated_with,omitempty" jsonschema:"description=Add Generated with Gnosh line to commit messages and issues and PRs,default=true"`
 }
 
 // JSONSchemaExtend marks the co_authored_by field as deprecated in the schema.
@@ -571,9 +571,9 @@ func (Attribution) JSONSchemaExtend(schema *jsonschema.Schema) {
 }
 
 type Options struct {
-	ContextPaths       []string `json:"context_paths,omitempty" jsonschema:"description=Paths to files containing context information for the AI,example=.cursorrules,example=BINETIC_AGENT.md"`
-	GlobalContextPaths []string `json:"global_context_paths,omitempty" jsonschema:"description=Paths to files containing global context information for the AI,default=~/.config/binetic_agent/BINETIC_AGENT.md,default=~/.config/AGENTS.md"`
-	SkillsPaths        []string `json:"skills_paths,omitempty" jsonschema:"description=Paths to directories containing Agent Skills (folders with SKILL.md files),example=~/.config/binetic_agent/skills,example=./skills"`
+	ContextPaths       []string `json:"context_paths,omitempty" jsonschema:"description=Paths to files containing context information for the AI,example=.cursorrules,example=CRUSH.md"`
+	GlobalContextPaths []string `json:"global_context_paths,omitempty" jsonschema:"description=Paths to files containing global context information for the AI,default=~/.config/crush/CRUSH.md,default=~/.config/AGENTS.md"`
+	SkillsPaths        []string `json:"skills_paths,omitempty" jsonschema:"description=Paths to directories containing Agent Skills (folders with SKILL.md files),example=~/.config/crush/skills,example=./skills"`
 	// Reasoning holds how hard each model thinks, keyed by
 	// "provider/model". A Qwen takes nothink or think, a gpt-oss takes
 	// low, medium or high; see [ReasoningAxis]. /model and the left and
@@ -592,30 +592,30 @@ type Options struct {
 	// window), as Claude Code's autoCompactWindow setting: 0 for auto, the
 	// point tuned for the model. /autocompact sets it.
 	AutoCompactWindow int64 `json:"auto_compact_window,omitempty" jsonschema:"description=How full the context gets before it is summarized: tokens from 100000 to 1000000 and never past the model's window; unset for auto. Set it in chat with /autocompact,minimum=100000,maximum=1000000"`
-	// DataDirectory is where Binetic Agent keeps per-project state such as
+	// DataDirectory is where Crush keeps per-project state such as
 	// the SQLite database and workspace overrides. Relative paths are
 	// resolved against the working directory; absolute paths are used
 	// verbatim. After defaulting the stored value is always absolute.
-	DataDirectory             string       `json:"data_directory,omitempty" jsonschema:"description=Directory for storing application data. Relative paths are resolved against the working directory; absolute paths are used as-is.,default=.binetic-agent,example=.binetic-agent"`
+	DataDirectory             string       `json:"data_directory,omitempty" jsonschema:"description=Directory for storing application data. Relative paths are resolved against the working directory; absolute paths are used as-is.,default=.crush,example=.crush"`
 	DisabledTools             []string     `json:"disabled_tools,omitempty" jsonschema:"description=List of built-in tools to disable and hide from the agent,example=bash,example=sourcegraph"`
-	DisableProviderAutoUpdate *bool        `json:"disable_provider_auto_update,omitempty" jsonschema:"description=Disable fetching the provider catalog from Charm's servers (catwalk.charm.land and hyper.charm.land). Unset it is not fetched and the catalog built into Binetic Agent is used; set false to fetch it,default=true"`
+	DisableProviderAutoUpdate *bool        `json:"disable_provider_auto_update,omitempty" jsonschema:"description=Disable fetching the provider catalog from Charm's servers (catwalk.charm.land and hyper.charm.land). Unset it is not fetched and the catalog built into Gnosh is used; set false to fetch it,default=true"`
 	DisableDefaultProviders   bool         `json:"disable_default_providers,omitempty" jsonschema:"description=Ignore all default/embedded providers. When enabled\\, providers must be fully specified in the config file with base_url\\, models\\, and api_key - no merging with defaults occurs,default=false"`
 	Attribution               *Attribution `json:"attribution,omitempty" jsonschema:"description=Attribution settings for generated content"`
 	DisableMetrics            *bool        `json:"disable_metrics,omitempty" jsonschema:"description=Disable sending usage metrics. Unset none are sent; set false to send them to metrics_url (never to Charm),default=true"`
 	MetricsURL                string       `json:"metrics_url,omitempty" jsonschema:"description=Where opted-in usage metrics go: a PostHog-compatible endpoint such as https://metrics.klash.pro. Empty sends nowhere; Charm is never a default."`
-	MetricsKey                string       `json:"metrics_key,omitempty" jsonschema:"description=Project key sent with metrics to metrics_url; a self-hosted collector may ignore it. Defaults to binetic-agent when metrics_url is set."`
-	UpdateRepo                string       `json:"update_repo,omitempty" jsonschema:"description=GitHub owner/repo whose latest release the update check compares against (e.g. binetic-agent-ai/binetic-agent). Empty disables the check; Charm's repo is never a default."`
-	InitializeAs              string       `json:"initialize_as,omitempty" jsonschema:"description=Name of the context file to create/update during project initialization,default=AGENTS.md,example=AGENTS.md,example=BINETIC_AGENT.md,example=CLAUDE.md,example=docs/LLMs.md"`
+	MetricsKey                string       `json:"metrics_key,omitempty" jsonschema:"description=Project key sent with metrics to metrics_url; a self-hosted collector may ignore it. Defaults to gnosh when metrics_url is set."`
+	UpdateRepo                string       `json:"update_repo,omitempty" jsonschema:"description=GitHub owner/repo whose latest release the update check compares against (e.g. gnosh-ai/gnosh). Empty disables the check; Charm's repo is never a default."`
+	InitializeAs              string       `json:"initialize_as,omitempty" jsonschema:"description=Name of the context file to create/update during project initialization,default=AGENTS.md,example=AGENTS.md,example=CRUSH.md,example=CLAUDE.md,example=docs/LLMs.md"`
 	AutoLSP                   *bool        `json:"auto_lsp,omitempty" jsonschema:"description=Automatically setup LSPs based on root markers,default=true"`
 	Progress                  *bool        `json:"progress,omitempty" jsonschema:"description=Show indeterminate progress updates during long operations,default=true"`
 	Notifications             string       `json:"notifications,omitempty" jsonschema:"description=Notification style to use. Options: auto (default)\\, native\\, osc\\, bell\\, disabled. Auto selects based on environment: native for local sessions\\, osc for SSH (with automatic OSC 99/777 detection).,enum=auto,enum=native,enum=osc,enum=bell,enum=disabled,default=auto"`
-	DisabledSkills            []string     `json:"disabled_skills,omitempty" jsonschema:"description=List of skill names to disable and hide from the agent,example=binetic-agent-config"`
+	DisabledSkills            []string     `json:"disabled_skills,omitempty" jsonschema:"description=List of skill names to disable and hide from the agent,example=gnosh-config"`
 	RequestTimeout            *int         `json:"request_timeout,omitempty" jsonschema:"description=Timeout in seconds for each LLM API request. Streaming responses are aborted only after this much inactivity\\, so slow but active streams are never killed. 0 disables it\\, negative values are invalid.,default=60,example=120,example=300,example=0"`
 	MaxBackgroundJobs         *int         `json:"max_background_jobs,omitempty" jsonschema:"description=How many background shell jobs may run at once. Jobs that have finished never count against it. 0 or negative restores the default.,default=50,example=10,example=200"`
-	// ArtifactServer is where Binetic Agent serves the deliverables the agent
+	// ArtifactServer is where Gnosh serves the deliverables the agent
 	// records with the artifact tool, so the user can open one from the
 	// machine they are sitting at rather than being handed a path on the
-	// machine Binetic Agent runs on. Unset listens on every interface at port
+	// machine Gnosh runs on. Unset listens on every interface at port
 	// 7777 (a port already taken falls back to a free one); an address of
 	// its own narrows it, as "127.0.0.1:7777" does; "off" serves none,
 	// and an artifact is then recorded as its path. Only a file the agent
@@ -657,16 +657,16 @@ func (o *Options) GetLoopMaxTurns() int {
 }
 
 // ProviderAutoUpdate reports whether the provider catalog is fetched from
-// Charm's servers. Upstream Binetic Agent fetches it unless told not to; this fork
+// Charm's servers. Upstream Crush fetches it unless told not to; this fork
 // uses the catalog built into the binary unless the user asks for the
 // fetch (option provider-auto-update true, or
-// BINETIC_AGENT_DISABLE_PROVIDER_AUTO_UPDATE=0).
+// GNOSH_DISABLE_PROVIDER_AUTO_UPDATE=0).
 func (o *Options) ProviderAutoUpdate() bool {
 	return o != nil && o.DisableProviderAutoUpdate != nil && !*o.DisableProviderAutoUpdate
 }
 
 // MetricsOptedIn reports whether the config asks for usage metrics to be
-// sent to Charm (option metrics true). Upstream Binetic Agent sends them unless told
+// sent to Charm (option metrics true). Upstream Crush sends them unless told
 // not to; this fork sends none unless asked.
 func (o *Options) MetricsOptedIn() bool {
 	return o != nil && o.DisableMetrics != nil && !*o.DisableMetrics
@@ -675,7 +675,7 @@ func (o *Options) MetricsOptedIn() bool {
 // MetricsSink is where opted-in metrics are sent. It is read only once the
 // metrics gate is on (DO_NOT_TRACK off, and either an explicit opt-in or this
 // machine's stored consent). The configured metrics_url wins; with none, the
-// default is binetic-agent's own analytics (DefaultMetricsURL), never Charm's.
+// default is gnosh's own analytics (DefaultMetricsURL), never Charm's.
 func (o *Options) MetricsSink() (url, key string) {
 	if o != nil {
 		url, key = o.MetricsURL, o.MetricsKey
@@ -684,7 +684,7 @@ func (o *Options) MetricsSink() (url, key string) {
 		url = DefaultMetricsURL
 	}
 	if key == "" {
-		key = "binetic-agent"
+		key = "gnosh"
 	}
 	return url, key
 }
@@ -1038,7 +1038,7 @@ type HookConfig struct {
 	// trigger) the hook runs for, as in Claude Code: empty or "*" for all,
 	// exact names separated by | or , ("Bash", "edit|write"), or else an
 	// unanchored regular expression ("^mcp_github_"). See HookMatcher.
-	Matcher string `json:"matcher,omitempty" jsonschema:"description=Which tools the hook runs for as in Claude Code: empty or * for all; exact names separated by | such as Bash|edit (binetic-agent's or Claude Code's names); anything else is an unanchored regular expression."`
+	Matcher string `json:"matcher,omitempty" jsonschema:"description=Which tools the hook runs for as in Claude Code: empty or * for all; exact names separated by | such as Bash|edit (gnosh's or Claude Code's names); anything else is an unanchored regular expression."`
 	// Shell command to execute.
 	Command string `json:"command" jsonschema:"required,description=Shell command to execute when the hook fires"`
 	// Timeout in seconds. Default 60, as in Claude Code.
@@ -1080,7 +1080,7 @@ func (h *HookConfig) TimeoutDuration(event string) time.Duration {
 	return 600 * time.Second
 }
 
-// Config holds the configuration for binetic_agent.
+// Config holds the configuration for crush.
 type Config struct {
 	Schema string `json:"$schema,omitempty"`
 

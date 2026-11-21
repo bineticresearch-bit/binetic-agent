@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 )
 
 // publisher stands in for the artifact server: it hands out a URL for a

@@ -9,20 +9,20 @@ import (
 	"strings"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools/mcp"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/lsp"
-	"github.com/charmbracelet/binetic_agent/internal/skills"
+	"github.com/charmbracelet/crush/internal/agent/tools/mcp"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/lsp"
+	"github.com/charmbracelet/crush/internal/skills"
 )
 
-const Binetic AgentInfoToolName = "binetic-agent_info"
+const GnoshInfoToolName = "gnosh_info"
 
-//go:embed binetic-agent_info.md
-var binetic-agentInfoDescription string
+//go:embed gnosh_info.md
+var gnoshInfoDescription string
 
-type Binetic AgentInfoParams struct{}
+type GnoshInfoParams struct{}
 
-func NewBinetic AgentInfoTool(
+func NewGnoshInfoTool(
 	cfg *config.ConfigStore,
 	lspManager *lsp.Manager,
 	allSkills []*skills.Skill,
@@ -30,15 +30,15 @@ func NewBinetic AgentInfoTool(
 	skillTracker *skills.Tracker,
 ) fantasy.AgentTool {
 	return fantasy.NewAgentTool(
-		Binetic AgentInfoToolName,
-		binetic-agentInfoDescription,
-		func(ctx context.Context, _ Binetic AgentInfoParams, _ fantasy.ToolCall) (fantasy.ToolResponse, error) {
-			return fantasy.NewTextResponse(buildBinetic AgentInfo(cfg, lspManager, allSkills, activeSkills, skillTracker)), nil
+		GnoshInfoToolName,
+		gnoshInfoDescription,
+		func(ctx context.Context, _ GnoshInfoParams, _ fantasy.ToolCall) (fantasy.ToolResponse, error) {
+			return fantasy.NewTextResponse(buildGnoshInfo(cfg, lspManager, allSkills, activeSkills, skillTracker)), nil
 		},
 	)
 }
 
-func buildBinetic AgentInfo(cfg *config.ConfigStore, lspManager *lsp.Manager, allSkills []*skills.Skill, activeSkills []*skills.Skill, skillTracker *skills.Tracker) string {
+func buildGnoshInfo(cfg *config.ConfigStore, lspManager *lsp.Manager, allSkills []*skills.Skill, activeSkills []*skills.Skill, skillTracker *skills.Tracker) string {
 	var b strings.Builder
 
 	writeConfigFiles(&b, cfg)

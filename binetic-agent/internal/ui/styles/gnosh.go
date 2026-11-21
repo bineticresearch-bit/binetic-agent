@@ -4,52 +4,52 @@ import (
 	"image/color"
 
 	"charm.land/lipgloss/v2"
-	"github.com/charmbracelet/binetic_agent/internal/ui/fade"
+	"github.com/charmbracelet/crush/internal/ui/fade"
 	"github.com/charmbracelet/x/exp/charmtone"
 )
 
 // DefaultThemeName is the theme the UI uses when none is configured.
-const DefaultThemeName = "binetic-agent-cosmos"
+const DefaultThemeName = "gnosh-cosmos"
 
-// Binetic Agent keeps Binetic Agent's own purple and hot pink, the colors of a nebula, and
+// Gnosh keeps Crush's own purple and hot pink, the colors of a nebula, and
 // adds green and gold sparingly: every fade starts green and ends gold with
 // purple and pink between, and the logo's mark is gold. The banner,
 // social card and avatar in docs/brand are drawn in the same colors
 // (scripts/brand.py).
 var (
-	Binetic AgentPurple = charmtone.Charple
-	Binetic AgentPink   = charmtone.Dolly
-	Binetic AgentGold   = lipgloss.Color("#FBD237")
-	Binetic AgentGreen  = charmtone.Julep
+	GnoshPurple = charmtone.Charple
+	GnoshPink   = charmtone.Dolly
+	GnoshGold   = lipgloss.Color("#FBD237")
+	GnoshGreen  = charmtone.Julep
 )
 
-// Binetic AgentCosmos returns Binetic Agent's dark theme: Charmtone's colors with Binetic Agent's
+// GnoshCosmos returns Gnosh's dark theme: Charmtone's colors with Gnosh's
 // starlight on top. It's the default style for the UI.
-func Binetic AgentCosmos() Styles {
-	return binetic-agentOverrides(quickStyle(binetic-agentOpts()))
+func GnoshCosmos() Styles {
+	return gnoshOverrides(quickStyle(gnoshOpts()))
 }
 
-// binetic-agentOpts returns the quickStyleOpts for the Binetic Agent Cosmos theme, which are
+// gnoshOpts returns the quickStyleOpts for the Gnosh Cosmos theme, which are
 // Charmtone's, kept whole.
-func binetic-agentOpts() quickStyleOpts {
+func gnoshOpts() quickStyleOpts {
 	return charmtoneOpts()
 }
 
-// Binetic AgentNebula returns the ends of Binetic Agent's fades: green, and a gold that the
-// fade reaches through Binetic Agent's purple and hot pink, so those two hold the
+// GnoshNebula returns the ends of Gnosh's fades: green, and a gold that the
+// fade reaches through Crush's purple and hot pink, so those two hold the
 // middle and green and gold only the ends.
-func Binetic AgentNebula() (from, to color.Color) {
-	return Binetic AgentGreen, &fade.Via{Color: Binetic AgentGold, Through: []color.Color{Binetic AgentPurple, Binetic AgentPink}}
+func GnoshNebula() (from, to color.Color) {
+	return GnoshGreen, &fade.Via{Color: GnoshGold, Through: []color.Color{GnoshPurple, GnoshPink}}
 }
 
-// binetic-agentOverrides applies Charmtone's own tweaks, then Binetic Agent's green and
+// gnoshOverrides applies Charmtone's own tweaks, then Gnosh's green and
 // gold: in every fade, and in the logo's mark and version.
-func binetic-agentOverrides(s Styles) Styles {
+func gnoshOverrides(s Styles) Styles {
 	s = charmtoneOverrides(s)
 
 	// The wordmark, the small and compact logos, dialog titles and the
 	// working animation all fade through the nebula.
-	from, to := Binetic AgentNebula()
+	from, to := GnoshNebula()
 	s.Logo.TitleColorA, s.Logo.TitleColorB = from, to
 	s.Logo.SmallGradFromColor, s.Logo.SmallGradToColor = from, to
 	s.Header.LogoGradFromColor, s.Header.LogoGradToColor = from, to
@@ -58,18 +58,18 @@ func binetic-agentOverrides(s Styles) Styles {
 
 	// A terminal without 24-bit color, as Apple's Terminal is, bands a fade
 	// over the whole name into stripes, so there the wordmarks draw Gno in
-	// one green and fade the rest from Binetic Agent's purple to hot pink. Jae,
+	// one green and fade the rest from Crush's purple to hot pink. Jae,
 	// 2026-10-30: "at least make 'gno' one color, green i suppose"; later
 	// he said that was meant for such terminals, and that Ghostty keeps the
 	// fade through the nebula, which looked better.
-	s.Logo.GnoColor = Binetic AgentGreen
-	s.Logo.GnoRestColorA, s.Logo.GnoRestColorB = Binetic AgentPurple, Binetic AgentPink
+	s.Logo.GnoColor = GnoshGreen
+	s.Logo.GnoRestColorA, s.Logo.GnoRestColorB = GnoshPurple, GnoshPink
 
 	// The logo's fields fade from purple to hot pink instead of lying flat.
-	s.Logo.FieldColorB = Binetic AgentPink
+	s.Logo.FieldColorB = GnoshPink
 
 	// The mark over the wordmark is gold, the version green.
-	s.Logo.CharmColor = Binetic AgentGold
-	s.Logo.VersionColor = Binetic AgentGreen
+	s.Logo.CharmColor = GnoshGold
+	s.Logo.VersionColor = GnoshGreen
 	return s
 }

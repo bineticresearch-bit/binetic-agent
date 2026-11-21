@@ -5,10 +5,10 @@ import (
 	"image/color"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/ui/fade"
+	"github.com/charmbracelet/crush/internal/ui/fade"
 )
 
-func TestBinetic AgentCosmosIsTheDefault(t *testing.T) {
+func TestGnoshCosmosIsTheDefault(t *testing.T) {
 	if !IsBuiltinTheme(DefaultThemeName) {
 		t.Fatalf("%q is not a built-in theme", DefaultThemeName)
 	}
@@ -16,23 +16,23 @@ func TestBinetic AgentCosmosIsTheDefault(t *testing.T) {
 		"an empty theme name": must(LoadTheme("")),
 		"an unknown theme":    ThemeFromConfig("no-such-theme"),
 	} {
-		if got, want := *hex(s.Logo.CharmColor), *hex(Binetic AgentGold); got != want {
-			t.Errorf("%s gave a mark in %s, want Binetic Agent's gold %s", name, got, want)
+		if got, want := *hex(s.Logo.CharmColor), *hex(GnoshGold); got != want {
+			t.Errorf("%s gave a mark in %s, want Gnosh's gold %s", name, got, want)
 		}
 	}
 }
 
-func TestBinetic AgentCosmos_KeepsBinetic AgentsColors(t *testing.T) {
-	// Binetic Agent adds green and gold to Charmtone; it doesn't recolor it.
-	k, c := Binetic AgentCosmos(), CharmtonePantera()
-	for _, p := range []struct{ name, binetic-agent, binetic_agent string }{
+func TestGnoshCosmos_KeepsCrushsColors(t *testing.T) {
+	// Gnosh adds green and gold to Charmtone; it doesn't recolor it.
+	k, c := GnoshCosmos(), CharmtonePantera()
+	for _, p := range []struct{ name, gnosh, crush string }{
 		{"fields", *hex(k.Logo.FieldColor), *hex(c.Logo.FieldColor)},
 		{"background", *hex(k.Background), *hex(c.Background)},
 		{"dialog border", *hex(k.Dialog.View.GetBorderTopForeground()), *hex(c.Dialog.View.GetBorderTopForeground())},
 		{"selected item", *hex(k.Dialog.SelectedItem.GetBackground()), *hex(c.Dialog.SelectedItem.GetBackground())},
 	} {
-		if p.binetic-agent != p.binetic-agent {
-			t.Errorf("%s is %s, want Charmtone's %s", p.name, p.binetic-agent, p.binetic-agent)
+		if p.gnosh != p.crush {
+			t.Errorf("%s is %s, want Charmtone's %s", p.name, p.gnosh, p.crush)
 		}
 	}
 	if k.Logo.FieldColorB == nil {
@@ -43,11 +43,11 @@ func TestBinetic AgentCosmos_KeepsBinetic AgentsColors(t *testing.T) {
 	}
 }
 
-func TestBinetic AgentCosmos_FadesRunThroughTheNebula(t *testing.T) {
-	// Every fade starts green and ends gold, with Binetic Agent's purple and hot
+func TestGnoshCosmos_FadesRunThroughTheNebula(t *testing.T) {
+	// Every fade starts green and ends gold, with Crush's purple and hot
 	// pink between them.
-	want := []string{*hex(Binetic AgentGreen), *hex(Binetic AgentPurple), *hex(Binetic AgentPink), *hex(Binetic AgentGold)}
-	s := Binetic AgentCosmos()
+	want := []string{*hex(GnoshGreen), *hex(GnoshPurple), *hex(GnoshPink), *hex(GnoshGold)}
+	s := GnoshCosmos()
 	for name, ends := range map[string][2]color.Color{
 		"wordmark":       {s.Logo.TitleColorA, s.Logo.TitleColorB},
 		"small wordmark": {s.Logo.SmallGradFromColor, s.Logo.SmallGradToColor},
@@ -66,11 +66,11 @@ func TestBinetic AgentCosmos_FadesRunThroughTheNebula(t *testing.T) {
 	}
 }
 
-func TestBinetic AgentCosmos_WordmarkGnoIsGreenWithoutTrueColor(t *testing.T) {
+func TestGnoshCosmos_WordmarkGnoIsGreenWithoutTrueColor(t *testing.T) {
 	// With 24-bit color a wordmark fades through the nebula over the whole
 	// name; without, Gno, its first three letters, is one green and the
-	// rest fades from Binetic Agent's purple to hot pink.
-	s := Binetic AgentCosmos()
+	// rest fades from Crush's purple to hot pink.
+	s := GnoshCosmos()
 	stopsOf := func(from, to color.Color) string {
 		stops := fade.Stops(from, to)
 		got := make([]string, len(stops))
@@ -89,19 +89,19 @@ func TestBinetic AgentCosmos_WordmarkGnoIsGreenWithoutTrueColor(t *testing.T) {
 	}
 
 	gno, from, to = s.Wordmark(false, s.Logo.TitleColorA, s.Logo.TitleColorB)
-	if gno == nil || *hex(gno) != *hex(Binetic AgentGreen) {
-		t.Fatalf("without 24-bit color Gno is %v, want %s", gno, *hex(Binetic AgentGreen))
+	if gno == nil || *hex(gno) != *hex(GnoshGreen) {
+		t.Fatalf("without 24-bit color Gno is %v, want %s", gno, *hex(GnoshGreen))
 	}
-	if got, want := stopsOf(from, to), fmt.Sprint([]string{*hex(Binetic AgentPurple), *hex(Binetic AgentPink)}); got != want {
+	if got, want := stopsOf(from, to), fmt.Sprint([]string{*hex(GnoshPurple), *hex(GnoshPink)}); got != want {
 		t.Errorf("without 24-bit color the rest of the wordmark fades through %v, want %v", got, want)
 	}
 }
 
-func TestBinetic AgentCosmos_HintsReadable(t *testing.T) {
+func TestGnoshCosmos_HintsReadable(t *testing.T) {
 	// The green and gold sit on the background; they must stay legible.
 	const minAA = 4.5
-	bg := *hex(Binetic AgentCosmos().Background)
-	for name, c := range map[string]string{"gold": *hex(Binetic AgentGold), "green": *hex(Binetic AgentGreen)} {
+	bg := *hex(GnoshCosmos().Background)
+	for name, c := range map[string]string{"gold": *hex(GnoshGold), "green": *hex(GnoshGreen)} {
 		if ratio := contrastRatio(c, bg); ratio < minAA {
 			t.Errorf("%s %s on %s is %.2f:1, below WCAG AA (%.1f)", name, c, bg, ratio, minAA)
 		}

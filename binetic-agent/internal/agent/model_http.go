@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/log"
+	"github.com/charmbracelet/crush/internal/log"
 )
 
 // remoteResponseTimeout is how long a request to a model API elsewhere

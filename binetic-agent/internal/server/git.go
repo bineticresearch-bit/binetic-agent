@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/charmbracelet/binetic_agent/internal/proto"
+	"github.com/charmbracelet/crush/internal/proto"
 )
 
 // handleGetWorkspaceGitBranch returns the current Git branch of the

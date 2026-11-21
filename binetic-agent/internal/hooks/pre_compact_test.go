@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/stretchr/testify/require"
 )
 
@@ -111,7 +111,7 @@ func TestRunPreCompactEnvCarriesTheTrigger(t *testing.T) {
 
 	dir := t.TempDir()
 	out := filepath.Join(dir, "out")
-	r := preCompactRunner(t, "", `echo "$BINETIC_AGENT_PRE_COMPACT_TRIGGER" > `+out)
+	r := preCompactRunner(t, "", `echo "$GNOSH_PRE_COMPACT_TRIGGER" > `+out)
 	_, err := r.RunPreCompact(context.Background(), "sess", PreCompactTriggerManual, "")
 	require.NoError(t, err)
 	data, err := os.ReadFile(out)

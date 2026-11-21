@@ -3,11 +3,11 @@ package server
 import (
 	"net/http"
 
-	"github.com/charmbracelet/binetic_agent/internal/apigen"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/apigen"
+	"github.com/charmbracelet/crush/internal/version"
 )
 
-// apiInfo is the top-level metadata for the Binetic Agent API documentation.
+// apiInfo is the top-level metadata for the Crush API documentation.
 var apiInfo = apigen.Info{
 	Title:   version.Name + " API",
 	Version: "1.0",

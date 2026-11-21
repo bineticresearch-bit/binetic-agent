@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -32,31 +32,31 @@ import (
 )
 
 // TestScenarios runs the use cases in testdata/scenarios against a real
-// binetic-agent and a real model, with binetic-agent's own system prompt ("v0") and with
+// gnosh and a real model, with gnosh's own system prompt ("v0") and with
 // each prompt variant in testdata/prompts appended to it, and writes what
 // happened: each turn's tool calls and answer, each check, and what the
 // persistent Gno machines hold at the end.
 //
-// It is skipped unless GNOVM_SCENARIO_BINETIC_AGENT names the binetic-agent to run. Every
+// It is skipped unless GNOVM_SCENARIO_GNOSH names the gnosh to run. Every
 // run gets its own config and data directories (copied from
-// GNOVM_SCENARIO_HOME, default $HOME: the binetic-agentrc, binetic-agent.json and the files
+// GNOVM_SCENARIO_HOME, default $HOME: the crushrc, crush.json and the files
 // that keep first-run questions away), so it never touches the user's
 // settings.
 //
-//	GNOVM_SCENARIO_BINETIC_AGENT     the binetic-agent to run (required)
+//	GNOVM_SCENARIO_GNOSH     the gnosh to run (required)
 //	GNOVM_SCENARIO_HOME      whose config to copy (default $HOME)
 //	GNOVM_SCENARIO_OUT       where runs and reports go (default a temp dir)
 //	GNOVM_SCENARIO_VARIANTS  comma-separated, e.g. "v0" (default v0 and
 //	                         every testdata/prompts file)
 //	GNOVM_SCENARIO_ONLY      a regexp on scenario names
-//	GNOVM_SCENARIO_MODEL     a model for binetic-agent run -m
+//	GNOVM_SCENARIO_MODEL     a model for gnosh run -m
 //	GNOVM_SCENARIO_REASONING the large model's reasoning level (default
 //	                         "nothink": these runs measure tool use, and
 //	                         Qwen's thinking is most of their time); "" keeps
 //	                         the user's
 //	GNOVM_SCENARIO_STRICT=1  fail the test when a check fails (by default
 //	                         the checks are reported: the scenarios measure
-//	                         the model and the prompt as much as binetic-agent)
+//	                         the model and the prompt as much as gnosh)
 //
 // Run it with -test.parallel below the model server's slots, so that live
 // sessions keep one: a conversation whose slot another request takes
@@ -64,9 +64,9 @@ import (
 func TestScenarios(t *testing.T) {
 	t.Parallel()
 	// GNOVM_SCENARIO_KLASH is its name from before the rename.
-	binetic-agent := cmp.Or(os.Getenv("GNOVM_SCENARIO_BINETIC_AGENT"), os.Getenv("GNOVM_SCENARIO_KLASH"))
-	if binetic-agent == "" {
-		t.Skip("set GNOVM_SCENARIO_BINETIC_AGENT to a binetic-agent binary to run the real-model scenarios")
+	gnosh := cmp.Or(os.Getenv("GNOVM_SCENARIO_GNOSH"), os.Getenv("GNOVM_SCENARIO_KLASH"))
+	if gnosh == "" {
+		t.Skip("set GNOVM_SCENARIO_GNOSH to a gnosh binary to run the real-model scenarios")
 	}
 	home := cmp.Or(os.Getenv("GNOVM_SCENARIO_HOME"), os.Getenv("HOME"))
 	out := cmp.Or(os.Getenv("GNOVM_SCENARIO_OUT"), t.TempDir())
@@ -107,7 +107,7 @@ func TestScenarios(t *testing.T) {
 				mu.Lock()
 				results = append(results, r)
 				mu.Unlock()
-				r.run(t, sc, binetic-agent, home, reasoning)
+				r.run(t, sc, gnosh, home, reasoning)
 				for _, c := range r.checks {
 					if !c.ok && os.Getenv("GNOVM_SCENARIO_STRICT") == "1" {
 						t.Errorf("check failed: %s (%s)", c.line, c.got)
@@ -130,7 +130,7 @@ type scenario struct {
 	mem    string
 	checks []string
 	// peers is how many sessions each fresh turn starts at once in the
-	// project, one binetic-agent process each (PARALLEL.md); GNOVM_SCENARIO_PEERS
+	// project, one gnosh process each (PARALLEL.md); GNOVM_SCENARIO_PEERS
 	// overrides it for a scenario that has a peers section; 0 is one.
 	peers int
 }
@@ -141,7 +141,7 @@ type turnSpec struct {
 }
 
 // TestScenarioStreamReprints checks that a turn keeps only its own calls and
-// text, when binetic-agent's stream prints an earlier turn's rows again.
+// text, when gnosh's stream prints an earlier turn's rows again.
 func TestScenarioStreamReprints(t *testing.T) {
 	t.Parallel()
 	turn1 := `{"type":"assistant","message":{"content":[{"type":"text","text":"looking"},{"type":"tool_use","id":"a1","name":"view","input":{}}]}}
@@ -258,7 +258,7 @@ mem-count facts == 1
 }
 
 // TestScenarioEmbeddingsURL checks that the harness finds the embedding
-// server a run's binetic-agent is given wherever the copied config sets it.
+// server a run's gnosh is given wherever the copied config sets it.
 func TestScenarioEmbeddingsURL(t *testing.T) {
 	t.Parallel()
 	write := func(path, body string) {
@@ -267,9 +267,9 @@ func TestScenarioEmbeddingsURL(t *testing.T) {
 		require.NoError(t, os.WriteFile(path, []byte(body), 0o600))
 	}
 	for name, files := range map[string]map[string]string{
-		"config binetic-agent.json": {"config/binetic_agent/binetic-agent.json": `{"options": {"mem_embeddings_url": "http://127.0.0.1:8091/v1"}}`},
-		"data binetic-agent.json":   {"data/binetic_agent/binetic-agent.json": `{"options": {"mem_embeddings_url": "http://127.0.0.1:8091/v1"}}`},
-		"binetic-agentrc":           {"config/binetic_agent/binetic-agentrc": "option reasoning nothink\noption mem-embeddings-url 'http://127.0.0.1:8091/v1'\n"},
+		"config crush.json": {"config/crush/crush.json": `{"options": {"mem_embeddings_url": "http://127.0.0.1:8091/v1"}}`},
+		"data crush.json":   {"data/crush/crush.json": `{"options": {"mem_embeddings_url": "http://127.0.0.1:8091/v1"}}`},
+		"crushrc":           {"config/crush/crushrc": "option reasoning nothink\noption mem-embeddings-url 'http://127.0.0.1:8091/v1'\n"},
 	} {
 		dir := t.TempDir()
 		for path, body := range files {
@@ -278,7 +278,7 @@ func TestScenarioEmbeddingsURL(t *testing.T) {
 		require.Equal(t, "http://127.0.0.1:8091/v1", memEmbeddingsURL(filepath.Join(dir, "config"), filepath.Join(dir, "data")), name)
 	}
 	dir := t.TempDir()
-	write(filepath.Join(dir, "config/binetic_agent/binetic-agent.json"), `{"models": {"large": {"provider": "qwen"}}}`)
+	write(filepath.Join(dir, "config/crush/crush.json"), `{"models": {"large": {"provider": "qwen"}}}`)
 	require.Empty(t, memEmbeddingsURL(filepath.Join(dir, "config"), filepath.Join(dir, "data")), "none set")
 }
 
@@ -374,24 +374,24 @@ type checkResult struct {
 	ok        bool
 }
 
-func (r *scenarioRun) run(t *testing.T, sc *scenario, binetic-agent, home, reasoning string) {
+func (r *scenarioRun) run(t *testing.T, sc *scenario, gnosh, home, reasoning string) {
 	start := time.Now()
 	defer func() { r.took = time.Since(start) }()
 	project := filepath.Join(r.dir, "project")
 	cfg, data := filepath.Join(r.dir, "config"), filepath.Join(r.dir, "data")
-	for _, d := range []string{filepath.Join(cfg, "binetic_agent"), filepath.Join(data, "binetic_agent"), project, filepath.Join(r.dir, "tmp")} {
+	for _, d := range []string{filepath.Join(cfg, "crush"), filepath.Join(data, "crush"), project, filepath.Join(r.dir, "tmp")} {
 		if err := os.MkdirAll(d, 0o700); err != nil {
 			t.Fatal(err)
 		}
 	}
-	for _, f := range []string{"binetic-agentrc", "binetic-agent.json"} {
-		copyIfThere(t, filepath.Join(home, ".config", "binetic_agent", f), filepath.Join(cfg, "binetic_agent", f))
+	for _, f := range []string{"crushrc", "crush.json"} {
+		copyIfThere(t, filepath.Join(home, ".config", "crush", f), filepath.Join(cfg, "crush", f))
 	}
-	for _, f := range []string{"providers.json", "metrics-consent.json", "binetic-agent.json"} {
-		copyIfThere(t, filepath.Join(home, ".local", "share", "binetic_agent", f), filepath.Join(data, "binetic_agent", f))
+	for _, f := range []string{"providers.json", "metrics-consent.json", "crush.json"} {
+		copyIfThere(t, filepath.Join(home, ".local", "share", "crush", f), filepath.Join(data, "crush", f))
 	}
 	if reasoning != "" {
-		setLargeModelReasoning(t, filepath.Join(data, "binetic_agent", "binetic-agent.json"), reasoning)
+		setLargeModelReasoning(t, filepath.Join(data, "crush", "crush.json"), reasoning)
 	}
 	for name, body := range sc.files {
 		path := filepath.Join(project, name)
@@ -403,7 +403,7 @@ func (r *scenarioRun) run(t *testing.T, sc *scenario, binetic-agent, home, reaso
 		}
 	}
 	if sc.mem != "" {
-		if err := seedMem(filepath.Join(data, "binetic_agent", "gnovm"), project, sc.mem, memEmbeddingsURL(cfg, data)); err != nil {
+		if err := seedMem(filepath.Join(data, "crush", "gnovm"), project, sc.mem, memEmbeddingsURL(cfg, data)); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -440,7 +440,7 @@ func (r *scenarioRun) run(t *testing.T, sc *scenario, binetic-agent, home, reaso
 	}
 	for i, ts := range sc.turns {
 		if peers > 0 && ts.fresh {
-			// The peers: one binetic-agent process each, started together in the
+			// The peers: one gnosh process each, started together in the
 			// project, each with its own data directory (its sessions'
 			// database), all sharing the project's mem.
 			type peerOut struct {
@@ -467,7 +467,7 @@ func (r *scenarioRun) run(t *testing.T, sc *scenario, binetic-agent, home, reaso
 					defer wg.Done()
 					ctx, cancel := context.WithTimeout(context.Background(), turnCap)
 					defer cancel()
-					cmd := exec.CommandContext(ctx, binetic-agent, args...)
+					cmd := exec.CommandContext(ctx, gnosh, args...)
 					cmd.Dir, cmd.Env = project, env
 					cmd.Stdout, cmd.Stderr = &po.stdout, &po.stderr
 					po.err = cmd.Run()
@@ -480,7 +480,7 @@ func (r *scenarioRun) run(t *testing.T, sc *scenario, binetic-agent, home, reaso
 				tr := parseStream(bytes.NewReader(po.stdout.Bytes()))
 				tr.prompt, tr.took, tr.turn = fmt.Sprintf("(peer %d of %d) %s", k+1, peers, ts.prompt), r.peersWall, i
 				if po.err != nil && tr.answer == "" {
-					tr.answer = fmt.Sprintf("(binetic-agent failed: %v; %s)", po.err, lastLine(po.stderr.String()))
+					tr.answer = fmt.Sprintf("(gnosh failed: %v; %s)", po.err, lastLine(po.stderr.String()))
 					tr.isError = true
 				}
 				r.turns = append(r.turns, tr)
@@ -509,7 +509,7 @@ func (r *scenarioRun) run(t *testing.T, sc *scenario, binetic-agent, home, reaso
 		args = append(args, ts.prompt)
 		turnStart := time.Now()
 		ctx, cancel := context.WithTimeout(context.Background(), turnCap)
-		cmd := exec.CommandContext(ctx, binetic-agent, args...)
+		cmd := exec.CommandContext(ctx, gnosh, args...)
 		cmd.Dir, cmd.Env = project, env
 		var stdout, stderr bytes.Buffer
 		cmd.Stdout, cmd.Stderr = &stdout, &stderr
@@ -519,7 +519,7 @@ func (r *scenarioRun) run(t *testing.T, sc *scenario, binetic-agent, home, reaso
 		tr := r.fresh(parseStream(bytes.NewReader(stdout.Bytes())))
 		tr.prompt, tr.took, tr.turn = ts.prompt, time.Since(turnStart), i
 		if err != nil && tr.answer == "" {
-			tr.answer = fmt.Sprintf("(binetic-agent failed: %v; %s)", err, lastLine(stderr.String()))
+			tr.answer = fmt.Sprintf("(gnosh failed: %v; %s)", err, lastLine(stderr.String()))
 			tr.isError = true
 		}
 		session = cmp.Or(tr.session, session)
@@ -531,7 +531,7 @@ func (r *scenarioRun) run(t *testing.T, sc *scenario, binetic-agent, home, reaso
 		_ = os.WriteFile(filepath.Join(r.dir, fmt.Sprintf("turn-%d.jsonl", i+1)), outs[i], 0o600)
 		_ = os.WriteFile(filepath.Join(r.dir, fmt.Sprintf("turn-%d.stderr", i+1)), errs[i], 0o600)
 	}
-	r.vms = dumpPersistentVMs(t, filepath.Join(data, "binetic_agent", "gnovm"), project)
+	r.vms = dumpPersistentVMs(t, filepath.Join(data, "crush", "gnovm"), project)
 	for _, line := range sc.checks {
 		r.checks = append(r.checks, r.check(line, project, env))
 	}
@@ -539,7 +539,7 @@ func (r *scenarioRun) run(t *testing.T, sc *scenario, binetic-agent, home, reaso
 }
 
 // setLargeModelReasoning sets the reasoning level of the model the runs use
-// in a copied binetic-agent.json (options.reasoning, keyed "provider/model"). It
+// in a copied crush.json (options.reasoning, keyed "provider/model"). It
 // fails the test when it cannot tell which model that is, rather than let
 // the runs go on with their reasoning left as it was.
 func setLargeModelReasoning(t *testing.T, path, level string) {
@@ -592,7 +592,7 @@ func copyIfThere(t *testing.T, from, to string) {
 	}
 }
 
-// parseStream reads binetic-agent run's stream-json output: the session id, each
+// parseStream reads gnosh run's stream-json output: the session id, each
 // tool call with its result, and the final answer.
 func parseStream(r io.Reader) turnResult {
 	var tr turnResult
@@ -651,8 +651,8 @@ func parseStream(r io.Reader) turnResult {
 }
 
 // fresh drops from tr the calls and texts an earlier turn already had: when
-// a pop cuts rows of an earlier turn, binetic-agent's stream prints them again, with
-// their old tool-call ids (C4 in binetic_agenttest/IMPROVEMENTS.md), and they would
+// a pop cuts rows of an earlier turn, gnosh's stream prints them again, with
+// their old tool-call ids (C4 in crushtest/IMPROVEMENTS.md), and they would
 // count as this turn's.
 func (r *scenarioRun) fresh(tr turnResult) turnResult {
 	if r.seen == nil {
@@ -695,7 +695,7 @@ func listFiles(dir string) map[string]string {
 	return files
 }
 
-// dumpPersistentVMs opens the run's VMs as binetic-agent left them and renders every
+// dumpPersistentVMs opens the run's VMs as gnosh left them and renders every
 // package-level value of each persistent one.
 func dumpPersistentVMs(t *testing.T, gnovmDir, project string) map[string]string {
 	dumps := map[string]string{}
@@ -735,7 +735,7 @@ func dumpPersistentVMs(t *testing.T, gnovmDir, project string) map[string]string
 // seedMem runs a scenario's mem section in project's mem as the user, typed
 // in no session: what mem held before the scenario's first turn, a secret
 // the user means to have erased, say. With an embedding server, the rows
-// get their vectors now: binetic-agent makes them in the background as a session
+// get their vectors now: gnosh makes them in the background as a session
 // starts, and a first prompt's recall does not wait for them.
 func seedMem(gnovmDir, project, code, embeddings string) error {
 	h, err := NewHost(Options{Dir: gnovmDir, Client: NewClientID()})
@@ -760,11 +760,11 @@ func seedMem(gnovmDir, project, code, embeddings string) error {
 
 var memEmbeddingsOptionRe = regexp.MustCompile(`(?m)^\s*option\s+mem-embeddings-url\s+["']?([^"'\s]+)`)
 
-// memEmbeddingsURL is the embedding server a run's binetic-agent is given, if any:
-// mem_embeddings_url in either of its binetic-agent.json files, or its binetic-agentrc's
+// memEmbeddingsURL is the embedding server a run's gnosh is given, if any:
+// mem_embeddings_url in either of its crush.json files, or its crushrc's
 // option line.
 func memEmbeddingsURL(cfg, data string) string {
-	for _, path := range []string{filepath.Join(data, "binetic_agent", "binetic-agent.json"), filepath.Join(cfg, "binetic_agent", "binetic-agent.json")} {
+	for _, path := range []string{filepath.Join(data, "crush", "crush.json"), filepath.Join(cfg, "crush", "crush.json")} {
 		var c struct {
 			Options struct {
 				MemEmbeddingsURL string `json:"mem_embeddings_url"`
@@ -774,7 +774,7 @@ func memEmbeddingsURL(cfg, data string) string {
 			return c.Options.MemEmbeddingsURL
 		}
 	}
-	b, _ := os.ReadFile(filepath.Join(cfg, "binetic_agent", "binetic-agentrc"))
+	b, _ := os.ReadFile(filepath.Join(cfg, "crush", "crushrc"))
 	if m := memEmbeddingsOptionRe.FindSubmatch(b); m != nil {
 		return string(m[1])
 	}
@@ -983,7 +983,7 @@ func (r *scenarioRun) check(line, project string, env []string) checkResult {
 		}
 	case len(f) == 4 && f[0] == "mem-count":
 		// mem-count <what> <op> <n>: one of mem's counts.
-		n, err := memCount(filepath.Join(r.dir, "data", "binetic_agent", "gnovm"), project, f[1])
+		n, err := memCount(filepath.Join(r.dir, "data", "crush", "gnovm"), project, f[1])
 		res.got = fmt.Sprintf("%d %s", n, f[1])
 		if err != nil {
 			res.got = err.Error()
@@ -992,7 +992,7 @@ func (r *scenarioRun) check(line, project string, env []string) checkResult {
 	case len(f) >= 5 && f[0] == "vm-eval":
 		// vm-eval <vm> <expression, no spaces> <op or contains> <value>:
 		// the expression's value in the VM, rebuilt from its journal.
-		got, err := evalInVM(filepath.Join(r.dir, "data", "binetic_agent", "gnovm"), project, f[1], f[2])
+		got, err := evalInVM(filepath.Join(r.dir, "data", "crush", "gnovm"), project, f[1], f[2])
 		res.got = truncate(got, 160)
 		switch {
 		case err != nil:

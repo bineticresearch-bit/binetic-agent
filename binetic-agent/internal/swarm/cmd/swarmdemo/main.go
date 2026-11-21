@@ -1,7 +1,7 @@
 // Command swarmdemo runs demo A of SWARM.md: N workers, each with its own
 // key, work one plan on the shared mem realm through a chain, with no
 // model: a todo's work is a sleep, so what is measured is the
-// coordination. It is a demo and test tool; nothing in binetic-agent runs it.
+// coordination. It is a demo and test tool; nothing in gnosh runs it.
 //
 //	swarmdemo keys -seed S -n 100 -amount 100000000000ugnot > balances.txt
 //	swarmdemo run -rpc http://127.0.0.1:36657 -chain dev -seed S -n 100 \
@@ -64,7 +64,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/gnochain"
+	"github.com/charmbracelet/crush/internal/gnochain"
 )
 
 const defaultRealm = "gno.land/r/g1ecsuj0q572jr0dhu29q9njtnmw03hyu7tyyvv6/mem"
@@ -909,7 +909,7 @@ func run(args []string) error {
 					w = slowness.d
 					if slowness.renew {
 						// Renew every third of a lease, in blocks, as
-						// binetic-agent's renewer does for a turn that goes on.
+						// gnosh's renewer does for a turn that goes on.
 						end := time.Now().Add(w)
 						step := max(int64(*lease/3), 1)
 						last := fol.height()

@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/shell"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/shell"
 	"github.com/stretchr/testify/require"
 )
 
@@ -15,7 +15,7 @@ import (
 // as a workspace's /tasks lists only its own.
 func TestJobToolsNameTheWorkspacesJobs(t *testing.T) {
 	// No user tool descriptions, which wrap a tool again.
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", t.TempDir())
+	t.Setenv("GNOSH_GLOBAL_CONFIG", t.TempDir())
 	const providerID = "test-provider"
 	env := testEnv(t)
 	coord := newTestCoordinator(t, env, providerID, config.ProviderConfig{ID: providerID})

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/workspace"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/workspace"
 	"github.com/stretchr/testify/require"
 )
 
@@ -20,7 +20,7 @@ func (w *namedSessionsWorkspace) ListSessions(context.Context) ([]session.Sessio
 	return w.sessions, w.err
 }
 
-// `binetic-agent -r <name>`, as Claude Code's --resume: the one session with that
+// `gnosh -r <name>`, as Claude Code's --resume: the one session with that
 // name, ignoring case; a name no session or several have is the search
 // to open the list on.
 func TestResumeByName(t *testing.T) {

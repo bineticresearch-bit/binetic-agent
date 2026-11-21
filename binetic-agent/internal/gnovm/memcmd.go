@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -42,7 +42,7 @@ func (h *Host) MemCommand(ctx context.Context, project, session, args string, ti
 	return out, err
 }
 
-// memCommand is MemCommand, with what it erased, if anything, for binetic-agent's
+// memCommand is MemCommand, with what it erased, if anything, for gnosh's
 // own copies of mem's text.
 func (h *Host) memCommand(ctx context.Context, project, session, args string, titles map[string]string) (string, *MemErasure, error) {
 	var reply memReply
@@ -51,7 +51,7 @@ func (h *Host) memCommand(ctx context.Context, project, session, args string, ti
 }
 
 // MemRead answers one of /mem's reads (show, find, log) typed at a shell
-// as command, binetic-agent mem: its text names command where a session's names
+// as command, gnosh mem: its text names command where a session's names
 // /mem, and refused reports that mem refused it, or failed ("no item
 // `x`"), for the command to exit 1. It takes nothing else: at a shell,
 // mem is only read.
@@ -168,7 +168,7 @@ func (h *Host) repairVM(ctx context.Context, project, name string) (string, erro
 
 // user runs code against mem as the user, typed in session as via ("/mem"),
 // and returns what it printed, then why it failed, if it did, and what
-// binetic-agent did besides. Only a busy mem is an error: the rest is the answer,
+// gnosh did besides. Only a busy mem is an error: the rest is the answer,
 // a failure marked refused in reply. Sessions are named for the user
 // (memSessions).
 func (h *memHost) user(ctx context.Context, session, code string, titles map[string]string, via string, reply *memReply) (string, error) {
@@ -283,14 +283,14 @@ func memEntryText(e memEntry, titles map[string]string) string {
 	return strings.Join(lines, "\n")
 }
 
-// memWho is who made entry e, as the user reads it: "you", "binetic-agent", or the
+// memWho is who made entry e, as the user reads it: "you", "gnosh", or the
 // agent in a session, by its title where titles has it.
 func memWho(e memEntry, titles map[string]string) string {
 	switch {
 	case e.Who == "user":
 		return "you"
-	case e.Who == "klash": // binetic-agent's own calls, recorded under its old name
-		return "binetic-agent"
+	case e.Who == "klash": // gnosh's own calls, recorded under its old name
+		return "gnosh"
 	case e.Session == "":
 		return e.Who
 	case titles[e.Session] != "":

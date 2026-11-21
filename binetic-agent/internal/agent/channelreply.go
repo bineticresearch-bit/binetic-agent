@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools/mcp"
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/agent/tools/mcp"
+	"github.com/charmbracelet/crush/internal/config"
 )
 
 // channelReplyTimeout bounds the auto-reply tool call so a wedged MCP
@@ -121,7 +121,7 @@ func channelReplyDelivered(reply *config.MCPChannelReply, channel string, comple
 // channel sender that something went wrong. Only channel-originated turns
 // qualify, and cancellation is excluded: it is the operator stopping the
 // turn (Esc, or CancelAll on shutdown), not a failure, and answering it
-// would message every in-flight sender each time Binetic Agent quits.
+// would message every in-flight sender each time Crush quits.
 func channelErrorReplyWanted(channel string, err error) bool {
 	return channel != "" && !errors.Is(err, context.Canceled)
 }

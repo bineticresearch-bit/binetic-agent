@@ -5,12 +5,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/shellconfig"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/shellconfig"
 	"github.com/stretchr/testify/require"
 )
 
-// The binetic-agentrc `hook add` builtin spells out the valid event names
+// The crushrc `hook add` builtin spells out the valid event names
 // because internal/config imports this package and cannot be imported
 // back. This test is what keeps the two copies in step: if config gains
 // or renames an event and this list does not follow, `hook add` would
@@ -51,15 +51,15 @@ func TestKnownMCPTypesMatchConfig(t *testing.T) {
 		"mcp add's accepted types must be exactly the types the loader accepts")
 }
 
-// Every option config.Options has can be written in a binetic-agentrc. A binetic-agentrc
+// Every option config.Options has can be written in a crushrc. A crushrc
 // line naming an option the table lacks is "option: unknown key", which
 // stops the whole config from loading, so an option added to config
-// without a binetic-agentrc name fails here instead of in a user's config.
-func TestEveryOptionHasABinetic AgentrcName(t *testing.T) {
+// without a crushrc name fails here instead of in a user's config.
+func TestEveryOptionHasACrushrcName(t *testing.T) {
 	t.Parallel()
 
 	// Not written by hand: the TUI keeps each model's reasoning level.
-	notInBinetic Agentrc := map[string]bool{"reasoning": true}
+	notInCrushrc := map[string]bool{"reasoning": true}
 	settable := map[string]bool{}
 	for _, key := range shellconfig.OptionJSONKeysForTest() {
 		settable[key] = true
@@ -67,11 +67,11 @@ func TestEveryOptionHasABinetic AgentrcName(t *testing.T) {
 	typ := reflect.TypeFor[config.Options]()
 	for i := range typ.NumField() {
 		name, _, _ := strings.Cut(typ.Field(i).Tag.Get("json"), ",")
-		if name == "" || name == "-" || notInBinetic Agentrc[name] {
+		if name == "" || name == "-" || notInCrushrc[name] {
 			continue
 		}
 		if !settable[name] {
-			t.Errorf("options.%s has no binetic-agentrc option: add it to optionSpecs in options.go", name)
+			t.Errorf("options.%s has no crushrc option: add it to optionSpecs in options.go", name)
 		}
 	}
 }

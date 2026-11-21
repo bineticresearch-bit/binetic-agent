@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/spf13/cobra"
 )
 
@@ -61,7 +61,7 @@ type claudeMCPServer struct {
 
 // parseMCPServers adds to servers those of data, a .mcp.json document.
 // A server without a type is stdio when it names a command and http when
-// it names a URL; the types are Claude Code's and Binetic Agent's alike.
+// it names a URL; the types are Claude Code's and Gnosh's alike.
 func parseMCPServers(data []byte, servers config.MCPs) error {
 	var doc struct {
 		MCPServers map[string]claudeMCPServer `json:"mcpServers"`

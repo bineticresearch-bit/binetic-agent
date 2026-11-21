@@ -4,10 +4,10 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
-	"github.com/charmbracelet/binetic_agent/internal/ui/util"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/ui/util"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/stretchr/testify/require"
 )
@@ -16,7 +16,7 @@ func heldForTest() *config.ProjectSettings {
 	return &config.ProjectSettings{
 		Folder:  "/work/stranger",
 		Dir:     "/work/stranger",
-		Scripts: []string{"/work/stranger/.binetic-agentrc"},
+		Scripts: []string{"/work/stranger/.gnoshrc"},
 		Hooks:   []string{"Stop: ./x.sh"},
 	}
 }
@@ -55,7 +55,7 @@ func TestUntrustedNotice(t *testing.T) {
 	info, ok := u.untrustedNotice()().(util.InfoMsg)
 	require.True(t, ok)
 	require.Equal(t, util.InfoTypeWarn, info.Type)
-	require.Equal(t, "Folder not trusted: its settings are off until binetic-agent trust /work/stranger and a restart (runs .binetic-agentrc; 1 hook).", info.Msg)
+	require.Equal(t, "Folder not trusted: its settings are off until gnosh trust /work/stranger and a restart (runs .gnoshrc; 1 hook).", info.Msg)
 
 	u.com.Workspace = safeModeWorkspace{cfg: &config.Config{}}
 	require.Nil(t, u.untrustedNotice())

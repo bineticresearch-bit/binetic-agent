@@ -9,10 +9,10 @@ import (
 	"time"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
-	"github.com/charmbracelet/binetic_agent/internal/shell"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/permission"
+	"github.com/charmbracelet/crush/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/shell"
 	"github.com/stretchr/testify/require"
 )
 
@@ -59,7 +59,7 @@ func TestForegroundSleep(t *testing.T) {
 // command that starts with a long sleep, in Claude Code's words, before
 // asking to run it, and its description says so. In the background it
 // runs, and so it does where nothing tells the agent: a sub-agent's bash,
-// or binetic-agent run's.
+// or gnosh run's.
 func TestBashBlocksALongForegroundSleep(t *testing.T) {
 	t.Parallel()
 

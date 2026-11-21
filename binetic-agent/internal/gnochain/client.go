@@ -1,16 +1,16 @@
-// Package gnochain is binetic-agent's client of gno.land: a realm's values read
+// Package gnochain is gnosh's client of gno.land: a realm's values read
 // through vm/qeval (free), its functions called in signed transactions,
 // and blocks and accounts read back. Immune's volunteer rounds and the
 // shared mem realm both talk to the chain through it.
 //
-// It is built on tm2's transaction types and amino, which binetic-agent already
+// It is built on tm2's transaction types and amino, which gnosh already
 // links, plus a small JSON-RPC client on net/http. Not on gno's gnoclient,
 // tm2's RPC client or gno.land's vm package: each links parts of the node
 // into its users (mdbx, a C database from an active outside project,
 // through gnoclient; consensus, validator signing, mempool, p2p and the RPC
 // server through the other two). Nor on gno's keybase: keys sign through
 // the user's own gnokey (GnokeySigner), or any other [Signer].
-// TestNoNodeInBinetic Agent keeps it so.
+// TestNoNodeInGnosh keeps it so.
 package gnochain
 
 import (

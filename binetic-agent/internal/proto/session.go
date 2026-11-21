@@ -1,6 +1,6 @@
 package proto
 
-import "github.com/charmbracelet/binetic_agent/internal/session"
+import "github.com/charmbracelet/crush/internal/session"
 
 // Session represents a session in the proto layer.
 //

@@ -6,15 +6,15 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/shell"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/shell"
 	"github.com/stretchr/testify/require"
 )
 
 // Claude Code's BASH_DEFAULT_TIMEOUT_MS, BASH_MAX_TIMEOUT_MS and
 // BASH_MAX_OUTPUT_LENGTH set how long a command runs before it moves to
 // the background, the most a call's timeout can ask for, and how much of
-// its output the model reads; unset or not a positive number, Binetic Agent's own
+// its output the model reads; unset or not a positive number, Gnosh's own
 // limits hold.
 func TestBashEnvLimits(t *testing.T) {
 	limits := func(def, most, output string) (int, int, int, int) {
@@ -26,7 +26,7 @@ func TestBashEnvLimits(t *testing.T) {
 	}
 
 	def, most, output, hour := limits("", "", "")
-	require.Equal(t, []int{120, 600, 30000, 600}, []int{def, most, output, hour}, "Binetic Agent's own limits")
+	require.Equal(t, []int{120, 600, 30000, 600}, []int{def, most, output, hour}, "Gnosh's own limits")
 
 	def, most, output, hour = limits("600000", "1800000", "60000")
 	require.Equal(t, []int{600, 1800, 60000, 1800}, []int{def, most, output, hour})

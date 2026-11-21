@@ -53,7 +53,7 @@ var (
 // --reasoning-levels` writes. With none set the id decides: a harmony model
 // (gpt-oss) takes an effort level, a Qwen takes the think switch, and
 // anything else has no axis. Guessing from the id is what keeps an existing
-// binetic-agentrc working without being edited.
+// crushrc working without being edited.
 func ReasoningAxis(model catwalk.Model) (ReasoningKind, []string) {
 	if len(model.ReasoningLevels) > 0 {
 		return kindOfLevels(model.ReasoningLevels), slices.Clone(model.ReasoningLevels)

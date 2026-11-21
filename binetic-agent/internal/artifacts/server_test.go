@@ -179,9 +179,9 @@ func TestOffServesNothing(t *testing.T) {
 // A listener on every interface is advertised at an address another
 // machine can reach, never 0.0.0.0, which reaches nothing from outside.
 // By default the server is reachable from this machine and no other. An
-// artifact is whatever the agent was told to make, and the machine Binetic Agent
+// artifact is whatever the agent was told to make, and the machine Gnosh
 // runs on is often shared; the user at another machine gets to it with an
-// ssh -L forward rather than by Binetic Agent opening a port to the network.
+// ssh -L forward rather than by Gnosh opening a port to the network.
 func TestTheDefaultIsThisMachineOnly(t *testing.T) {
 	t.Parallel()
 
@@ -212,17 +212,17 @@ func TestEveryInterfaceIsAdvertisedReachably(t *testing.T) {
 // sniffed would reach the user as a download rather than something to
 // watch. The extension here is one no mime.types on earth names, so
 // http.ServeFile has nothing of its own to answer with and the header
-// Binetic Agent computes is the only thing under test.
+// Gnosh computes is the only thing under test.
 func TestAVideoIsServedAsAVideo(t *testing.T) {
 	t.Parallel()
 
 	dir := t.TempDir()
-	video := filepath.Join(dir, "video_a_v7.binetic-agentvid")
+	video := filepath.Join(dir, "video_a_v7.gnoshvid")
 	require.NoError(t, os.WriteFile(video, []byte("not really an mp4"), 0o600))
 
 	s := serving(t, dir)
 	s.byExtension = func(ext string) string {
-		if ext == ".binetic-agentvid" {
+		if ext == ".gnoshvid" {
 			return "video/mp4"
 		}
 		return ""
@@ -251,13 +251,13 @@ func TestContentTypeFallsBackForMedia(t *testing.T) {
 	require.Equal(t, "video/quicktime", bare.contentType("cut.MOV"), "the extension is matched whatever its case")
 	require.Equal(t, "audio/mp4", bare.contentType("vo.m4a"))
 	require.Contains(t, bare.contentType("notes.md"), "markdown")
-	require.Empty(t, bare.contentType("cut.binetic-agentnope"), "an extension no one knows is left to the server to sniff")
+	require.Empty(t, bare.contentType("cut.gnoshnope"), "an extension no one knows is left to the server to sniff")
 
 	own := &Server{byExtension: func(string) string { return "text/html" }}
 	require.Equal(t, "text/html", own.contentType("page.html"), "this machine's own table answers first")
 }
 
-// Close hands the port back before it returns. A `binetic-agent run` closes the
+// Close hands the port back before it returns. A `gnosh run` closes the
 // server app.New made for it and the next listener on that address has
 // to succeed; waiting on the Serve goroutine to get round to it is a
 // race the caller cannot see.
@@ -277,10 +277,10 @@ func TestCloseFreesThePortAtOnce(t *testing.T) {
 	}
 }
 
-// When the default port is taken — by another Binetic Agent, most likely — the
+// When the default port is taken — by another Gnosh, most likely — the
 // fallback stays on this machine too. A fallback that opened every
 // interface would quietly undo the default on exactly the machines where
-// it matters most: the ones already running a Binetic Agent.
+// it matters most: the ones already running a Gnosh.
 func TestTheFallbackStaysOnThisMachine(t *testing.T) {
 	// Not parallel: it takes the default port for the duration. Whether
 	// or not that listen succeeds, the port is in use afterwards, so

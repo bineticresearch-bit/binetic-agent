@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/db"
+	"github.com/charmbracelet/crush/internal/db"
 	"github.com/stretchr/testify/require"
 )
 

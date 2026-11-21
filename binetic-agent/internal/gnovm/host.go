@@ -1,13 +1,13 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
 // published in the canonical copy of internal/gnovm/LICENSE.md; together with
 // the Additional Terms (Strong Attribution) in that file.
 
-// Package gnovm runs named Gno virtual machines for binetic-agent: each with a
+// Package gnovm runs named Gno virtual machines for gnosh: each with a
 // memory cap and a gas limit per call, its state kept as a journal of the
 // calls that succeeded, persisted on request, and evicted from memory when
 // the budget needs the room. DESIGN.md has the design and its reviews.
@@ -33,7 +33,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/lock"
+	"github.com/charmbracelet/crush/internal/lock"
 )
 
 const (
@@ -59,7 +59,7 @@ const (
 	defaultGas      = 1_000_000_000
 	maxGas          = 100_000_000_000
 
-	// lockWait is the least a run waits for a VM another binetic-agent process is
+	// lockWait is the least a run waits for a VM another gnosh process is
 	// using: another process's call, or its replay of a VM, can outlast a
 	// short run's own wall-clock limit on a busy machine.
 	lockWait = 30 * time.Second
@@ -79,9 +79,9 @@ var (
 
 // Options configures a Host.
 type Options struct {
-	// Dir is the data directory, <XDG data>/binetic-agent/gnovm.
+	// Dir is the data directory, <XDG data>/gnosh/gnovm.
 	Dir string
-	// Client names the binetic-agent process the host serves, for its memory-only
+	// Client names the gnosh process the host serves, for its memory-only
 	// VMs, which live until that process exits; NewClientID makes one.
 	Client string
 	// BudgetBytes caps the memory the VMs may use; 0 picks it from the
@@ -102,7 +102,7 @@ type Options struct {
 	Embeddings string
 }
 
-// NewClientID returns a fresh id for a binetic-agent process.
+// NewClientID returns a fresh id for a gnosh process.
 func NewClientID() string {
 	var b [4]byte
 	_, _ = rand.Read(b[:])
@@ -125,7 +125,7 @@ type machineFile struct {
 	VMOptions
 }
 
-// Host owns the VMs of one binetic-agent process. It runs one operation at a time:
+// Host owns the VMs of one gnosh process. It runs one operation at a time:
 // the GnoVM is single-threaded, and its stores are not safe to share.
 type Host struct {
 	mu      sync.Mutex
@@ -202,7 +202,7 @@ func (s *vmState) persistent() bool { return s.opts.Persist }
 
 // NewHost makes a host. It takes the client's lock, unless the client
 // process already holds it (a worker's client does), and sweeps the
-// memory-only VMs of binetic-agent processes that are gone as it meets each
+// memory-only VMs of gnosh processes that are gone as it meets each
 // project.
 func NewHost(opts Options) (*Host, error) {
 	if opts.Dir == "" || opts.Client == "" {
@@ -251,7 +251,7 @@ func (h *Host) Close() error {
 		s.res = nil
 		delete(h.vms, key)
 	}
-	// Memory-only VMs end with the binetic-agent process, which holds the client
+	// Memory-only VMs end with the gnosh process, which holds the client
 	// lock: a worker's host leaves them for the next worker, and the
 	// client deletes them when it closes (deleteEphemeral).
 	if h.release != nil {
@@ -311,7 +311,7 @@ func (h *Host) lockPath(project, name string) string {
 	return filepath.Join(h.projectDir(project), "locks", name+".lock")
 }
 
-// sweep deletes the memory-only VMs of binetic-agent processes that are gone: their
+// sweep deletes the memory-only VMs of gnosh processes that are gone: their
 // client lock is free or missing.
 func (h *Host) sweep(project string) {
 	if h.swept[project] {
@@ -428,7 +428,7 @@ func (h *Host) create(project, name string, opts VMOptions) (*vmState, error) {
 	}
 	if err := os.Rename(tmp, final); err != nil {
 		if _, statErr := os.Stat(final); statErr == nil {
-			return nil, &refusal{fmt.Sprintf("another binetic-agent process made a VM named %s just now; use it, or pick another name", name)}
+			return nil, &refusal{fmt.Sprintf("another gnosh process made a VM named %s just now; use it, or pick another name", name)}
 		}
 		return nil, err
 	}
@@ -446,8 +446,8 @@ func (h *Host) create(project, name string, opts VMOptions) (*vmState, error) {
 }
 
 // lockVM takes a persistent VM's cross-process lock, waiting while another
-// binetic-agent process holds it, until ctx is done. Memory-only VMs belong to one
-// binetic-agent process and need none.
+// gnosh process holds it, until ctx is done. Memory-only VMs belong to one
+// gnosh process and need none.
 func (h *Host) lockVM(ctx context.Context, s *vmState) (func(), error) {
 	if !s.persistent() {
 		return func() {}, nil
@@ -467,9 +467,9 @@ func (h *Host) lockVM(ctx context.Context, s *vmState) (func(), error) {
 		}
 		select {
 		case <-ctx.Done():
-			holder := "another binetic-agent process"
+			holder := "another gnosh process"
 			if b, err := os.ReadFile(path); err == nil && len(strings.TrimSpace(string(b))) > 0 {
-				holder = "binetic-agent process " + strings.TrimSpace(string(b))
+				holder = "gnosh process " + strings.TrimSpace(string(b))
 			}
 			return nil, &busyError{msg: fmt.Sprintf("VM %s is in use by %s; try again shortly", s.name, holder)}
 		case <-time.After(50 * time.Millisecond):
@@ -739,7 +739,7 @@ type RunResult struct {
 	// MemGoals are the goals a call to mem changed, as its session sees
 	// them, for the session's task list.
 	MemGoals []MemGoal `json:",omitempty"`
-	// Erased is what a call to mem erased, for binetic-agent's own copies of mem's
+	// Erased is what a call to mem erased, for gnosh's own copies of mem's
 	// text (gnovm_run hands it to OnMemErased).
 	Erased *MemErasure `json:",omitempty"`
 	// Rules are the rules a call to mem set, changed or removed, which the
@@ -803,7 +803,7 @@ func (h *Host) Run(ctx context.Context, req RunRequest) (*RunResult, error) {
 		if err != nil {
 			return nil, err
 		}
-		notes = append(notes, "new scratch VM "+name+": memory only, it ends with this binetic-agent process; name a VM with gnovm_new to keep state")
+		notes = append(notes, "new scratch VM "+name+": memory only, it ends with this gnosh process; name a VM with gnovm_new to keep state")
 	case s == nil:
 		return nil, &refusal{fmt.Sprintf("there is no VM named %s; make it with gnovm_new, or leave out name to use your scratch VM", name)}
 	case req.Reset && s.persistent():
@@ -1171,7 +1171,7 @@ func (h *Host) New(ctx context.Context, req NewRequest) (VMInfo, bool, error) {
 	}
 	project := projectKey(req.Project)
 	if req.Name == MemVM {
-		return VMInfo{}, false, &refusal{`mem is your memory, kept by binetic-agent and made when first used: run gnovm_run with name "mem"; it has no settings to change`}
+		return VMInfo{}, false, &refusal{`mem is your memory, kept by gnosh and made when first used: run gnovm_run with name "mem"; it has no settings to change`}
 	}
 	s, err := h.lookup(project, req.Name)
 	if err != nil {
@@ -1254,7 +1254,7 @@ func applyOptions(opts *VMOptions, req NewRequest) {
 func (h *Host) persist(s *vmState) error {
 	dst := h.persistDir(s.project, s.name)
 	if _, err := os.Stat(dst); err == nil {
-		return &refusal{fmt.Sprintf("another binetic-agent process has a persistent VM named %s; pick another name", s.name)}
+		return &refusal{fmt.Sprintf("another gnosh process has a persistent VM named %s; pick another name", s.name)}
 	}
 	if err := mkdirSync(filepath.Dir(dst)); err != nil {
 		return err
@@ -1463,7 +1463,7 @@ func (h *Host) KeptFrames(projectPath, req string) ([]MemFrame, bool, error) {
 
 // Repair makes a broken VM usable again: it cuts the journal before the
 // first entry that cannot be read or replayed, keeps the old journal beside
-// it as a .bak, and starts a new generation, so other binetic-agent processes
+// it as a .bak, and starts a new generation, so other gnosh processes
 // rebuild rather than catch up. It reports how many entries it kept and
 // cut.
 func (h *Host) Repair(ctx context.Context, projectPath, name string) (kept, cut int, err error) {
@@ -1487,7 +1487,7 @@ func (h *Host) Repair(ctx context.Context, projectPath, name string) (kept, cut 
 		return 0, 0, err
 	}
 	defer release()
-	// Another binetic-agent may have repaired it, or gone on writing to it, since
+	// Another gnosh may have repaired it, or gone on writing to it, since
 	// this one saw it broken: look at the journal as it is now.
 	_ = h.sync(ctx, s)
 	if s.broken == nil {

@@ -4,16 +4,16 @@ import (
 	"runtime"
 	"strconv"
 
-	"github.com/charmbracelet/binetic_agent/internal/env"
+	"github.com/charmbracelet/crush/internal/env"
 )
 
 var useGoCoreUtils bool
 
 func init() {
-	// If BINETIC_AGENT_CORE_UTILS (or KLASH_ or BINETIC_AGENT_CORE_UTILS) is set to either true or
+	// If GNOSH_CORE_UTILS (or KLASH_ or CRUSH_CORE_UTILS) is set to either true or
 	// false, respect that.
 	// By default, enable on Windows only.
-	if v, err := strconv.ParseBool(env.Getenv("BINETIC_AGENT_CORE_UTILS")); err == nil {
+	if v, err := strconv.ParseBool(env.Getenv("GNOSH_CORE_UTILS")); err == nil {
 		useGoCoreUtils = v
 	} else {
 		useGoCoreUtils = runtime.GOOS == "windows"

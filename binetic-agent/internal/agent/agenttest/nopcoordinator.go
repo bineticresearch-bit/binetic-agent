@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent"
-	"github.com/charmbracelet/binetic_agent/internal/message"
+	"github.com/charmbracelet/crush/internal/agent"
+	"github.com/charmbracelet/crush/internal/message"
 )
 
 // NopCoordinator implements every [agent.Coordinator] method as a no-op

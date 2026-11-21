@@ -12,8 +12,8 @@ import (
 
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/charlievieth/fastwalk"
-	"github.com/charmbracelet/binetic_agent/internal/csync"
-	"github.com/charmbracelet/binetic_agent/internal/home"
+	"github.com/charmbracelet/crush/internal/csync"
+	"github.com/charmbracelet/crush/internal/home"
 	"github.com/charmbracelet/x/ansi"
 )
 
@@ -30,9 +30,9 @@ func SkipHidden(path string) bool {
 	}
 
 	commonIgnoredDirs := map[string]bool{
-		".binetic-agent":           true,
+		".gnosh":           true,
 		".klash":           true,
-		".binetic-agent":           true,
+		".crush":           true,
 		"node_modules":     true,
 		"vendor":           true,
 		"dist":             true,
@@ -62,7 +62,7 @@ func SkipHidden(path string) bool {
 }
 
 // FastGlobWalker provides gitignore-aware file walking with fastwalk
-// It uses hierarchical ignore checking like git does, checking .gitignore/.binetic-agentignore
+// It uses hierarchical ignore checking like git does, checking .gitignore/.crushignore
 // files in each directory from the root to the target path.
 type FastGlobWalker struct {
 	directoryLister *directoryLister
@@ -75,13 +75,13 @@ func NewFastGlobWalker(searchPath string) *FastGlobWalker {
 }
 
 // ShouldSkip checks if a file path should be skipped based on hierarchical gitignore,
-// binetic_agentignore, and hidden file rules.
+// crushignore, and hidden file rules.
 func (w *FastGlobWalker) ShouldSkip(path string) bool {
 	return w.directoryLister.shouldIgnore(path, nil, false)
 }
 
 // ShouldSkipDir checks if a directory path should be skipped based on hierarchical
-// gitignore, binetic_agentignore, and hidden file rules.
+// gitignore, crushignore, and hidden file rules.
 func (w *FastGlobWalker) ShouldSkipDir(path string) bool {
 	return w.directoryLister.shouldIgnore(path, nil, true)
 }

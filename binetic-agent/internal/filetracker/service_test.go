@@ -9,7 +9,7 @@ import (
 	"testing/synctest"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/db"
+	"github.com/charmbracelet/crush/internal/db"
 	"github.com/stretchr/testify/require"
 )
 
@@ -170,7 +170,7 @@ func TestService_UnchangedSinceReadJudgesLargeFilesByTime(t *testing.T) {
 	require.False(t, env.svc.UnchangedSinceRead(env.ctx, "s", path), "not compared with the read before the last")
 }
 
-// A file read in an earlier run of Binetic Agent, a session resumed since, has
+// A file read in an earlier run of Gnosh, a session resumed since, has
 // no hash in this run: it counts as unchanged unless modified in a later
 // second than the read, as the edit tool judges it. That includes a file
 // written and read in the same second, as the write tool does.

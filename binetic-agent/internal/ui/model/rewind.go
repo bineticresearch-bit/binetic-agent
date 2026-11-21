@@ -9,10 +9,10 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/charmbracelet/binetic_agent/internal/app"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/ui/dialog"
-	"github.com/charmbracelet/binetic_agent/internal/ui/util"
+	"github.com/charmbracelet/crush/internal/app"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/ui/dialog"
+	"github.com/charmbracelet/crush/internal/ui/util"
 )
 
 // rewindPromptsMsg is the prompts of session sessionID /rewind can go
@@ -39,7 +39,7 @@ type rewoundMsg struct {
 	result             app.RewindResult
 }
 
-// said is what binetic-agent says of a rewind done: what it restored, where the
+// said is what gnosh says of a rewind done: what it restored, where the
 // whole conversation is kept, and the files it left as they are.
 func (msg rewoundMsg) said() string {
 	var said []string
@@ -127,7 +127,7 @@ const rewindEscWindow = 800 * time.Millisecond
 // Esc within rewindEscWindow of the first opens /rewind on an empty
 // prompt in a session, and clears a prompt with text in it, keeping the
 // text for Up; on the first there, it says "Esc again to clear". An
-// alt+esc is two Escs that reached binetic-agent together. Esc while browsing
+// alt+esc is two Escs that reached gnosh together. Esc while browsing
 // history goes back to the draft, as before. It reports whether it took
 // the key.
 func (m *UI) escapeTwice(msg tea.KeyPressMsg) (tea.Cmd, bool) {

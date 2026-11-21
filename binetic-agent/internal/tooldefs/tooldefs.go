@@ -1,9 +1,9 @@
-// Package tooldefs names Binetic Agent's built-in tools.
+// Package tooldefs names Crush's built-in tools.
 //
 // The list lives here, in a package that imports nothing, because two
 // places need to agree on it and neither can own it: internal/config
 // validates the tool names a config file uses, and internal/shellconfig
-// validates the ones a binetic-agentrc writes — and config imports shellconfig,
+// validates the ones a crushrc writes — and config imports shellconfig,
 // so shellconfig cannot import config back.
 //
 // Duplicating 29 strings behind a drift-guard test was the alternative.
@@ -24,8 +24,8 @@ var names = []string{
 	"artifact",
 	"bash",
 	"gnokey",
-	"binetic-agent_info",
-	"binetic-agent_logs",
+	"gnosh_info",
+	"gnosh_logs",
 	"job_output",
 	"job_kill",
 	"download",
@@ -62,14 +62,14 @@ func Names() []string {
 	return slices.Clone(names)
 }
 
-// legacyNames are the names tools had before the renames, from Binetic Agent to
-// Klash to Binetic Agent, newest first, each with its name now, so that a config or
+// legacyNames are the names tools had before the renames, from Crush to
+// Klash to Gnosh, newest first, each with its name now, so that a config or
 // hook naming an old one keeps working.
 var legacyNames = []struct{ old, current string }{
-	{"klash_info", "binetic-agent_info"},
-	{"klash_logs", "binetic-agent_logs"},
-	{"binetic_agent_info", "binetic-agent_info"},
-	{"binetic_agent_logs", "binetic-agent_logs"},
+	{"klash_info", "gnosh_info"},
+	{"klash_logs", "gnosh_logs"},
+	{"crush_info", "gnosh_info"},
+	{"crush_logs", "gnosh_logs"},
 }
 
 // Canonical returns the current name of a built-in tool given by any of
@@ -129,7 +129,7 @@ var claudeCodeNames = map[string]string{
 }
 
 // FromClaudeCode returns the built-in tool Claude Code calls name, or ""
-// if Claude Code has no tool by that name or Binetic Agent none like it.
+// if Claude Code has no tool by that name or Gnosh none like it.
 func FromClaudeCode(name string) string {
 	return claudeCodeNames[name]
 }

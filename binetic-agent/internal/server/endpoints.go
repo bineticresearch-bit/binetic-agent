@@ -1,8 +1,8 @@
 package server
 
 import (
-	"github.com/charmbracelet/binetic_agent/internal/apigen"
-	"github.com/charmbracelet/binetic_agent/internal/proto"
+	"github.com/charmbracelet/crush/internal/apigen"
+	"github.com/charmbracelet/crush/internal/proto"
 )
 
 // endpoints is the single source of truth for the v1 API: every entry
@@ -474,7 +474,7 @@ func (c *controllerV1) endpoints() []apigen.Endpoint {
 
 		apigen.Get("/v1/workspaces/{id}/doctor").
 			Summary("Doctor report").
-			Description("The check of the workspace's setup that binetic-agent doctor prints, as the Markdown Claude Code's /doctor shows: the config files, the providers it can use and why not the others, the models, the hooks, and the programs it calls.").
+			Description("The check of the workspace's setup that gnosh doctor prints, as the Markdown Claude Code's /doctor shows: the config files, the providers it can use and why not the others, the models, the hooks, and the programs it calls.").
 			Tags("workspaces").
 			PathParam("id", "Workspace ID").
 			Responds(proto.DoctorReport{}).

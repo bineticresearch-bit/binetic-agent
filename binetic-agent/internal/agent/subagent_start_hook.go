@@ -6,9 +6,9 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/hooks"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/hooks"
+	"github.com/charmbracelet/crush/internal/pubsub"
 )
 
 // runSubagentStartHooks runs the SubagentStart hooks for a sub-agent of
@@ -17,7 +17,7 @@ import (
 // prompt, as Claude Code does. A hook cannot stop the sub-agent; one that
 // did not run to a verdict is shown to the user as a hook warning, and
 // the sub-agent starts without it. A Claude Code config with SubagentStart
-// hooks used to stop Binetic Agent at startup, as an event it did not fire.
+// hooks used to stop Gnosh at startup, as an event it did not fire.
 func (c *coordinator) runSubagentStartHooks(ctx context.Context, sessionID, agentID, agentType string) string {
 	if c.cfg == nil {
 		return ""

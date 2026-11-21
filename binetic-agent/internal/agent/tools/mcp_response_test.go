@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools/mcp"
+	"github.com/charmbracelet/crush/internal/agent/tools/mcp"
 	"github.com/stretchr/testify/require"
 )
 

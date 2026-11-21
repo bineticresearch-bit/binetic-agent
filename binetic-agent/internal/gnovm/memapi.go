@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -33,8 +33,8 @@ type memCalls struct {
 
 var memAPI = readMemAPI()
 
-// memNotCalls are exported for binetic-agent, not for the model: Bind is /goal's,
-// Apply the journal's, Check the tests', Has binetic-agent mem's, NextHint the
+// memNotCalls are exported for gnosh, not for the model: Bind is /goal's,
+// Apply the journal's, Check the tests', Has gnosh mem's, NextHint the
 // receipt's, and String prints.
 var memNotCalls = map[string]bool{"Bind": true, "Apply": true, "Check": true, "Has": true, "NextHint": true, "String": true, "Name": true, "Kind": true, "Says": true, "NextTodo": true}
 
@@ -177,7 +177,7 @@ func memHelp(call string) string {
 }
 
 // memHelpText is mem.Help()'s list of the calls to know.
-const memHelpText = `mem is your memory, kept by binetic-agent for this project. The calls to know:
+const memHelpText = `mem is your memory, kept by gnosh for this project. The calls to know:
   mem.Todo("make the port configurable", "add a --port flag", "document it").Push()  plan a task with its todos, in order, and step into it
   mem.Next()  step into the next todo; from the top, the first open one, in the order made
   mem.Pop("what came of it")  close the todo you are in, done, with its result

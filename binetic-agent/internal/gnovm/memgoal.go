@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -23,7 +23,7 @@ import (
 )
 
 // A session's /goal is a goal in mem that the session is bound to (MEMPLAN
-// §7). mem keeps the goal, its steps and what came of them; binetic-agent keeps the
+// §7). mem keeps the goal, its steps and what came of them; gnosh keeps the
 // binding with the session, and as each of the session's turns ends it
 // reads the goal and says what comes next: the agent goes on, the turn
 // ends, or the judge is asked whether the goal, closed as done, holds.
@@ -141,7 +141,7 @@ func lastGoalJSON(out string) (memGoalJSON, error) {
 	return j.Goals[0], nil
 }
 
-// GoalTurn is what binetic-agent does with a session's goal as a turn ends.
+// GoalTurn is what gnosh does with a session's goal as a turn ends.
 type GoalTurn struct {
 	// Do is one of:
 	//   - "continue": send Prompt, hidden, and go on;
@@ -304,7 +304,7 @@ func memIsDay(s string) bool {
 	return err == nil
 }
 
-// goalReopen reopens goal b, which the judge found not met, as binetic-agent's own
+// goalReopen reopens goal b, which the judge found not met, as gnosh's own
 // input, with what it found as a note.
 func (h *memHost) goalReopen(ctx context.Context, b GoalBinding, reason string) error {
 	code := "mem.Reopen(" + strconv.Quote(b.Name) + ")\nmem.Note(" + strconv.Quote(b.Name) + ", " +

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/stretchr/testify/require"
 )
 
@@ -117,7 +117,7 @@ func TestRunSubagentStopPayloadFirstPass(t *testing.T) {
 	envOut := filepath.Join(dir, "env.txt")
 	r := subagentStopRunner(t,
 		"cat > "+out+
-			"; printf '%s|%s|%s|%s|%s' \"$BINETIC_AGENT_EVENT\" \"$BINETIC_AGENT_STOP_HOOK_ACTIVE\" \"$BINETIC_AGENT_SESSION_ID\" \"$BINETIC_AGENT_AGENT_ID\" \"$BINETIC_AGENT_AGENT_TYPE\" > "+envOut)
+			"; printf '%s|%s|%s|%s|%s' \"$CRUSH_EVENT\" \"$CRUSH_STOP_HOOK_ACTIVE\" \"$GNOSH_SESSION_ID\" \"$GNOSH_AGENT_ID\" \"$GNOSH_AGENT_TYPE\" > "+envOut)
 
 	_, err := r.RunSubagentStop(context.Background(), "main-1", "sub-1", "task", "", false)
 	require.NoError(t, err)
@@ -138,14 +138,14 @@ func TestRunSubagentStopEnvMarksActive(t *testing.T) {
 
 	dir := t.TempDir()
 	envOut := filepath.Join(dir, "env.txt")
-	r := subagentStopRunner(t, `printf '%s|%s' "$BINETIC_AGENT_STOP_HOOK_ACTIVE" "$BINETIC_AGENT_STOP_HOOK_ACTIVE" > `+envOut)
+	r := subagentStopRunner(t, `printf '%s|%s' "$GNOSH_STOP_HOOK_ACTIVE" "$CRUSH_STOP_HOOK_ACTIVE" > `+envOut)
 
 	_, err := r.RunSubagentStop(context.Background(), "main", "sub", "task", "", true)
 	require.NoError(t, err)
 
 	envLine, err := os.ReadFile(envOut)
 	require.NoError(t, err)
-	require.Equal(t, "1|1", string(envLine), "under the BINETIC_AGENT_ name and the BINETIC_AGENT_ name before it")
+	require.Equal(t, "1|1", string(envLine), "under the GNOSH_ name and the CRUSH_ name before it")
 }
 
 // updated_input patches a tool's arguments; with no tool call in flight

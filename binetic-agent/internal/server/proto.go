@@ -7,11 +7,11 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent"
-	"github.com/charmbracelet/binetic_agent/internal/app"
-	"github.com/charmbracelet/binetic_agent/internal/backend"
-	"github.com/charmbracelet/binetic_agent/internal/proto"
-	"github.com/charmbracelet/binetic_agent/internal/session"
+	"github.com/charmbracelet/crush/internal/agent"
+	"github.com/charmbracelet/crush/internal/app"
+	"github.com/charmbracelet/crush/internal/backend"
+	"github.com/charmbracelet/crush/internal/proto"
+	"github.com/charmbracelet/crush/internal/session"
 	"github.com/google/uuid"
 )
 
@@ -771,7 +771,7 @@ func (c *controllerV1) handlePostWorkspaceJobKill(w http.ResponseWriter, r *http
 }
 
 // handleGetWorkspaceDoctorReport reports the check of the workspace's
-// setup that binetic-agent doctor prints.
+// setup that gnosh doctor prints.
 func (c *controllerV1) handleGetWorkspaceDoctorReport(w http.ResponseWriter, r *http.Request) {
 	report, err := c.backend.DoctorReport(r.PathValue("id"))
 	if err != nil {

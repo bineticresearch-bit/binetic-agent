@@ -11,7 +11,7 @@ import (
 
 	"charm.land/catwalk/pkg/catwalk"
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/message"
+	"github.com/charmbracelet/crush/internal/message"
 	"github.com/stretchr/testify/require"
 )
 
@@ -146,7 +146,7 @@ func TestRun_SessionStartAfterCompactingBeforeTheRequest(t *testing.T) {
 	dir := t.TempDir()
 	out := filepath.Join(dir, "source")
 	r := sessionStartAgent(t, false, "",
-		sessionStartHooks("", `echo "$BINETIC_AGENT_SESSION_START_SOURCE" > `+out+`; echo "source: $BINETIC_AGENT_SESSION_START_SOURCE"`)...)
+		sessionStartHooks("", `echo "$GNOSH_SESSION_START_SOURCE" > `+out+`; echo "source: $GNOSH_SESSION_START_SOURCE"`)...)
 	_, err := r.agent.Run(t.Context(), SessionAgentCall{SessionID: r.sessionID, Prompt: "first"})
 	require.NoError(t, err)
 	r.agent.disableAutoSummarize = false

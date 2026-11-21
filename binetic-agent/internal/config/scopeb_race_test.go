@@ -18,10 +18,10 @@ import (
 // pointer, so a reader always sees an immutable snapshot. Run with -race.
 func TestScopeB_InPlaceMutationRace(t *testing.T) {
 	dir := t.TempDir()
-	configPath := filepath.Join(dir, "binetic-agent.json")
+	configPath := filepath.Join(dir, "crush.json")
 
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", dir)
-	t.Setenv("BINETIC_AGENT_GLOBAL_DATA", dir)
+	t.Setenv("CRUSH_GLOBAL_CONFIG", dir)
+	t.Setenv("CRUSH_GLOBAL_DATA", dir)
 	resetProviderState()
 	t.Cleanup(resetProviderState)
 

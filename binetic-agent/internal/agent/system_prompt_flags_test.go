@@ -6,20 +6,20 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/prompt"
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/agent/prompt"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/stretchr/testify/require"
 )
 
 // The coordinator applies --system-prompt and --append-system-prompt (in
 // RuntimeOverrides) when it builds its top-level agents: the coder's own
 // instructions give way to the user's, its environment and the project's
-// BINETIC_AGENT.md stay, and the appended text ends the coder's and the plan
+// GNOSH.md stay, and the appended text ends the coder's and the plan
 // agent's prompts.
 func TestNewCoordinatorUsesTheSystemPromptFlags(t *testing.T) {
 	env := testEnv(t)
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", filepath.Join(t.TempDir(), "binetic-agent.json"))
-	binetic_agentJSON := `{
+	t.Setenv("CRUSH_GLOBAL_CONFIG", filepath.Join(t.TempDir(), "crush.json"))
+	crushJSON := `{
   "options": {"disable_default_providers": true, "disable_provider_auto_update": true},
   "providers": {"mock": {"id": "mock", "name": "Mock", "type": "openai",
     "base_url": "http://127.0.0.1:9/v1", "api_key": "test-key",
@@ -27,8 +27,8 @@ func TestNewCoordinatorUsesTheSystemPromptFlags(t *testing.T) {
   "models": {"large": {"provider": "mock", "model": "mock-model"},
              "small": {"provider": "mock", "model": "mock-model"}}
 }`
-	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "binetic-agent.json"), []byte(binetic_agentJSON), 0o644))
-	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "BINETIC_AGENT.md"), []byte("Run the linter before every commit."), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "crush.json"), []byte(crushJSON), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "GNOSH.md"), []byte("Run the linter before every commit."), 0o644))
 
 	prompts := func(replace, appended string) (coder, plan string) {
 		cfg, err := config.Init(env.workingDir, "", false, config.TrustFolderForSession())
@@ -56,17 +56,17 @@ func TestNewCoordinatorUsesTheSystemPromptFlags(t *testing.T) {
 	}
 
 	coder, plan := prompts("", "")
-	require.True(t, strings.HasPrefix(coder, "You are Binetic Agent, a powerful AI Assistant"), "without the flags the built-in instructions are used")
+	require.True(t, strings.HasPrefix(coder, "You are Gnosh, a powerful AI Assistant"), "without the flags the built-in instructions are used")
 	require.Contains(t, coder, "Run the linter before every commit.")
 	plainPlan := plan
-	require.True(t, strings.HasPrefix(plan, "You are Binetic Agent in plan mode"), "the plan agent's own instructions come first")
+	require.True(t, strings.HasPrefix(plan, "You are Gnosh in plan mode"), "the plan agent's own instructions come first")
 	require.Contains(t, plan, "\n<env>\nWorking directory: "+env.workingDir, "the plan agent knows where it is, as the coder does")
-	require.Contains(t, plan, "Run the linter before every commit.", "the plan agent plans with the project's BINETIC_AGENT.md, as Claude Code's plan mode has CLAUDE.md")
+	require.Contains(t, plan, "Run the linter before every commit.", "the plan agent plans with the project's GNOSH.md, as Claude Code's plan mode has CLAUDE.md")
 
 	coder, plan = prompts("You answer only in haiku.", "End every answer with DONE.")
 	require.True(t, strings.HasPrefix(coder, "You answer only in haiku.\n\n<env>\nWorking directory: "+env.workingDir), "the user's instructions come first, then the environment: %.120q", coder)
-	require.NotContains(t, coder, "You are Binetic Agent, a powerful AI Assistant", "--system-prompt replaces the built-in instructions")
-	require.Contains(t, coder, "Run the linter before every commit.", "the project's BINETIC_AGENT.md is kept, as Claude Code keeps CLAUDE.md")
+	require.NotContains(t, coder, "You are Gnosh, a powerful AI Assistant", "--system-prompt replaces the built-in instructions")
+	require.Contains(t, coder, "Run the linter before every commit.", "the project's GNOSH.md is kept, as Claude Code keeps CLAUDE.md")
 	require.True(t, strings.HasSuffix(coder, "\n\nEnd every answer with DONE."), "--append-system-prompt ends the coder's prompt")
 	require.Equal(t, plainPlan+"\n\nEnd every answer with DONE.", plan, "the plan agent keeps its own instructions and gets the appended text")
 }
@@ -79,11 +79,11 @@ func TestBuiltinCoderTemplateHasAnEnvLine(t *testing.T) {
 }
 
 // --permission-mode plan (RuntimeOverrides.MainAgent) starts the session
-// with the plan agent, in the TUI and in binetic-agent run alike.
+// with the plan agent, in the TUI and in gnosh run alike.
 func TestNewCoordinatorStartsWithThePlanAgent(t *testing.T) {
 	env := testEnv(t)
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", filepath.Join(t.TempDir(), "binetic-agent.json"))
-	binetic_agentJSON := `{
+	t.Setenv("CRUSH_GLOBAL_CONFIG", filepath.Join(t.TempDir(), "crush.json"))
+	crushJSON := `{
   "options": {"disable_default_providers": true, "disable_provider_auto_update": true},
   "providers": {"mock": {"id": "mock", "name": "Mock", "type": "openai",
     "base_url": "http://127.0.0.1:9/v1", "api_key": "test-key",
@@ -91,7 +91,7 @@ func TestNewCoordinatorStartsWithThePlanAgent(t *testing.T) {
   "models": {"large": {"provider": "mock", "model": "mock-model"},
              "small": {"provider": "mock", "model": "mock-model"}}
 }`
-	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "binetic-agent.json"), []byte(binetic_agentJSON), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "crush.json"), []byte(crushJSON), 0o644))
 	for _, start := range []string{"", config.AgentPlan} {
 		cfg, err := config.Init(env.workingDir, "", false, config.TrustFolderForSession())
 		require.NoError(t, err)
@@ -139,7 +139,7 @@ func TestCoderPromptNamesTheAddedDirs(t *testing.T) {
 	require.Contains(t, withDirs, "\nAdditional working directories: /src/gno, /src/bubblerumble\nIs directory a git repo:")
 }
 
-// The coder is told to keep binetic-agent's data folder, under the older names
+// The coder is told to keep gnosh's data folder, under the older names
 // too, which a project from before the renames still keeps its sessions
 // in. The names are written out rather than the project's own folder, so
 // the system prompt stays the same from one project to the next.
@@ -150,7 +150,7 @@ func TestCoderPromptKeepsTheDataFolder(t *testing.T) {
 
 	text, err := p.Build(t.Context(), "", "", store)
 	require.NoError(t, err)
-	require.Contains(t, text, "Never delete or move `.binetic-agent/` either, nor `.klash/` or `.binetic-agent/` in an older project:")
+	require.Contains(t, text, "Never delete or move `.gnosh/` either, nor `.klash/` or `.crush/` in an older project:")
 }
 
 // The task sub-agent's environment names them too, as Claude Code's
@@ -181,7 +181,7 @@ func TestTaskAgentIsAnExploreAgent(t *testing.T) {
 	text, err := p.Build(t.Context(), "", "", store)
 	require.NoError(t, err)
 
-	require.True(t, strings.HasPrefix(text, "You are a file search specialist for Binetic Agent."), text)
+	require.True(t, strings.HasPrefix(text, "You are a file search specialist for Gnosh."), text)
 	for _, want := range []string{
 		"=== CRITICAL: READ-ONLY MODE - NO FILE MODIFICATIONS ===",
 		"Wherever possible you should try to spawn multiple parallel tool calls for grepping and reading files",
@@ -201,8 +201,8 @@ func TestTaskAgentIsAnExploreAgent(t *testing.T) {
 // the sub-agents its agent tool runs.
 func TestRebuildSystemPromptsNamesAnAddedDir(t *testing.T) {
 	env := testEnv(t)
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", filepath.Join(t.TempDir(), "binetic-agent.json"))
-	binetic_agentJSON := `{
+	t.Setenv("CRUSH_GLOBAL_CONFIG", filepath.Join(t.TempDir(), "crush.json"))
+	crushJSON := `{
   "options": {"disable_default_providers": true, "disable_provider_auto_update": true},
   "providers": {"mock": {"id": "mock", "name": "Mock", "type": "openai",
     "base_url": "http://127.0.0.1:9/v1", "api_key": "test-key",
@@ -210,7 +210,7 @@ func TestRebuildSystemPromptsNamesAnAddedDir(t *testing.T) {
   "models": {"large": {"provider": "mock", "model": "mock-model"},
              "small": {"provider": "mock", "model": "mock-model"}}
 }`
-	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "binetic-agent.json"), []byte(binetic_agentJSON), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "crush.json"), []byte(crushJSON), 0o644))
 	cfg, err := config.Init(env.workingDir, "", false, config.TrustFolderForSession())
 	require.NoError(t, err)
 	cfg.SetupAgents()
@@ -244,7 +244,7 @@ func TestRebuildSystemPromptsNamesAnAddedDir(t *testing.T) {
 	require.Contains(t, task(), "\nAdditional working directories: /src/gno\n")
 	planAgent := coord.agents[config.AgentPlan].(*sessionAgent)
 	require.Contains(t, planAgent.environment.Get(), "\nAdditional working directories: /src/gno\n")
-	require.True(t, strings.HasPrefix(planAgent.systemPrompt.Get(), "You are Binetic Agent in plan mode"))
+	require.True(t, strings.HasPrefix(planAgent.systemPrompt.Get(), "You are Gnosh in plan mode"))
 	require.NotContains(t, planAgent.systemPrompt.Get(), "Working directory: ", "the system prompt is the same in every session")
 }
 

@@ -6,7 +6,7 @@ import (
 	"charm.land/catwalk/pkg/catwalk"
 	"github.com/stretchr/testify/require"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 )
 
 // cfgWith returns a config holding the given "provider/model" -> level
@@ -18,7 +18,7 @@ func cfgWith(levels map[string]string) *config.Config {
 func TestReasoningSummary(t *testing.T) {
 	t.Parallel()
 
-	// Jae's two models, both added by hand in binetic-agentrc: no catalog entry, so
+	// Jae's two models, both added by hand in crushrc: no catalog entry, so
 	// CanReason is false and ReasoningLevels is empty. The axis comes from
 	// the id alone.
 	gptoss := catwalk.Model{ID: "gpt-oss-120b-abliterated", Name: "gpt-oss-120b abliterated"}

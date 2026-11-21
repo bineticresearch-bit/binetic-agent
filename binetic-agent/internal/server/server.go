@@ -13,8 +13,8 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/backend"
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/backend"
+	"github.com/charmbracelet/crush/internal/config"
 )
 
 // maxUnixSocketPathLen is the maximum length of a Unix domain socket
@@ -22,7 +22,7 @@ import (
 // use 104 so the resulting path is portable across both platforms.
 const maxUnixSocketPathLen = 104
 
-// socketDir returns the directory used for the Binetic Agent Unix socket.
+// socketDir returns the directory used for the Crush Unix socket.
 // It prefers $XDG_RUNTIME_DIR when set (systemd's per-user runtime
 // directory on Linux), and otherwise falls back to [os.TempDir],
 // which resolves to the per-user private $TMPDIR on macOS and to
@@ -64,16 +64,16 @@ func ParseHostURL(host string) (*url.URL, error) {
 //
 // On Windows the address is a named pipe under \\.\pipe\. On Unix
 // platforms the socket lives in the per-user runtime directory
-// returned by [socketDir] and is named binetic_agent-<uid>.sock, falling
-// back to binetic_agent.sock when the current uid cannot be determined. If
+// returned by [socketDir] and is named crush-<uid>.sock, falling
+// back to crush.sock when the current uid cannot be determined. If
 // the composed path would exceed [maxUnixSocketPathLen] bytes (the
-// macOS sun_path limit), we fall back to /tmp/binetic_agent-<uid>.sock so
+// macOS sun_path limit), we fall back to /tmp/crush-<uid>.sock so
 // the socket remains bindable.
 func DefaultHost() string {
-	sock := "binetic_agent.sock"
+	sock := "crush.sock"
 	usr, err := user.Current()
 	if err == nil && usr.Uid != "" {
-		sock = fmt.Sprintf("binetic_agent-%s.sock", usr.Uid)
+		sock = fmt.Sprintf("crush-%s.sock", usr.Uid)
 	}
 	if runtime.GOOS == "windows" {
 		return fmt.Sprintf("npipe:////./pipe/%s", sock)
@@ -85,7 +85,7 @@ func DefaultHost() string {
 	return "unix://" + path
 }
 
-// Server represents a Binetic Agent server bound to a specific address.
+// Server represents a Crush server bound to a specific address.
 type Server struct {
 	// Addr can be a TCP address, a Unix socket path, or a Windows named pipe.
 	Addr    string

@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -120,7 +120,7 @@ func TestHostFrames(t *testing.T) {
 	require.NotContains(t, log, "shared port")
 	require.Contains(t, log, "pop `fix-flaky-test/find-why-fails` → \"it races on the (redacted)\"")
 
-	// A name binetic-agent made for a text (its small model's) reaches the realm by
+	// A name gnosh made for a text (its small model's) reaches the realm by
 	// text; a name mem has already gets -2; a text with no made name
 	// is named from its words.
 	res, err = h.Run(ctx, RunRequest{Project: "/proj", Session: "s1", Name: MemVM, Code: "mem.Think(\"the suite shares port 8080\")\nmem.Think(\"the suite shares port 8080\")\nmem.Think(\"nobody named this one\")", Frames: stack, Names: map[string]string{"the suite shares port 8080": "shared-port"}})

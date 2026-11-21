@@ -27,40 +27,40 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"charm.land/catwalk/pkg/catwalk"
 	"charm.land/lipgloss/v2"
-	"github.com/charmbracelet/binetic_agent/internal/agent/hyper"
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	agenttools "github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools/mcp"
-	"github.com/charmbracelet/binetic_agent/internal/app"
-	"github.com/charmbracelet/binetic_agent/internal/clipboard"
-	"github.com/charmbracelet/binetic_agent/internal/commands"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/env"
-	"github.com/charmbracelet/binetic_agent/internal/event"
-	"github.com/charmbracelet/binetic_agent/internal/fsext"
-	"github.com/charmbracelet/binetic_agent/internal/history"
-	"github.com/charmbracelet/binetic_agent/internal/home"
-	"github.com/charmbracelet/binetic_agent/internal/lsp"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
-	"github.com/charmbracelet/binetic_agent/internal/question"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/skills"
-	"github.com/charmbracelet/binetic_agent/internal/stringext"
-	"github.com/charmbracelet/binetic_agent/internal/ui/anim"
-	"github.com/charmbracelet/binetic_agent/internal/ui/attachments"
-	"github.com/charmbracelet/binetic_agent/internal/ui/chat"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
-	"github.com/charmbracelet/binetic_agent/internal/ui/completions"
-	"github.com/charmbracelet/binetic_agent/internal/ui/dialog"
-	fimage "github.com/charmbracelet/binetic_agent/internal/ui/image"
-	"github.com/charmbracelet/binetic_agent/internal/ui/logo"
-	"github.com/charmbracelet/binetic_agent/internal/ui/notification"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
-	"github.com/charmbracelet/binetic_agent/internal/ui/util"
-	"github.com/charmbracelet/binetic_agent/internal/version"
-	"github.com/charmbracelet/binetic_agent/internal/workspace"
+	"github.com/charmbracelet/crush/internal/agent/hyper"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	agenttools "github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/agent/tools/mcp"
+	"github.com/charmbracelet/crush/internal/app"
+	"github.com/charmbracelet/crush/internal/clipboard"
+	"github.com/charmbracelet/crush/internal/commands"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/env"
+	"github.com/charmbracelet/crush/internal/event"
+	"github.com/charmbracelet/crush/internal/fsext"
+	"github.com/charmbracelet/crush/internal/history"
+	"github.com/charmbracelet/crush/internal/home"
+	"github.com/charmbracelet/crush/internal/lsp"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/permission"
+	"github.com/charmbracelet/crush/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/question"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/skills"
+	"github.com/charmbracelet/crush/internal/stringext"
+	"github.com/charmbracelet/crush/internal/ui/anim"
+	"github.com/charmbracelet/crush/internal/ui/attachments"
+	"github.com/charmbracelet/crush/internal/ui/chat"
+	"github.com/charmbracelet/crush/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/ui/completions"
+	"github.com/charmbracelet/crush/internal/ui/dialog"
+	fimage "github.com/charmbracelet/crush/internal/ui/image"
+	"github.com/charmbracelet/crush/internal/ui/logo"
+	"github.com/charmbracelet/crush/internal/ui/notification"
+	"github.com/charmbracelet/crush/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/ui/util"
+	"github.com/charmbracelet/crush/internal/version"
+	"github.com/charmbracelet/crush/internal/workspace"
 	uv "github.com/charmbracelet/ultraviolet"
 	"github.com/charmbracelet/ultraviolet/layout"
 	"github.com/charmbracelet/ultraviolet/screen"
@@ -88,7 +88,7 @@ const sessionDetailsMaxHeight = 20
 const hyperCreditsPollInterval = 60 * time.Second
 
 // gitBranchPollInterval is how often the workspace's checked-out branch is
-// re-read. A checkout emits no event Binetic Agent can subscribe to, so the branch
+// re-read. A checkout emits no event Crush can subscribe to, so the branch
 // has to be polled to stay current.
 const gitBranchPollInterval = 5 * time.Second
 
@@ -231,7 +231,7 @@ type UI struct {
 	// continueLastSession is set to continue the most recent session on startup.
 	continueLastSession bool
 	// pickSessionAtStart opens the sessions list on startup, for a bare
-	// `binetic-agent -r` (see PickSessionAtStart), filtered by pickSessionSearch.
+	// `gnosh -r` (see PickSessionAtStart), filtered by pickSessionSearch.
 	pickSessionAtStart bool
 	pickSessionSearch  string
 	// forkAtStart makes the session the UI starts in a copy of the one
@@ -258,7 +258,7 @@ type UI struct {
 
 	// mouseEnabled controls whether Bubble Tea mouse reporting is active.
 	// When false, the terminal emulator (or tmux) handles text selection,
-	// copy/paste, right-click, and scrolling instead of Binetic Agent.
+	// copy/paste, right-click, and scrolling instead of Crush.
 	mouseEnabled bool
 
 	// themeKey identifies the currently applied theme so applyTheme can
@@ -338,7 +338,7 @@ type UI struct {
 	// trackTurnOutcome.
 	turnOutcome tea.ProgramState
 	// memNoticeDay is the local day mem's notice was last asked for, and
-	// memNoticeFresh whether the one asked for as binetic-agent started still
+	// memNoticeFresh whether the one asked for as gnosh started still
 	// stands for the first new session (see memNoticeOnPrompt).
 	memNoticeDay   string
 	memNoticeFresh bool
@@ -564,8 +564,8 @@ func New(com *common.Common, initialSessionID string, continueLast bool) *UI {
 		key.WithKeys("ctrl+shift+a"),
 		key.WithHelp("ctrl+shift+a", "select all"),
 	)
-	// Copying is handled by binetic_agent's keymap (Editor.CopySelection) so it can
-	// use binetic_agent's clipboard backend and user feedback; disable the
+	// Copying is handled by crush's keymap (Editor.CopySelection) so it can
+	// use crush's clipboard backend and user feedback; disable the
 	// textarea's built-in copy binding.
 	ta.KeyMap.CopySelection = key.NewBinding()
 	ta.Focus()
@@ -730,13 +730,13 @@ func (m *UI) Init() tea.Cmd {
 		cmds = append(cmds, cmd)
 	}
 	// The credits balance is shown from the first frame on, so fetch it
-	// right away and keep polling it while Binetic Agent sits idle. The poll runs
+	// right away and keep polling it while Crush sits idle. The poll runs
 	// for every provider: it is a no-op unless Hyper is selected.
 	if m.com.IsHyper() {
 		cmds = append(cmds, m.fetchHyperCredits())
 	}
 	// The branch is shown from the first frame on, so read it now and keep
-	// polling for checkouts made outside Binetic Agent.
+	// polling for checkouts made outside Crush.
 	cmds = append(cmds, m.fetchGitBranch(), m.gitBranchTicker())
 	cmds = append(cmds, m.hyperCreditsTicker())
 	// Prime the memoized MCP state off-thread. There is deliberately no
@@ -775,7 +775,7 @@ func (m *UI) initTipCmd() tea.Cmd {
 		return nil
 	}
 	initFile := cmp.Or(m.com.Config().Options.InitializeAs, "AGENTS.md")
-	tip := util.InfoMsg{Type: util.InfoTypeInfo, Msg: fmt.Sprintf("Run /init to create %s %s file with instructions for Binetic Agent", article(initFile), initFile), TTL: initTipTTL}
+	tip := util.InfoMsg{Type: util.InfoTypeInfo, Msg: fmt.Sprintf("Run /init to create %s %s file with instructions for Gnosh", article(initFile), initFile), TTL: initTipTTL}
 	return tea.Batch(util.CmdHandler(tip), m.markProjectInitializedCmd())
 }
 
@@ -809,8 +809,8 @@ func (m *UI) StartInPlanMode() {
 }
 
 // PickSessionAtStart makes the UI open the list of sessions to pick from
-// as it starts, for a bare `binetic-agent -r`, as Claude Code's `claude -r` opens
-// its picker, and for `binetic-agent -r <name>` with a name that is not one
+// as it starts, for a bare `gnosh -r`, as Claude Code's `claude -r` opens
+// its picker, and for `gnosh -r <name>` with a name that is not one
 // session's, the list filtered by search. Like a session named on the
 // command line, it goes before the question whether to initialize the
 // project (see startState).
@@ -4226,7 +4226,7 @@ func (m *UI) Draw(scr uv.Screen, area uv.Rectangle) *tea.Cursor {
 	}
 
 	// Debugging rendering (visually see when the tui rerenders)
-	if env.Getenv("BINETIC_AGENT_UI_DEBUG") == "true" {
+	if env.Getenv("GNOSH_UI_DEBUG") == "true" {
 		debugView := lipgloss.NewStyle().Background(lipgloss.ANSIColor(rand.Intn(256))).Width(4).Height(2)
 		debug := uv.NewStyledString(debugView.String())
 		debug.Draw(scr, image.Rectangle{
@@ -5082,7 +5082,7 @@ func (m *UI) openEditor(value string) tea.Cmd {
 		return util.ReportError(err)
 	}
 	cmd, err := editor.Command(
-		"binetic_agent",
+		"crush",
 		tmpPath,
 		editor.AtPosition(
 			m.textarea.Line()+1,
@@ -5789,7 +5789,7 @@ func (m *UI) sendMessage(content string, attachments ...message.Attachment) tea.
 	return m.sendMessageInternal(content, false, attachments...)
 }
 
-// builtinCommand runs content when it is one of binetic-agent's own commands, as
+// builtinCommand runs content when it is one of gnosh's own commands, as
 // typed in the editor, and reports whether it was.
 func (m *UI) builtinCommand(content string) (tea.Cmd, bool) {
 	if enabled, ok := config.ParseThinkingCommand(content); ok {
@@ -5938,8 +5938,8 @@ func (m *UI) permissionsReport() tea.Cmd {
 	}
 }
 
-// doctorReport checks the setup binetic-agent runs with, as Claude Code's /doctor
-// does and binetic-agent doctor prints it, off the update loop: it looks for the
+// doctorReport checks the setup gnosh runs with, as Claude Code's /doctor
+// does and gnosh doctor prints it, off the update loop: it looks for the
 // programs hooks and LSP servers run.
 func (m *UI) doctorReport() tea.Cmd {
 	return func() tea.Msg {
@@ -5968,7 +5968,7 @@ func (m *UI) memCommand(args string) tea.Cmd {
 }
 
 // memNoticeOnPrompt is mem's notice again with a prompt the user sends:
-// with a new session's first, unless the notice shown as binetic-agent started
+// with a new session's first, unless the notice shown as gnosh started
 // stands for it, and with the first of a new day, so a TUI left open
 // overnight tells the user when they are back, not at midnight to an empty
 // room; nil otherwise. It reads status.json, and starts no worker.
@@ -5986,7 +5986,7 @@ func (m *UI) memNoticeOnPrompt() tea.Cmd {
 	return m.memNotice()
 }
 
-// memNotice tells the user as binetic-agent starts what in mem is due and what
+// memNotice tells the user as gnosh starts what in mem is due and what
 // waits on them, since the model, busy with the task at hand, may not.
 func (m *UI) memNotice() tea.Cmd {
 	return func() tea.Msg {
@@ -7344,7 +7344,7 @@ func (m *UI) disableDockerMCP() tea.Msg {
 	return util.NewInfoMsg("Docker MCP disabled successfully")
 }
 
-// renderLogo renders the Binetic Agent logo with the given styles and dimensions;
+// renderLogo renders the Crush logo with the given styles and dimensions;
 // trueColor says whether the terminal shows 24-bit color (Styles.Wordmark).
 func renderLogo(t *styles.Styles, compact, hyper, trueColor bool, width int) string {
 	gno, from, to := t.Wordmark(trueColor, t.Logo.TitleColorA, t.Logo.TitleColorB)

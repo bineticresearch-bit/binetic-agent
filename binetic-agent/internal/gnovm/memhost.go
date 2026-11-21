@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -24,7 +24,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/lock"
+	"github.com/charmbracelet/crush/internal/lock"
 	"golang.org/x/mod/semver"
 )
 
@@ -35,7 +35,7 @@ import (
 //	index-<gen>.db    its rows' text, searched by words (memindex.go)
 //	vectors-<gen>.db  their vectors, searched by meaning (memvectors.go)
 //	status.json       mem.JSON(), for hooks and the <mem> block
-//	lock              held through each call, so binetic-agent processes take turns
+//	lock              held through each call, so gnosh processes take turns
 //
 // A call takes the lock, opens the store and brings it up to the journal,
 // runs, journals what it changed, commits that to the store, and closes the
@@ -54,7 +54,7 @@ type memHost struct {
 	// embed is the embedding server mem.Find looks by meaning with; nil
 	// looks by words alone.
 	embed *memEmbedder
-	// data is binetic-agent's gnovm data directory, where sessions' turn locks are
+	// data is gnosh's gnovm data directory, where sessions' turn locks are
 	// (mempeers.go); "" when there is none, as in some tests.
 	data string
 	// working, in tests, stands in for the turn locks and peers records
@@ -75,9 +75,9 @@ var memSlice = 10 * time.Second
 // catches up with the journal. (A variable only so tests can shorten it.)
 var memBatchOps = 1000
 
-// errClosesToCheck is the failure of an input that closes a todo binetic-agent is
-// to check first (memResult.Closes): binetic-agent reads the closes, not this.
-var errClosesToCheck = errors.New("not kept yet: binetic-agent checks the todos this closes first")
+// errClosesToCheck is the failure of an input that closes a todo gnosh is
+// to check first (memResult.Closes): gnosh reads the closes, not this.
+var errClosesToCheck = errors.New("not kept yet: gnosh checks the todos this closes first")
 
 // memRequest is one input to mem.
 type memRequest struct {
@@ -95,7 +95,7 @@ type memRequest struct {
 	// Fresh is the frame on top of Frames that the session entered in the
 	// round before this one, with nothing since (RunRequest.Fresh).
 	Fresh string
-	// Names are the names binetic-agent made for the texts the input keeps without
+	// Names are the names gnosh made for the texts the input keeps without
 	// naming them, by text (RunRequest.Names).
 	Names map[string]string
 	// Pipe is the wake pipe the client made for this input, pending in
@@ -106,14 +106,14 @@ type memRequest struct {
 	Pipe     string
 	SubAgent bool
 	MayWait  bool
-	// CheckCloses has mem hand binetic-agent, before it keeps the input, each close
+	// CheckCloses has mem hand gnosh, before it keeps the input, each close
 	// of a todo with nothing under it that Checked does not name
 	// (MemClose.Checked), and keep nothing then (RunRequest.CheckCloses).
 	CheckCloses bool
 	Checked     []string
 	// Run is set for the agent's own gnovm_run call (Host.runMem), which
 	// carries the session's stack in Frames: only such a call keeps the
-	// session's peers record (afterCall). binetic-agent's own reads for a session,
+	// session's peers record (afterCall). gnosh's own reads for a session,
 	// the goal's at a turn's end, leave the record alone.
 	Run bool
 }
@@ -124,17 +124,17 @@ type memResult struct {
 	Ops    []memOp
 	// Seq is the journal entry the input was kept as; 0 for a read.
 	Seq int64
-	// Notes say what binetic-agent did besides: rebuilt the store, caught it up.
+	// Notes say what gnosh did besides: rebuilt the store, caught it up.
 	Notes []string
 	// Renamed is the goals an erasure renamed, old name to new; Erased is
-	// all an erasure took away, for binetic-agent's own copies (MemErasure).
+	// all an erasure took away, for gnosh's own copies (MemErasure).
 	Renamed map[string]string
 	Erased  *MemErasure
 	// Goals are the goals the input changed, as its session sees them.
 	Goals []MemGoal
 	// Frames are the frames the input pushed and popped, in order.
 	Frames []MemFrame
-	// Closes are the closes binetic-agent is to check before the input is kept
+	// Closes are the closes gnosh is to check before the input is kept
 	// (memRequest.CheckCloses); with them, nothing was kept.
 	Closes []MemClose
 	// Instance is mem's instance id, which a mem made anew does not share.
@@ -166,7 +166,7 @@ type MemFrame struct {
 }
 
 // MemClose is a close of a todo with nothing under it, as done, that mem
-// asks binetic-agent to check before it keeps the input making it
+// asks gnosh to check before it keeps the input making it
 // (RunRequest.CheckCloses, CLOSE-CHECK.md).
 type MemClose struct {
 	// Id is the todo, Title its task, Result what the input closes it
@@ -183,7 +183,7 @@ type MemClose struct {
 	Worked  bool `json:"worked,omitempty"`
 }
 
-// Checked is how RunRequest.Checked names a close binetic-agent approved; AnyResult,
+// Checked is how RunRequest.Checked names a close gnosh approved; AnyResult,
 // a todo approved whatever it is closed with in the rest of the call (a
 // result made of the time differs on every run).
 func (c MemClose) Checked() string   { return c.Id + "\x00" + c.Result }
@@ -248,9 +248,9 @@ func (h *memHost) call(ctx context.Context, q memRequest) (memResult, error) {
 		return res, err
 	}
 	if len(call.Closes) > 0 {
-		// binetic-agent checks these closes before the input is kept: nothing of it
+		// gnosh checks these closes before the input is kept: nothing of it
 		// is kept, nobody is woken, and the session's peers record stays,
-		// as for an input that failed. binetic-agent runs it again once it
+		// as for an input that failed. gnosh runs it again once it
 		// approves them all.
 		return memResult{Output: call.Output, Closes: call.Closes, Notes: notes, Instance: j.instance}, errClosesToCheck
 	}
@@ -346,7 +346,7 @@ func (h *memHost) touched(r *memRealm, caller string, ops []memOp, working func(
 	return out.Goals
 }
 
-// memStatus is status.json: mem.JSON() as binetic-agent computed it for no session
+// memStatus is status.json: mem.JSON() as gnosh computed it for no session
 // after a change, with what it was computed for. Hooks read it, and so does
 // the <mem> block at a session's start, without opening mem.
 type memStatus struct {
@@ -488,14 +488,14 @@ func (h *memHost) holding(j *journal) func(text string, ops []memOp) (names, kin
 	}
 }
 
-// lock takes mem's lock, waiting for as long as another binetic-agent process
+// lock takes mem's lock, waiting for as long as another gnosh process
 // holds it.
 func (h *memHost) lock(ctx context.Context) (func(), error) {
 	return lockMemDir(ctx, h.dir)
 }
 
 // lockMemDir takes the lock of mem in dir, waiting while another holds it
-// (a binetic-agent process's call, or its main process reading the index or
+// (a gnosh process's call, or its main process reading the index or
 // writing vectors) until ctx is done. The wait is the kernel's: the lock
 // is granted the moment its holder lets go, with no polling and no limit
 // but ctx; every holder's turn is one call, which mem bounds.
@@ -518,7 +518,7 @@ func lockMemDir(ctx context.Context, dir string) (func(), error) {
 	release, err := lock.File(ctx, path)
 	if err != nil {
 		if ctx.Err() != nil {
-			return nil, &busyError{msg: "stopped waiting for mem, which another binetic-agent process was using"}
+			return nil, &busyError{msg: "stopped waiting for mem, which another gnosh process was using"}
 		}
 		return nil, err
 	}
@@ -593,14 +593,14 @@ func (h *memHost) open() (r *memRealm, j *journal, notes []string, err error) {
 	if err == nil && ok {
 		if st.Layout > memLayout {
 			r.close()
-			return nil, nil, nil, &refusal{"a newer binetic-agent wrote mem (layout " + strconv.Itoa(st.Layout) + "); restart binetic-agent to use it"}
+			return nil, nil, nil, &refusal{"a newer gnosh wrote mem (layout " + strconv.Itoa(st.Layout) + "); restart gnosh to use it"}
 		}
 		// Two builds on one mem: the newer gno rebuilds an older one's
 		// store; the older refuses the newer's, as for a layout, rather
 		// than each rebuilding the store over the other's, call after call.
 		if newerGno(st.Gno) {
 			r.close()
-			return nil, nil, nil, &refusal{"a newer binetic-agent wrote mem (gno " + st.Gno + "); restart binetic-agent to use it"}
+			return nil, nil, nil, &refusal{"a newer gnosh wrote mem (gno " + st.Gno + "); restart gnosh to use it"}
 		}
 		same := st.Layout == memLayout && st.Gno == stdlibVersion() && st.Generation == hdr.Generation
 		if same {
@@ -860,7 +860,7 @@ func (h *memHost) openIndex(j *journal) (*memIndex, error) {
 	st, ok, err := x.stamp()
 	if err == nil && ok && st.Layout > memIndexLayout {
 		x.close()
-		return nil, &refusal{"a newer binetic-agent wrote mem's index (layout " + strconv.Itoa(st.Layout) + "); restart binetic-agent to use it"}
+		return nil, &refusal{"a newer gnosh wrote mem's index (layout " + strconv.Itoa(st.Layout) + "); restart gnosh to use it"}
 	}
 	if err == nil && ok {
 		same := st.Layout == memIndexLayout && st.Generation == j.generation

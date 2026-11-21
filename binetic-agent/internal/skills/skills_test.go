@@ -364,8 +364,8 @@ func TestToPromptXMLBuiltinType(t *testing.T) {
 	t.Parallel()
 
 	skills := []*Skill{
-		{Name: "builtin-skill", Description: "A builtin.", SkillFilePath: "binetic-agent://skills/builtin-skill/SKILL.md", Builtin: true},
-		{Name: "user-skill", Description: "A user skill.", SkillFilePath: "/home/user/.config/binetic_agent/skills/user-skill/SKILL.md"},
+		{Name: "builtin-skill", Description: "A builtin.", SkillFilePath: "gnosh://skills/builtin-skill/SKILL.md", Builtin: true},
+		{Name: "user-skill", Description: "A user skill.", SkillFilePath: "/home/user/.config/crush/skills/user-skill/SKILL.md"},
 	}
 	xml := ToPromptXML(skills)
 	require.Contains(t, xml, "<type>builtin</type>")
@@ -408,25 +408,25 @@ func TestDiscoverBuiltin(t *testing.T) {
 
 	var found bool
 	for _, s := range discovered {
-		if s.Name == "binetic-agent-config" {
+		if s.Name == "gnosh-config" {
 			found = true
 			require.True(t, strings.HasPrefix(s.SkillFilePath, BuiltinPrefix))
 			require.True(t, strings.HasPrefix(s.Path, BuiltinPrefix))
-			require.Equal(t, "binetic-agent://skills/binetic-agent-config/SKILL.md", s.SkillFilePath)
-			require.Equal(t, "binetic-agent://skills/binetic-agent-config", s.Path)
+			require.Equal(t, "gnosh://skills/gnosh-config/SKILL.md", s.SkillFilePath)
+			require.Equal(t, "gnosh://skills/gnosh-config", s.Path)
 			require.NotEmpty(t, s.Description)
 			require.NotEmpty(t, s.Instructions)
 			require.True(t, s.Builtin)
 		}
 	}
-	require.True(t, found, "binetic-agent-config builtin skill not found")
+	require.True(t, found, "gnosh-config builtin skill not found")
 
 	var foundJQ bool
 	for _, s := range discovered {
 		if s.Name == "jq" {
 			foundJQ = true
-			require.Equal(t, "binetic-agent://skills/jq/SKILL.md", s.SkillFilePath)
-			require.Equal(t, "binetic-agent://skills/jq", s.Path)
+			require.Equal(t, "gnosh://skills/jq/SKILL.md", s.SkillFilePath)
+			require.Equal(t, "gnosh://skills/jq", s.Path)
 			require.NotEmpty(t, s.Description)
 			require.NotEmpty(t, s.Instructions)
 			require.True(t, s.Builtin)
@@ -436,16 +436,16 @@ func TestDiscoverBuiltin(t *testing.T) {
 
 	var foundHooks bool
 	for _, s := range discovered {
-		if s.Name == "binetic-agent-hooks" {
+		if s.Name == "gnosh-hooks" {
 			foundHooks = true
-			require.Equal(t, "binetic-agent://skills/binetic-agent-hooks/SKILL.md", s.SkillFilePath)
-			require.Equal(t, "binetic-agent://skills/binetic-agent-hooks", s.Path)
+			require.Equal(t, "gnosh://skills/gnosh-hooks/SKILL.md", s.SkillFilePath)
+			require.Equal(t, "gnosh://skills/gnosh-hooks", s.Path)
 			require.NotEmpty(t, s.Description)
 			require.NotEmpty(t, s.Instructions)
 			require.True(t, s.Builtin)
 		}
 	}
-	require.True(t, foundHooks, "binetic-agent-hooks builtin skill not found")
+	require.True(t, foundHooks, "gnosh-hooks builtin skill not found")
 }
 
 func TestDeduplicate(t *testing.T) {
@@ -465,10 +465,10 @@ func TestDeduplicate(t *testing.T) {
 		},
 		{
 			name:     "user overrides builtin",
-			input:    []*Skill{{Name: "binetic-agent-config", Path: "binetic-agent://skills/binetic-agent-config"}, {Name: "binetic-agent-config", Path: "/user/binetic-agent-config"}},
+			input:    []*Skill{{Name: "gnosh-config", Path: "gnosh://skills/gnosh-config"}, {Name: "gnosh-config", Path: "/user/gnosh-config"}},
 			wantLen:  1,
-			wantName: "binetic-agent-config",
-			wantPath: "/user/binetic-agent-config",
+			wantName: "gnosh-config",
+			wantPath: "/user/gnosh-config",
 		},
 		{
 			name:    "empty",
@@ -525,22 +525,22 @@ func TestCanonicalBuiltinPath(t *testing.T) {
 	t.Parallel()
 
 	for in, want := range map[string]string{
-		"binetic_agent://skills/binetic_agent-config/SKILL.md": "binetic-agent://skills/binetic-agent-config/SKILL.md",
-		"binetic_agent://skills/binetic_agent-hooks":           "binetic-agent://skills/binetic-agent-hooks",
-		"binetic_agent://skills/jq/SKILL.md":           "binetic-agent://skills/jq/SKILL.md",
-		"klash://skills/klash-config/SKILL.md": "binetic-agent://skills/binetic-agent-config/SKILL.md",
-		"klash://skills/jq/SKILL.md":           "binetic-agent://skills/jq/SKILL.md",
-		"binetic-agent://skills/binetic-agent-config/SKILL.md": "binetic-agent://skills/binetic-agent-config/SKILL.md",
-		"binetic-agent://skills/binetic_agent-config/SKILL.md": "binetic-agent://skills/binetic-agent-config/SKILL.md",
+		"crush://skills/crush-config/SKILL.md": "gnosh://skills/gnosh-config/SKILL.md",
+		"crush://skills/crush-hooks":           "gnosh://skills/gnosh-hooks",
+		"crush://skills/jq/SKILL.md":           "gnosh://skills/jq/SKILL.md",
+		"klash://skills/klash-config/SKILL.md": "gnosh://skills/gnosh-config/SKILL.md",
+		"klash://skills/jq/SKILL.md":           "gnosh://skills/jq/SKILL.md",
+		"gnosh://skills/gnosh-config/SKILL.md": "gnosh://skills/gnosh-config/SKILL.md",
+		"gnosh://skills/crush-config/SKILL.md": "gnosh://skills/gnosh-config/SKILL.md",
 		"/home/me/skills/x/SKILL.md":           "/home/me/skills/x/SKILL.md",
 	} {
 		require.Equal(t, want, CanonicalBuiltinPath(in), in)
 	}
-	require.True(t, IsBuiltinPath("binetic_agent://skills/jq/SKILL.md"))
+	require.True(t, IsBuiltinPath("crush://skills/jq/SKILL.md"))
 	require.True(t, IsBuiltinPath("klash://skills/jq/SKILL.md"))
-	require.True(t, IsBuiltinPath("binetic-agent://skills/jq/SKILL.md"))
+	require.True(t, IsBuiltinPath("gnosh://skills/jq/SKILL.md"))
 	require.False(t, IsBuiltinPath("/skills/jq/SKILL.md"))
-	require.Equal(t, "binetic-agent-config", CanonicalSkillName("binetic_agent-config"))
-	require.Equal(t, "binetic-agent-config", CanonicalSkillName("klash-config"))
+	require.Equal(t, "gnosh-config", CanonicalSkillName("crush-config"))
+	require.Equal(t, "gnosh-config", CanonicalSkillName("klash-config"))
 	require.Equal(t, "jq", CanonicalSkillName("jq"))
 }

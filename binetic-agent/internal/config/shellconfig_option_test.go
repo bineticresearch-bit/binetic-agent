@@ -7,7 +7,7 @@ import (
 )
 
 func TestShellConfigOptionBooleans(t *testing.T) {
-	store := loadBinetic AgentSh(t, `option debug true
+	store := loadCrushSh(t, `option debug true
 option progress false
 option auto-lsp false`)
 
@@ -22,7 +22,7 @@ option auto-lsp false`)
 // Config phrases this field negatively (disable_metrics) but the command
 // exposes it positively. "metrics false" must land as disable_metrics = true.
 func TestShellConfigOptionPositiveMetricsFalse(t *testing.T) {
-	store := loadBinetic AgentSh(t, `option metrics false`)
+	store := loadCrushSh(t, `option metrics false`)
 	opts := store.Config().Options
 	require.NotNil(t, opts.DisableMetrics)
 	require.True(t, *opts.DisableMetrics, "metrics off => disable_metrics true")
@@ -32,7 +32,7 @@ func TestShellConfigOptionPositiveMetricsFalse(t *testing.T) {
 // The bare positive form defaults to true, which inverts to disable = false:
 // the one way a config opts in to sending metrics.
 func TestShellConfigOptionPositiveMetricsBare(t *testing.T) {
-	store := loadBinetic AgentSh(t, `option metrics`)
+	store := loadCrushSh(t, `option metrics`)
 	opts := store.Config().Options
 	require.NotNil(t, opts.DisableMetrics)
 	require.False(t, *opts.DisableMetrics, "metrics on => disable_metrics false")
@@ -40,10 +40,10 @@ func TestShellConfigOptionPositiveMetricsBare(t *testing.T) {
 }
 
 // A config that says nothing about metrics or the catalog fetch sends no
-// metrics and fetches no catalog: upstream Binetic Agent does both by default, this
+// metrics and fetches no catalog: upstream Crush does both by default, this
 // fork does neither.
 func TestShellConfigOptionsReachingCharmAreOffUnlessAsked(t *testing.T) {
-	store := loadBinetic AgentSh(t, `option debug true`)
+	store := loadCrushSh(t, `option debug true`)
 	opts := store.Config().Options
 	require.Nil(t, opts.DisableMetrics)
 	require.False(t, opts.MetricsOptedIn())
@@ -53,17 +53,17 @@ func TestShellConfigOptionsReachingCharmAreOffUnlessAsked(t *testing.T) {
 func TestShellConfigOptionProviderAutoUpdate(t *testing.T) {
 	// TestMain forces the fetch off through the environment, which outranks
 	// the config; an empty value leaves the decision to the config again.
-	t.Setenv("BINETIC_AGENT_DISABLE_PROVIDER_AUTO_UPDATE", "")
+	t.Setenv("GNOSH_DISABLE_PROVIDER_AUTO_UPDATE", "")
 
-	on := loadBinetic AgentSh(t, `option provider-auto-update true`).Config().Options
+	on := loadCrushSh(t, `option provider-auto-update true`).Config().Options
 	require.True(t, on.ProviderAutoUpdate(), "provider-auto-update true asks for the fetch")
 
-	off := loadBinetic AgentSh(t, `option provider-auto-update false`).Config().Options
+	off := loadCrushSh(t, `option provider-auto-update false`).Config().Options
 	require.False(t, off.ProviderAutoUpdate())
 }
 
 func TestShellConfigOptionUI(t *testing.T) {
-	store := loadBinetic AgentSh(t, `option ui compact true
+	store := loadCrushSh(t, `option ui compact true
 option ui diff split
 option ui transparent false
 option ui mouse false
@@ -87,13 +87,13 @@ option ui completions-max-items 200`)
 }
 
 func TestShellConfigOptionUIRejectsInvalidValue(t *testing.T) {
-	_, err := loadBinetic AgentShErr(t, `option ui diff side-by-side`)
+	_, err := loadCrushShErr(t, `option ui diff side-by-side`)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "expects unified or split")
 }
 
 func TestShellConfigOptionAttribution(t *testing.T) {
-	store := loadBinetic AgentSh(t, `option attribution-trailer-style none
+	store := loadCrushSh(t, `option attribution-trailer-style none
 option attribution-generated-with false`)
 
 	attribution := store.Config().Options.Attribution
@@ -103,7 +103,7 @@ option attribution-generated-with false`)
 }
 
 func TestShellConfigOptionAttributionTrailerStylePreservesGeneratedWithDefault(t *testing.T) {
-	store := loadBinetic AgentSh(t, `option attribution-trailer-style co-authored-by`)
+	store := loadCrushSh(t, `option attribution-trailer-style co-authored-by`)
 
 	attribution := store.Config().Options.Attribution
 	require.NotNil(t, attribution)
@@ -112,29 +112,29 @@ func TestShellConfigOptionAttributionTrailerStylePreservesGeneratedWithDefault(t
 }
 
 func TestShellConfigOptionAttributionGeneratedWithCaseInsensitive(t *testing.T) {
-	store := loadBinetic AgentSh(t, `option attribution-generated-with YES`)
+	store := loadCrushSh(t, `option attribution-generated-with YES`)
 
 	require.NotNil(t, store.Config().Options.Attribution)
 	require.True(t, store.Config().Options.Attribution.GeneratedWith)
 }
 
 func TestShellConfigOptionAttributionRejectsInvalidStyle(t *testing.T) {
-	_, err := loadBinetic AgentShErr(t, `option attribution-trailer-style bogus`)
+	_, err := loadCrushShErr(t, `option attribution-trailer-style bogus`)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "expects none, co-authored-by, or assisted-by")
 }
 
 func TestShellConfigOptionListAppends(t *testing.T) {
-	store := loadBinetic AgentSh(t, `option disable-skill binetic-agent-config
+	store := loadCrushSh(t, `option disable-skill gnosh-config
 option disable-skill jq`)
 
-	require.Subset(t, store.Config().Options.DisabledSkills, []string{"binetic-agent-config", "jq"})
+	require.Subset(t, store.Config().Options.DisabledSkills, []string{"gnosh-config", "jq"})
 }
 
 // reset wipes values added earlier (or via source) while keeping anything
 // added after it — observable in the effective config.
 func TestShellConfigOptionReset(t *testing.T) {
-	store := loadBinetic AgentSh(t, `option skill-path ./inherited-a
+	store := loadCrushSh(t, `option skill-path ./inherited-a
 option skill-path ./inherited-b
 option reset skill-path
 option skill-path ./mine`)
@@ -146,16 +146,16 @@ option skill-path ./mine`)
 }
 
 func TestShellConfigOptionUnknownKeyFails(t *testing.T) {
-	_, err := loadBinetic AgentShErr(t, `option bogus-key value`)
+	_, err := loadCrushShErr(t, `option bogus-key value`)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "unknown key")
 }
 
-// Options a binetic-agentrc could not name before: idle compaction, phrased
+// Options a crushrc could not name before: idle compaction, phrased
 // positively as auto-summarize is, the artifact server and the
 // auto-compact window.
 func TestShellConfigOptionIdleCompactionArtifactServerCompactWindow(t *testing.T) {
-	store := loadBinetic AgentSh(t, `option idle-compaction false
+	store := loadCrushSh(t, `option idle-compaction false
 option artifact-server off
 option auto-compact-window 300000`)
 
@@ -166,33 +166,33 @@ option auto-compact-window 300000`)
 }
 
 func TestShellConfigOptionDisableToolRemoved(t *testing.T) {
-	_, err := loadBinetic AgentShErr(t, `option disable-tool bash`)
+	_, err := loadCrushShErr(t, `option disable-tool bash`)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "unknown key")
 }
 
 func TestShellConfigOptionResetRejectsNonList(t *testing.T) {
-	_, err := loadBinetic AgentShErr(t, `option reset debug`)
+	_, err := loadCrushShErr(t, `option reset debug`)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "not one")
 }
 
 // The fork's own endpoints are plain string options, and default to empty so
 // nothing is sent or checked until they are set (and never to Charm).
-func TestShellConfigBinetic AgentEndpoints(t *testing.T) {
-	bare := loadBinetic AgentSh(t, `option debug true`).Config().Options
+func TestShellConfigGnoshEndpoints(t *testing.T) {
+	bare := loadCrushSh(t, `option debug true`).Config().Options
 	require.Empty(t, bare.MetricsURL)
 	require.Empty(t, bare.UpdateRepo)
 	// MetricsSink is read only once the gate is on; with no custom url it is
-	// binetic-agent's own analytics, never Charm.
+	// gnosh's own analytics, never Charm.
 	url, key := bare.MetricsSink()
 	require.Equal(t, "https://metrics.klash.pro", url)
-	require.Equal(t, "binetic-agent", key)
+	require.Equal(t, "gnosh", key)
 
-	set := loadBinetic AgentSh(t, `option metrics-url https://my.collector
-option update-repo binetic-agent-ai/binetic-agent`).Config().Options
+	set := loadCrushSh(t, `option metrics-url https://my.collector
+option update-repo gnosh-ai/gnosh`).Config().Options
 	gotURL, gotKey := set.MetricsSink()
 	require.Equal(t, "https://my.collector", gotURL)
-	require.Equal(t, "binetic-agent", gotKey, "a sink with no key defaults to binetic-agent")
-	require.Equal(t, "binetic-agent-ai/binetic-agent", set.UpdateCheckRepo())
+	require.Equal(t, "gnosh", gotKey, "a sink with no key defaults to gnosh")
+	require.Equal(t, "gnosh-ai/gnosh", set.UpdateCheckRepo())
 }

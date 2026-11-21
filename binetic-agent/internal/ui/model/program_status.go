@@ -2,16 +2,16 @@ package model
 
 import (
 	tea "charm.land/bubbletea/v2"
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
-	"github.com/charmbracelet/binetic_agent/internal/ui/dialog"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/ui/dialog"
 )
 
 // programStatusApp is the stable program name reported to the terminal.
-const programStatusApp = "binetic_agent"
+const programStatusApp = "crush"
 
-// programStatus reports what Binetic Agent is doing to terminals that support the
-// Program Status Protocol (OSC 7501), so they can show whether Binetic Agent is
+// programStatus reports what Crush is doing to terminals that support the
+// Program Status Protocol (OSC 7501), so they can show whether Crush is
 // working, waiting on the user, or finished. Terminals without support
 // ignore it.
 func (m *UI) programStatus() *tea.ProgramStatus {

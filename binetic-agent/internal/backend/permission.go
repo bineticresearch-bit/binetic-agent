@@ -1,8 +1,8 @@
 package backend
 
 import (
-	"github.com/charmbracelet/binetic_agent/internal/permission"
-	"github.com/charmbracelet/binetic_agent/internal/proto"
+	"github.com/charmbracelet/crush/internal/permission"
+	"github.com/charmbracelet/crush/internal/proto"
 )
 
 // GrantPermission grants, denies, or persistently grants a permission

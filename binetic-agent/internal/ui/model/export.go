@@ -10,11 +10,11 @@ import (
 	"unicode"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/charmbracelet/binetic_agent/internal/home"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
-	"github.com/charmbracelet/binetic_agent/internal/ui/dialog"
-	"github.com/charmbracelet/binetic_agent/internal/ui/util"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/home"
+	"github.com/charmbracelet/crush/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/ui/dialog"
+	"github.com/charmbracelet/crush/internal/ui/util"
+	"github.com/charmbracelet/crush/internal/version"
 )
 
 // exportConversation exports the conversation as Claude Code's /export
@@ -45,7 +45,7 @@ func (m *UI) copyConversation() tea.Cmd {
 }
 
 // conversationText is the conversation as Claude Code's /export writes
-// it, as plain text: a header with binetic-agent's version, the session and the
+// it, as plain text: a header with gnosh's version, the session and the
 // working directory, as Claude Code's welcome header has its own, then
 // each message as the chat shows it.
 func (m *UI) conversationText() string {

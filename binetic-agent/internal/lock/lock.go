@@ -15,7 +15,7 @@
 // create a window where two processes lock different inodes at the
 // same path.
 //
-// This is the canonical file-locking helper for Binetic Agent. Callers should
+// This is the canonical file-locking helper for Crush. Callers should
 // prefer it over rolling their own platform-specific code.
 package lock
 

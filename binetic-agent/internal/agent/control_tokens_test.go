@@ -57,7 +57,7 @@ func TestSanitizeControlTokensToolResultText(t *testing.T) {
 func TestSanitizeControlTokensLeavesCleanMessagesAlone(t *testing.T) {
 	t.Parallel()
 	msgs := []fantasy.Message{
-		fantasy.NewSystemMessage("You are Binetic Agent. Do not touch <|this|>."),
+		fantasy.NewSystemMessage("You are Crush. Do not touch <|this|>."),
 		fantasy.NewUserMessage("just a normal question"),
 	}
 	got := sanitizeControlTokens(msgs)

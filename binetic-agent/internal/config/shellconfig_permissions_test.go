@@ -5,25 +5,25 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/stretchr/testify/require"
 )
 
-// loadBinetic AgentSh writes a binetic_agent.sh into an isolated project and loads it through
+// loadCrushSh writes a crush.sh into an isolated project and loads it through
 // the real config pipeline (discovery -> shell execution -> merge -> typed
 // Config). Asserting on the resulting *config.Config is a black-box test of
 // what a shell config command actually produces, and it stays valid across
 // internal changes to how config is assembled.
-func loadBinetic AgentSh(t *testing.T, script string) *config.ConfigStore {
+func loadCrushSh(t *testing.T, script string) *config.ConfigStore {
 	t.Helper()
-	store, err := loadBinetic AgentShErr(t, script)
+	store, err := loadCrushShErr(t, script)
 	require.NoError(t, err)
 	return store
 }
 
-// loadBinetic AgentShErr is loadBinetic AgentSh without asserting success, for cases that are
+// loadCrushShErr is loadCrushSh without asserting success, for cases that are
 // expected to fail at load time.
-func loadBinetic AgentShErr(t *testing.T, script string) (*config.ConfigStore, error) {
+func loadCrushShErr(t *testing.T, script string) (*config.ConfigStore, error) {
 	t.Helper()
 	// Isolate from the developer's real global config so only the script
 	// under test contributes. No t.Parallel(): these tests set env vars.
@@ -31,25 +31,25 @@ func loadBinetic AgentShErr(t *testing.T, script string) (*config.ConfigStore, e
 	t.Setenv("HOME", isolated)
 	t.Setenv("XDG_CONFIG_HOME", filepath.Join(isolated, ".config"))
 	t.Setenv("XDG_DATA_HOME", filepath.Join(isolated, ".local", "share"))
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", filepath.Join(isolated, ".config", "binetic_agent"))
-	t.Setenv("BINETIC_AGENT_GLOBAL_DATA", filepath.Join(isolated, ".local", "share", "binetic_agent"))
+	t.Setenv("CRUSH_GLOBAL_CONFIG", filepath.Join(isolated, ".config", "crush"))
+	t.Setenv("CRUSH_GLOBAL_DATA", filepath.Join(isolated, ".local", "share", "crush"))
 
 	workDir := t.TempDir()
 	dataDir := t.TempDir()
-	require.NoError(t, os.WriteFile(filepath.Join(workDir, "binetic-agentrc"), []byte(script), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(workDir, "crushrc"), []byte(script), 0o644))
 
 	return config.Load(workDir, dataDir, false, config.TrustFolderForSession())
 }
 
 func TestShellConfigPermissionsAllow(t *testing.T) {
-	store := loadBinetic AgentSh(t, `permissions allow bash view`)
+	store := loadCrushSh(t, `permissions allow bash view`)
 
 	require.NotNil(t, store.Config().Permissions)
 	require.ElementsMatch(t, []string{"bash", "view"}, store.Config().Permissions.AllowedTools)
 }
 
 func TestShellConfigPermissionsAccumulateAndDedup(t *testing.T) {
-	store := loadBinetic AgentSh(t, `permissions allow bash
+	store := loadCrushSh(t, `permissions allow bash
 permissions allow view
 permissions allow bash`)
 
@@ -57,20 +57,20 @@ permissions allow bash`)
 }
 
 func TestShellConfigPermissionsLegacyFlagFails(t *testing.T) {
-	_, err := loadBinetic AgentShErr(t, `permissions --allow bash`)
+	_, err := loadCrushShErr(t, `permissions --allow bash`)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "unknown subcommand")
 }
 
 func TestShellConfigPermissionsAllowRequiresTool(t *testing.T) {
-	_, err := loadBinetic AgentShErr(t, `permissions allow`)
+	_, err := loadCrushShErr(t, `permissions allow`)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "usage: permissions allow")
 }
 
 // deny hides tools from the agent by writing options.disabled_tools.
 func TestShellConfigPermissionsDeny(t *testing.T) {
-	store := loadBinetic AgentSh(t, `permissions deny bash sourcegraph
+	store := loadCrushSh(t, `permissions deny bash sourcegraph
 permissions deny bash`)
 
 	require.Equal(t, []string{"bash", "sourcegraph"}, store.Config().Options.DisabledTools)
@@ -80,7 +80,7 @@ permissions deny bash`)
 // disabled_tools which removes it from the agent entirely, regardless of
 // its presence in the allow-list.
 func TestShellConfigPermissionsDenyWinsOverAllow(t *testing.T) {
-	store := loadBinetic AgentSh(t, `permissions allow bash view
+	store := loadCrushSh(t, `permissions allow bash view
 permissions deny bash`)
 
 	require.ElementsMatch(t, []string{"bash", "view"}, store.Config().Permissions.AllowedTools)
@@ -96,14 +96,14 @@ permissions deny bash`)
 // permissions deny takes Claude Code's Bash(pattern) deny rules beside
 // tools: they go into permissions.deny, and stop the commands they match.
 func TestShellConfigPermissionsDenyRules(t *testing.T) {
-	store := loadBinetic AgentSh(t, `permissions deny 'Bash(git push *)' sourcegraph
+	store := loadCrushSh(t, `permissions deny 'Bash(git push *)' sourcegraph
 permissions deny 'Bash(git push *)' 'bash(rm -rf *)'`)
 
 	require.Equal(t, []string{"Bash(git push *)", "bash(rm -rf *)"}, store.Config().Permissions.Deny)
 	require.Equal(t, []string{"git push *", "rm -rf *"}, store.Config().Permissions.BashDenyPatterns())
 	require.Contains(t, store.Config().Options.DisabledTools, "sourcegraph")
 
-	_, err := loadBinetic AgentShErr(t, `permissions deny 'Bash()'`)
+	_, err := loadCrushShErr(t, `permissions deny 'Bash()'`)
 	require.ErrorContains(t, err, "names no command")
 }
 
@@ -111,13 +111,13 @@ permissions deny 'Bash(git push *)' 'bash(rm -rf *)'`)
 // tools: they go into permissions.allow, and let the commands they match
 // run without asking.
 func TestShellConfigPermissionsAllowRules(t *testing.T) {
-	store := loadBinetic AgentSh(t, `permissions allow 'Bash(git diff *)' view
+	store := loadCrushSh(t, `permissions allow 'Bash(git diff *)' view
 permissions allow 'Bash(git diff *)' 'bash(npm run *)'`)
 
 	require.Equal(t, []string{"Bash(git diff *)", "bash(npm run *)"}, store.Config().Permissions.Allow)
 	require.Equal(t, []string{"git diff *", "npm run *"}, store.Config().Permissions.BashAllowPatterns())
 	require.Contains(t, store.Config().Permissions.AllowedTools, "view")
 
-	_, err := loadBinetic AgentShErr(t, `permissions allow 'Bash(:*)'`)
+	_, err := loadCrushShErr(t, `permissions allow 'Bash(:*)'`)
 	require.ErrorContains(t, err, "names no command")
 }

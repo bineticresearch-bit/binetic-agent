@@ -7,13 +7,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/require"
 )
 
 // trustForTest records proj as trusted, in the test's own data directory,
-// as the user who wrote its binetic-agent.json would have.
+// as the user who wrote its gnosh.json would have.
 func trustForTest(t *testing.T, proj string) {
 	t.Helper()
 	_, err := config.TrustFolder(proj)
@@ -45,40 +45,40 @@ func runCapturing(t *testing.T, args ...string) (stdout, stderr string, err erro
 
 // standInGlobalProject is standInRunProject with the stand-in model in the
 // user's own config, so that a run works whether or not the project is
-// trusted, and the project's settings what is given: its binetic-agent.json and
-// its binetic-agentrc.
-func standInGlobalProject(t *testing.T, projectJSON, binetic-agentrc string) string {
+// trusted, and the project's settings what is given: its gnosh.json and
+// its gnoshrc.
+func standInGlobalProject(t *testing.T, projectJSON, gnoshrc string) string {
 	t.Helper()
 	isolated := t.TempDir()
 	t.Setenv("HOME", isolated)
 	t.Setenv("XDG_CONFIG_HOME", filepath.Join(isolated, ".config"))
 	t.Setenv("XDG_DATA_HOME", filepath.Join(isolated, ".local", "share"))
-	global := filepath.Join(isolated, ".config", "binetic-agent")
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", global)
-	t.Setenv("BINETIC_AGENT_GLOBAL_DATA", filepath.Join(isolated, ".local", "share", "binetic-agent"))
-	for _, name := range []string{"BINETIC_AGENT_DISABLE_PROVIDER_AUTO_UPDATE", "BINETIC_AGENT_DISABLE_DEFAULT_PROVIDERS", "BINETIC_AGENT_DISABLE_METRICS", "BINETIC_AGENT_DISABLE_UPDATE_CHECK"} {
+	global := filepath.Join(isolated, ".config", "gnosh")
+	t.Setenv("GNOSH_GLOBAL_CONFIG", global)
+	t.Setenv("GNOSH_GLOBAL_DATA", filepath.Join(isolated, ".local", "share", "gnosh"))
+	for _, name := range []string{"GNOSH_DISABLE_PROVIDER_AUTO_UPDATE", "GNOSH_DISABLE_DEFAULT_PROVIDERS", "GNOSH_DISABLE_METRICS", "GNOSH_DISABLE_UPDATE_CHECK"} {
 		t.Setenv(name, "1")
 	}
 	srv := standInModel(t)
 	cfg := `{"providers": {"standin": {"type": "llamacpp", "base_url": "` + srv.URL + `"}},
 		"models": {"large": {"model": "stand-in", "provider": "standin"}, "small": {"model": "stand-in", "provider": "standin"}}}`
 	require.NoError(t, os.MkdirAll(global, 0o700))
-	require.NoError(t, os.WriteFile(filepath.Join(global, "binetic-agent.json"), []byte(cfg), 0o600))
+	require.NoError(t, os.WriteFile(filepath.Join(global, "gnosh.json"), []byte(cfg), 0o600))
 	// Trust names the folder with its links resolved, and its files from
 	// there; macOS's temp dir runs through a link (/var is /private/var).
 	proj, err := filepath.EvalSymlinks(t.TempDir())
 	require.NoError(t, err)
-	require.NoError(t, os.WriteFile(filepath.Join(proj, "binetic-agent.json"), []byte(projectJSON), 0o644))
-	require.NoError(t, os.WriteFile(filepath.Join(proj, ".binetic-agentrc"), []byte(binetic-agentrc), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(proj, "gnosh.json"), []byte(projectJSON), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(proj, ".gnoshrc"), []byte(gnoshrc), 0o644))
 	require.NoError(t, os.WriteFile(filepath.Join(proj, "a.txt"), []byte("alpha\n"), 0o644))
 	t.Chdir(proj)
 	return proj
 }
 
-// binetic-agent run never asks: in a folder not trusted, it runs the turn without
-// the folder's settings (its binetic-agentrc does not run, its hooks do not fire)
+// gnosh run never asks: in a folder not trusted, it runs the turn without
+// the folder's settings (its gnoshrc does not run, its hooks do not fire)
 // and says so in one line on stderr, with how to trust it. --trust-folder
-// trusts it for the run, and binetic-agent trust for good.
+// trusts it for the run, and gnosh trust for good.
 func TestRunInAnUntrustedFolder(t *testing.T) {
 	rcRan := filepath.Join(t.TempDir(), "rc-ran")
 	hookRan := filepath.Join(t.TempDir(), "hook-ran")
@@ -89,12 +89,12 @@ func TestRunInAnUntrustedFolder(t *testing.T) {
 	text, stderr, err := runCapturing(t, "list the files here")
 	require.NoError(t, err)
 	require.Equal(t, "Let me look.\n\nThere are two text files.\n", text, "the turn runs on the user's own settings")
-	require.NoFileExists(t, rcRan, "an untrusted folder's binetic-agentrc must not run")
+	require.NoFileExists(t, rcRan, "an untrusted folder's gnoshrc must not run")
 	require.NoFileExists(t, hookRan, "an untrusted folder's hooks must not run")
 	lines := strings.Split(strings.TrimSpace(stderr), "\n")
 	require.Len(t, lines, 1, stderr)
-	require.Contains(t, lines[0], "is not trusted, so its project settings are off (runs .binetic-agentrc; 1 hook)")
-	require.Contains(t, lines[0], "binetic-agent trust ")
+	require.Contains(t, lines[0], "is not trusted, so its project settings are off (runs .gnoshrc; 1 hook)")
+	require.Contains(t, lines[0], "gnosh trust ")
 	require.Contains(t, lines[0], "--trust-folder for one run")
 
 	_, stderr, err = runCapturing(t, "--trust-folder", "list the files here")
@@ -116,7 +116,7 @@ func TestRunInAnUntrustedFolder(t *testing.T) {
 	require.FileExists(t, hookRan)
 }
 
-// runTrust runs `binetic-agent trust args...` and returns what it printed.
+// runTrust runs `gnosh trust args...` and returns what it printed.
 func runTrust(t *testing.T, args ...string) (string, error) {
 	t.Helper()
 	var out bytes.Buffer
@@ -130,7 +130,7 @@ func runTrust(t *testing.T, args ...string) (string, error) {
 	return out.String(), err
 }
 
-// binetic-agent trust records a folder, says what its settings now do, lists the
+// gnosh trust records a folder, says what its settings now do, lists the
 // trusted folders and forgets one.
 func TestTrustCommand(t *testing.T) {
 	proj := standInGlobalProject(t, `{"mcp": {"helper": {"command": "./mcp-server"}}}`, "option debug true\n")
@@ -138,9 +138,9 @@ func TestTrustCommand(t *testing.T) {
 	out, err := runTrust(t, proj)
 	require.NoError(t, err)
 	require.Contains(t, out, "Trusted ")
-	require.Contains(t, out, "  - run .binetic-agentrc, a shell script, as binetic-agent starts\n")
+	require.Contains(t, out, "  - run .gnoshrc, a shell script, as gnosh starts\n")
 	require.Contains(t, out, "  - start 1 MCP server: helper\n")
-	require.Contains(t, out, "What could go wrong:\n  - Its binetic-agentrc and MCP server would run as you: ")
+	require.Contains(t, out, "What could go wrong:\n  - Its gnoshrc and MCP server would run as you: ")
 	require.Contains(t, out, "If you did not write them and have not read them: "+config.ForgetCommand(proj)+"\n")
 	require.True(t, config.FolderTrusted(proj))
 
@@ -168,7 +168,7 @@ func TestResolveCwdTwiceWithARelativeCwd(t *testing.T) {
 	parent := t.TempDir()
 	require.NoError(t, os.Mkdir(filepath.Join(parent, "proj"), 0o755))
 	t.Chdir(parent)
-	cmd := &cobra.Command{Use: "binetic-agent"}
+	cmd := &cobra.Command{Use: "gnosh"}
 	cmd.Flags().StringP("cwd", "c", "", "")
 	require.NoError(t, cmd.ParseFlags([]string{"-c", "proj"}))
 	first, err := ResolveCwd(cmd)

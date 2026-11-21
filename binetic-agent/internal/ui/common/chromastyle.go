@@ -8,7 +8,7 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/alecthomas/chroma/v2"
 	chromastyles "github.com/alecthomas/chroma/v2/styles"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/ui/styles"
 )
 
 // Building a chroma style from a theme (chroma.MustNewStyle) parses every
@@ -63,7 +63,7 @@ func ChromaStyle(st *styles.Styles, bg color.Color) *chroma.Style {
 		chromaStyleByBg = nil
 	}
 	if chromaStyleBase == nil {
-		chromaStyleBase = chroma.MustNewStyle("binetic_agent", st.ChromaTheme())
+		chromaStyleBase = chroma.MustNewStyle("crush", st.ChromaTheme())
 	}
 	if bg == nil {
 		return chromaStyleBase

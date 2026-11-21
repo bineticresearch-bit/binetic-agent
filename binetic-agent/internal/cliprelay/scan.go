@@ -1,8 +1,8 @@
 // Package cliprelay runs a command on a pseudo-terminal of its own, joined
-// to the terminal binetic-agent was started in, and puts the text of the OSC 52
-// clipboard writes the command prints on this computer's clipboard. binetic-agent
+// to the terminal gnosh was started in, and puts the text of the OSC 52
+// clipboard writes the command prints on this computer's clipboard. gnosh
 // ssh is built on it: a terminal such as Apple's Terminal ignores OSC 52, so
-// a copy made in binetic-agent, or in tmux, on the far side of ssh never reached the
+// a copy made in gnosh, or in tmux, on the far side of ssh never reached the
 // clipboard of the computer in front of you.
 package cliprelay
 

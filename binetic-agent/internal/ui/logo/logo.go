@@ -1,4 +1,4 @@
-// Package logo renders the Binetic Agent wordmark in a stylized way.
+// Package logo renders the Gnosh wordmark in a stylized way.
 package logo
 
 import (
@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"charm.land/lipgloss/v2"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/version"
 	"github.com/charmbracelet/x/ansi"
 )
 
@@ -18,11 +18,11 @@ type letterform func(bool) string
 
 const diag = `╱`
 
-// Mark is the maker's mark printed above the wordmark, where upstream Binetic Agent
+// Mark is the maker's mark printed above the wordmark, where upstream Crush
 // prints Charm™.
-const Mark = "binetic-agent.local"
+const Mark = "gnosh.ai"
 
-// Opts are the options for rendering the Binetic Agent title art.
+// Opts are the options for rendering the Gnosh title art.
 type Opts struct {
 	FieldColor   color.Color // diagonal lines
 	FieldColorB  color.Color // when set, the diagonal lines fade from FieldColor to it
@@ -32,10 +32,10 @@ type Opts struct {
 	CharmColor   color.Color // maker's mark color
 	VersionColor color.Color // version text color
 	Width        int         // width of the rendered logo, used for truncation
-	Hyper        bool        // whether it is Binetic Agent or Hyperbinetic_agent
+	Hyper        bool        // whether it is Crush or Hypercrush
 }
 
-// Render renders the Binetic Agent logo. Set the argument to true to render the narrow
+// Render renders the Crush logo. Set the argument to true to render the narrow
 // version, intended for use in a sidebar.
 //
 // The compact argument determines whether it renders compact for the sidebar
@@ -104,7 +104,7 @@ func Render(base lipgloss.Style, version string, compact bool, o Opts) string {
 	// The meta row goes under the word.
 	title = strings.TrimSuffix(title, "\n") + "\n" + metaRow
 
-	// Narrow version. If this is Hyperbinetic_agent, this is also a stacked version.
+	// Narrow version. If this is Hypercrush, this is also a stacked version.
 	// The fields run the other way to the title above it and the same way
 	// below, so the stack shimmers.
 	if compact {
@@ -127,7 +127,7 @@ func Render(base lipgloss.Style, version string, compact bool, o Opts) string {
 	}
 
 	// Right field, as wide on every row, so the logo's right edge is
-	// straight: Binetic Agent's stepped one cell in per row, a ragged corner.
+	// straight: Crush's stepped one cell in per row, a ragged corner.
 	rightWidth := max(15, o.Width-titleWidth-leftWidth-2) // 2 for the gap.
 	rightField := new(strings.Builder)
 	for range fieldHeight {
@@ -173,13 +173,13 @@ func field(base lipgloss.Style, o Opts, width int, reverse bool) string {
 	return styles.ApplyForegroundGrad(base, lines, from, to)
 }
 
-// SmallRender renders a smaller version of the Binetic Agent logo, suitable for
+// SmallRender renders a smaller version of the Crush logo, suitable for
 // smaller windows or sidebar usage.
 func SmallRender(t *styles.Styles, width int, o Opts) string {
 	// In capitals, as the big logo and the compact header spell it.
 	name := strings.ToUpper(version.Name)
 	if o.Hyper {
-		name = "HYPERBINETIC_AGENT"
+		name = "HYPERCRUSH"
 	}
 	title := styles.ApplyBoldForegroundGrad(t.Logo.GradCanvas, name, t.Logo.SmallGradFromColor, t.Logo.SmallGradToColor)
 	if o.GnoColor != nil && !o.Hyper {

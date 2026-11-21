@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 )
 
 // ThemeFile represents a standalone theme definition stored as JSON.
@@ -89,9 +89,9 @@ func SaveThemeFile(path string, tf *ThemeFile) error {
 var themeDirsOverride []string
 
 // ThemeDirs returns the user theme directory. Theme files are global so
-// launching Binetic Agent from different working directories always resolves the same
-// themes. Themes live in the Binetic Agent config directory (the one holding the
-// global config file) under themes/, which honors BINETIC_AGENT_GLOBAL_CONFIG and
+// launching Crush from different working directories always resolves the same
+// themes. Themes live in the Crush config directory (the one holding the
+// global config file) under themes/, which honors GNOSH_GLOBAL_CONFIG and
 // matches the README on every platform.
 func ThemeDirs() []string {
 	if themeDirsOverride != nil {

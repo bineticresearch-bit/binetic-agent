@@ -59,9 +59,9 @@ def load(run):
                     entries.append(e)
     sessions = {}
     # A peer's database is in its own data directory (-D), one session's in
-    # the project's .binetic-agent; a session found twice is the same session.
-    dbs = glob.glob(os.path.join(run, "data*", "**", "binetic-agent.db"), recursive=True)
-    dbs += glob.glob(os.path.join(run, "project", ".binetic-agent", "binetic-agent.db"))
+    # the project's .gnosh; a session found twice is the same session.
+    dbs = glob.glob(os.path.join(run, "data*", "**", "gnosh.db"), recursive=True)
+    dbs += glob.glob(os.path.join(run, "project", ".gnosh", "gnosh.db"))
     for db in sorted(dbs):
         c = opendb(db)
         for sid, title in c.execute("select id, title from sessions where parent_session_id is null or parent_session_id = ''"):

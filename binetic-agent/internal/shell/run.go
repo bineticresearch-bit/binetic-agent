@@ -11,7 +11,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/tooldefs"
+	"github.com/charmbracelet/crush/internal/tooldefs"
 	"mvdan.cc/sh/v3/expand"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
@@ -29,7 +29,7 @@ type RunOptions struct {
 	Command string
 	// Cwd is the working directory for the execution. Required: callers
 	// must supply a non-empty value. Run does not silently fall back to
-	// the Binetic Agent process cwd — hooks and the bash tool have different
+	// the Crush process cwd — hooks and the bash tool have different
 	// notions of "default" and each owns that decision.
 	Cwd string
 	// Env is the full environment visible to the command. The caller is
@@ -184,7 +184,7 @@ func RunAndCapturePTY(ctx context.Context, opts RunOptions) (CaptureResult, erro
 }
 
 // newRunner constructs an [interp.Runner] configured with the standard
-// Binetic Agent handler stack. Shared by the stateless [Run] entrypoint and the
+// Crush handler stack. Shared by the stateless [Run] entrypoint and the
 // stateful [Shell] so the two surfaces cannot drift.
 func newRunner(cwd string, env []string, stdin io.Reader, stdout, stderr io.Writer, blockFuncs []BlockFunc) (*interp.Runner, error) {
 	env = withNonInteractiveEnv(env)
@@ -198,15 +198,15 @@ func newRunner(cwd string, env []string, stdin io.Reader, stdout, stderr io.Writ
 }
 
 // execHandlerOption returns an interp.RunnerOption that installs the
-// standard Binetic Agent middleware chain (builtins, script dispatch, block list)
+// standard Crush middleware chain (builtins, script dispatch, block list)
 // on top of a process-group-isolated base exec handler.
 //
 // We use interp.ExecHandler (singular) with a manually-built chain rather
 // than interp.ExecHandlers because the latter always appends
 // interp.DefaultExecHandler as the final handler, which lacks process group
 // isolation. Without isolation, shells like zsh that set up job control
-// when sourcing framework files can send SIGINT/SIGTERM to Binetic Agent's process
-// group and binetic-agent the parent.
+// when sourcing framework files can send SIGINT/SIGTERM to Crush's process
+// group and gnosh the parent.
 func execHandlerOption(blockFuncs []BlockFunc) interp.RunnerOption {
 	base := processGroupExecHandler(defaultKillTimeout)
 	handler := base
@@ -220,7 +220,7 @@ func execHandlerOption(blockFuncs []BlockFunc) interp.RunnerOption {
 
 // nonInteractiveEnvVars are forced on every shell execution to prevent
 // commands from hanging on a nonexistent TTY. These are always applied
-// regardless of the caller's environment because Binetic Agent shells are never
+// regardless of the caller's environment because Crush shells are never
 // interactive — preserving user preferences like EDITOR=nvim only causes
 // hangs, not useful behavior.
 var nonInteractiveEnvVars = []string{
@@ -295,13 +295,13 @@ type execMiddleware = func(next interp.ExecHandlerFunc) interp.ExecHandlerFunc
 
 // standardHandlers returns the exec-handler middleware chain used by both
 // [Run] and [Shell]. Order matters:
-//  1. builtins first (so Binetic Agent's in-process jq wins over any PATH binary);
+//  1. builtins first (so Crush's in-process jq wins over any PATH binary);
 //  2. script dispatch (shebang / binary / shell-source for path-prefixed
 //     argv[0], no-op for bare commands) — runs before the block list so
 //     that deny rules see the already-resolved argv of anything the
 //     script exec's rather than the outer path-prefixed wrapper;
 //  3. block list;
-//  4. tool names (a Binetic Agent tool run as a command is told to be called);
+//  4. tool names (a Gnosh tool run as a command is told to be called);
 //  5. missing commands (told what to do instead of searching for them);
 //  6. optional Go coreutils (only when useGoCoreUtils is on).
 func standardHandlers(blockFuncs []BlockFunc) []execMiddleware {
@@ -318,7 +318,7 @@ func standardHandlers(blockFuncs []BlockFunc) []execMiddleware {
 	return handlers
 }
 
-// builtinHandler returns middleware that dispatches recognized Binetic Agent
+// builtinHandler returns middleware that dispatches recognized Crush
 // builtins to their in-process Go implementations. All builtins (jq plus the
 // config builtins registered by shellconfig) live in the builtins map; config
 // builtins are no-ops without a ConfigBuilder on the context.
@@ -360,7 +360,7 @@ func blockHandler(blockFuncs []BlockFunc) execMiddleware {
 }
 
 // toolNameHandler returns middleware that says so when a command the
-// shell cannot find is named like one of Binetic Agent's tools: a model that runs
+// shell cannot find is named like one of Gnosh's tools: a model that runs
 // "job_kill 077" in bash meant the job_kill tool, and the shell's own
 // "executable file not found" left an agent on the AI box with a server
 // it never stopped. A command of that name on the PATH runs as usual.
@@ -375,7 +375,7 @@ func toolNameHandler() execMiddleware {
 			if _, lookErr := interp.LookPathDir(hc.Dir, hc.Env, args[0]); lookErr == nil {
 				return err
 			}
-			fmt.Fprintf(hc.Stderr, "%s is a Binetic Agent tool, not a shell command: call the %s tool instead.\n", args[0], tooldefs.Canonical(args[0]))
+			fmt.Fprintf(hc.Stderr, "%s is a Gnosh tool, not a shell command: call the %s tool instead.\n", args[0], tooldefs.Canonical(args[0]))
 			return err
 		}
 	}
@@ -519,8 +519,8 @@ func lookedUp(args []string) []string {
 }
 
 // notInstalled reports whether nothing answers to name in a shell in dir
-// with env: no keyword, no builtin of the shell's or Binetic Agent's own, and no
-// program on the PATH. A path, and a Binetic Agent tool's name, have notes of
+// with env: no keyword, no builtin of the shell's or Gnosh's own, and no
+// program on the PATH. A path, and a Gnosh tool's name, have notes of
 // their own or none.
 func notInstalled(dir string, env expand.Environ, name string) bool {
 	if name == "" || strings.Contains(name, "/") || tooldefs.IsKnown(name) ||

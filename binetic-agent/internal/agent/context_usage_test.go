@@ -7,9 +7,9 @@ import (
 	"testing"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/prompt"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/skills"
+	"github.com/charmbracelet/crush/internal/agent/prompt"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/skills"
 	"github.com/stretchr/testify/require"
 )
 
@@ -55,7 +55,7 @@ func categories(u ContextUsage) map[string]int64 {
 func TestContextUsage(t *testing.T) {
 	t.Parallel()
 
-	global := prompt.ContextFile{Path: "/home/u/.config/binetic_agent/BINETIC_AGENT.md", Content: strings.Repeat("g", 400)}
+	global := prompt.ContextFile{Path: "/home/u/.config/crush/CRUSH.md", Content: strings.Repeat("g", 400)}
 	project := prompt.ContextFile{Path: "/p/AGENTS.md", Content: strings.Repeat("p", 800)}
 	local := prompt.ContextFile{Path: "/p/AGENTS.local.md", Content: strings.Repeat("l", 40)}
 	gno := &skills.Skill{Name: "gno", Description: strings.Repeat("d", 200), SkillFilePath: "/skills/gno/SKILL.md", Builtin: true}

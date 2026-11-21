@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -22,27 +22,27 @@ import (
 	"testing"
 	"unicode"
 
-	"github.com/charmbracelet/binetic_agent/internal/gnovm"
+	"github.com/charmbracelet/crush/internal/gnovm"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/agent/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-// The gnovm_run examples in Binetic Agent's documents are runs, not illustrations.
+// The gnovm_run examples in Gnosh's documents are runs, not illustrations.
 // In a fenced block, a line `gnovm_run {...}` is a call, its JSON exactly the
 // tool's input, and the lines under it indented by two spaces are what the
 // call shows the model: everything above the status line. The status line
 // (gas and time, which vary from run to run) and notes are left out. Each
 // block runs on a fresh project, call by call, through the real tool, so a
 // change to what mem prints names the example that no longer says what
-// Binetic Agent does. Every call in a block is checked, so one run lists every
+// Gnosh does. Every call in a block is checked, so one run lists every
 // example that has drifted, not only the first.
 //
 // A block can also show what the user does: a line `/mem <args>` is the
 // user's /mem, with what it shows indented under it, and a line that starts
-// `mem due: ` or `mem waiting on you: ` is the notice binetic-agent shows the user
+// `mem due: ` or `mem waiting on you: ` is the notice gnosh shows the user
 // as a session starts, after the calls above it. They run against the same
 // mem as the block's gnovm_run calls, the /mem lines in a later session than
 // theirs: the user reads what an earlier session of the agent left.
@@ -77,7 +77,7 @@ var checkedDocs = map[string]int{
 
 // docCall is one call in a document and what the document says it shows:
 // gnovm_run as the agent makes it (or, after ❯, the mem call as the agent
-// writes it), /mem as the user types it, or the notice binetic-agent shows as a
+// writes it), /mem as the user types it, or the notice gnosh shows as a
 // session starts.
 type docCall struct {
 	line  int    // 1-based, in the document
@@ -153,7 +153,7 @@ func docBlocks(t *testing.T, root, doc string) [][]docCall {
 			collecting = true
 		case strings.HasPrefix(line, "❯ "):
 			// A call to mem as the agent writes it, in a block that also
-			// holds what the user typed and what binetic-agent told them.
+			// holds what the user typed and what gnosh told them.
 			flush()
 			input, err := json.Marshal(map[string]string{"name": "mem", "code": strings.TrimPrefix(line, "❯ ")})
 			require.NoError(t, err)
@@ -229,7 +229,7 @@ func TestDocExamplesRun(t *testing.T) {
 							doc, c.line, c.input, got)
 					case "notice":
 						assert.Equal(t, c.want, l.MemNotice("/proj"),
-							"%s line %d: binetic-agent's notice as a session starts is no longer what the document says", doc, c.line)
+							"%s line %d: gnosh's notice as a session starts is no longer what the document says", doc, c.line)
 					default:
 						resp := docRun(t, run, c.input)
 						if got := shown(resp.Content); !docMatch(c.want, got) {
@@ -385,8 +385,8 @@ func TestDocBlocksParse(t *testing.T) {
 	}, blocks)
 	require.Equal(t, map[string]string{docAgentSession: "Facts"}, docTitles(blocks[2]))
 	require.Nil(t, docTitles(blocks[0]))
-	require.Equal(t, "#3 <when>, you: mem.Forget(\"a\")\n    remove fact `a`\n#12 <when>, binetic-agent: x",
-		docWhen("#3 2026-10-30 10:12, you: mem.Forget(\"a\")\n    remove fact `a`\n#12 2026-01-02 03:04, binetic-agent: x"))
+	require.Equal(t, "#3 <when>, you: mem.Forget(\"a\")\n    remove fact `a`\n#12 <when>, gnosh: x",
+		docWhen("#3 2026-10-30 10:12, you: mem.Forget(\"a\")\n    remove fact `a`\n#12 2026-01-02 03:04, gnosh: x"))
 
 	require.Equal(t, "40", shown("40\nok · VM s · gas 12 · kept as entry 1\nnote: new scratch VM\n"))
 	require.Equal(t, "", shown("ok · VM s · nothing to keep\n"))
@@ -551,7 +551,7 @@ func TestDocLinkProblems(t *testing.T) {
 }
 
 // docPrompts binds a user's words quoted in a document to the real-model
-// scenario that shows Binetic Agent doing what the document says it does: every
+// scenario that shows Gnosh doing what the document says it does: every
 // prompt of the scenario must appear in the document word for word. Change
 // the example and this fails until the scenario says the same, and is run.
 var docPrompts = []struct{ doc, scenario string }{
@@ -704,7 +704,7 @@ func TestDocScenarioPrompts(t *testing.T) {
 // the build, and commands that write only under ~, which the test points at
 // a temporary directory. A line of any other shape fails the test rather
 // than run on the machine running it.
-var installLine = regexp.MustCompile(`^(go build -o binetic-agent \.|mkdir -p ~/[\w./-]+|install -m 755 binetic-agent ~/[\w./-]+)(\s+#.*)?$`)
+var installLine = regexp.MustCompile(`^(go build -o gnosh \.|mkdir -p ~/[\w./-]+|install -m 755 gnosh ~/[\w./-]+)(\s+#.*)?$`)
 
 // TestDocInstallLinesRun runs README's install lines as written, in a home
 // with no ~/.local/bin, as a new machine often has none: install does not
@@ -720,7 +720,7 @@ func TestDocInstallLinesRun(t *testing.T) {
 	_, after, _ := strings.Cut(string(readme), "\n## Installation\n")
 	_, after, _ = strings.Cut(after, "```bash\n")
 	block, _, _ := strings.Cut(after, "```")
-	require.Contains(t, block, "go build -o binetic-agent .", "README's Installation block")
+	require.Contains(t, block, "go build -o gnosh .", "README's Installation block")
 	for line := range strings.Lines(block) {
 		if line = strings.TrimSpace(line); line == "" {
 			continue
@@ -730,13 +730,13 @@ func TestDocInstallLinesRun(t *testing.T) {
 	}
 
 	dir, home := t.TempDir(), t.TempDir()
-	cmd := exec.CommandContext(t.Context(), bash, "-e", "-c", strings.Replace(block, "go build -o binetic-agent .", "touch binetic-agent", 1))
+	cmd := exec.CommandContext(t.Context(), bash, "-e", "-c", strings.Replace(block, "go build -o gnosh .", "touch gnosh", 1))
 	cmd.Dir = dir
 	cmd.Env = append(os.Environ(), "HOME="+home)
 	out, err := cmd.CombinedOutput()
 	require.NoError(t, err, "README's install lines, in a home with no ~/.local/bin:\n%s", out)
-	info, err := os.Stat(filepath.Join(home, ".local", "bin", "binetic-agent"))
-	require.NoError(t, err, "README's install lines leave binetic-agent in ~/.local/bin")
+	info, err := os.Stat(filepath.Join(home, ".local", "bin", "gnosh"))
+	require.NoError(t, err, "README's install lines leave gnosh in ~/.local/bin")
 	assert.NotZero(t, info.Mode()&0o111, "and it can be run")
 }
 
@@ -814,7 +814,7 @@ func TestDocTableRowsAreScenarios(t *testing.T) {
 		"GNOMEM's line above the table should say %q, as its rows do", summary)
 }
 
-// TestDocUserWordVerdict: GNOMEM quotes the words binetic-agent itself puts before
+// TestDocUserWordVerdict: GNOMEM quotes the words gnosh itself puts before
 // the reason of a goal met on the user's word (userWordPrefix in
 // internal/agent/goal.go), so a change to them fails here.
 func TestDocUserWordVerdict(t *testing.T) {
@@ -825,7 +825,7 @@ func TestDocUserWordVerdict(t *testing.T) {
 	doc, err := os.ReadFile(filepath.Join(repoRoot, "GNOMEM.md"))
 	require.NoError(t, err)
 	assert.Contains(t, strings.Join(strings.Fields(string(doc)), " "), "("+strings.TrimSpace(string(m[1]))+" ",
-		"GNOMEM's verdict on the user's word no longer begins as binetic-agent writes it")
+		"GNOMEM's verdict on the user's word no longer begins as gnosh writes it")
 }
 
 // TestDocLoopNote: README quotes the note the scratch machine adds when a

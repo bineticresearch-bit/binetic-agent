@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestBinetic AgentIgnore(t *testing.T) {
+func TestCrushIgnore(t *testing.T) {
 	tempDir := t.TempDir()
 	t.Chdir(tempDir)
 
@@ -17,8 +17,8 @@ func TestBinetic AgentIgnore(t *testing.T) {
 	require.NoError(t, os.WriteFile("test2.log", []byte("test"), 0o644))
 	require.NoError(t, os.WriteFile("test3.tmp", []byte("test"), 0o644))
 
-	// Create a .binetic-agentignore file that ignores .log files
-	require.NoError(t, os.WriteFile(".binetic-agentignore", []byte("*.log\n"), 0o644))
+	// Create a .crushignore file that ignores .log files
+	require.NoError(t, os.WriteFile(".crushignore", []byte("*.log\n"), 0o644))
 
 	dl := NewDirectoryLister(tempDir)
 	require.True(t, dl.shouldIgnore("test2.log", nil, false), ".log files should be ignored")
@@ -50,16 +50,16 @@ func TestShouldExcludeFile(t *testing.T) {
 		t.Fatalf("Failed to create .gitignore: %v", err)
 	}
 
-	// Create .binetic-agentignore file
-	binetic_agentignoreContent := "custom_ignored/\n"
-	if err := os.WriteFile(filepath.Join(tempDir, ".binetic-agentignore"), []byte(binetic_agentignoreContent), 0o644); err != nil {
-		t.Fatalf("Failed to create .binetic-agentignore: %v", err)
+	// Create .crushignore file
+	crushignoreContent := "custom_ignored/\n"
+	if err := os.WriteFile(filepath.Join(tempDir, ".crushignore"), []byte(crushignoreContent), 0o644); err != nil {
+		t.Fatalf("Failed to create .crushignore: %v", err)
 	}
 
 	// Test that ignored directories are properly ignored
 	require.True(t, shouldExcludeFile(tempDir, nodeModules), "Expected node_modules to be ignored by .gitignore")
 	require.True(t, shouldExcludeFile(tempDir, target), "Expected target to be ignored by .gitignore")
-	require.True(t, shouldExcludeFile(tempDir, customIgnored), "Expected custom_ignored to be ignored by .binetic-agentignore")
+	require.True(t, shouldExcludeFile(tempDir, customIgnored), "Expected custom_ignored to be ignored by .crushignore")
 
 	// Test that normal directories are not ignored
 	require.False(t, shouldExcludeFile(tempDir, normalDir), "Expected src directory to not be ignored")
@@ -84,14 +84,14 @@ func TestShouldExcludeFileHierarchical(t *testing.T) {
 		}
 	}
 
-	// Create .binetic-agentignore in subdir that ignores normal_nested
-	subBinetic Agentignore := "normal_nested/\n"
-	if err := os.WriteFile(filepath.Join(subDir, ".binetic-agentignore"), []byte(subBinetic Agentignore), 0o644); err != nil {
-		t.Fatalf("Failed to create subdir .binetic-agentignore: %v", err)
+	// Create .crushignore in subdir that ignores normal_nested
+	subCrushignore := "normal_nested/\n"
+	if err := os.WriteFile(filepath.Join(subDir, ".crushignore"), []byte(subCrushignore), 0o644); err != nil {
+		t.Fatalf("Failed to create subdir .crushignore: %v", err)
 	}
 
-	// Test hierarchical ignore behavior - this should work because the .binetic-agentignore is in the parent directory
-	require.True(t, shouldExcludeFile(tempDir, nestedNormal), "Expected normal_nested to be ignored by subdir .binetic-agentignore")
+	// Test hierarchical ignore behavior - this should work because the .crushignore is in the parent directory
+	require.True(t, shouldExcludeFile(tempDir, nestedNormal), "Expected normal_nested to be ignored by subdir .crushignore")
 	require.False(t, shouldExcludeFile(tempDir, subDir), "Expected subdir itself to not be ignored")
 }
 

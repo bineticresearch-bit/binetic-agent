@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools/mcp"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/home"
-	"github.com/charmbracelet/binetic_agent/internal/skills"
+	"github.com/charmbracelet/crush/internal/agent/tools/mcp"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/home"
+	"github.com/charmbracelet/crush/internal/skills"
 )
 
 var namedArgPattern = regexp.MustCompile(`\$([A-Z][A-Z0-9_]*)`)
@@ -122,24 +122,24 @@ func LoadMCPPrompts() ([]MCPPrompt, error) {
 	return commands, nil
 }
 
-// buildCommandSources lists where commands are read from. The binetic-agent, klash
-// and binetic_agent user directories are all read, binetic-agent first: picking whichever
+// buildCommandSources lists where commands are read from. The gnosh, klash
+// and crush user directories are all read, gnosh first: picking whichever
 // exists let a commands directory made under the new name hide every
 // command in an old one.
 func buildCommandSources(cfg *config.Config) []commandSource {
 	return []commandSource{
-		{path: filepath.Join(home.Config(), "binetic-agent", "commands"), prefix: userCommandPrefix},
+		{path: filepath.Join(home.Config(), "gnosh", "commands"), prefix: userCommandPrefix},
 		{path: filepath.Join(home.Config(), "klash", "commands"), prefix: userCommandPrefix},
-		{path: filepath.Join(home.Config(), "binetic_agent", "commands"), prefix: userCommandPrefix},
-		{path: filepath.Join(home.Dir(), ".binetic-agent", "commands"), prefix: userCommandPrefix},
+		{path: filepath.Join(home.Config(), "crush", "commands"), prefix: userCommandPrefix},
+		{path: filepath.Join(home.Dir(), ".gnosh", "commands"), prefix: userCommandPrefix},
 		{path: filepath.Join(home.Dir(), ".klash", "commands"), prefix: userCommandPrefix},
-		{path: filepath.Join(home.Dir(), ".binetic-agent", "commands"), prefix: userCommandPrefix},
+		{path: filepath.Join(home.Dir(), ".crush", "commands"), prefix: userCommandPrefix},
 		{path: filepath.Join(cfg.Options.DataDirectory, "commands"), prefix: projectCommandPrefix},
 	}
 }
 
 // loadAll loads every source's commands in order. A command found again
-// under the same name, as after copying binetic_agent's commands into binetic-agent's, is
+// under the same name, as after copying crush's commands into gnosh's, is
 // shown once: the first one wins.
 func loadAll(sources []commandSource) ([]CustomCommand, error) {
 	var commands []CustomCommand

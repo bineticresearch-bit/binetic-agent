@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/stretchr/testify/require"
 )
 
@@ -16,8 +16,8 @@ import (
 // defects the guides name (QA, 2026-11-06).
 func TestTheCoderIsAskedToAuditGnoCode(t *testing.T) {
 	env := testEnv(t)
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", filepath.Join(t.TempDir(), "binetic-agent.json"))
-	binetic_agentJSON := `{
+	t.Setenv("CRUSH_GLOBAL_CONFIG", filepath.Join(t.TempDir(), "crush.json"))
+	crushJSON := `{
   "options": {"disable_default_providers": true, "disable_provider_auto_update": true},
   "providers": {"mock": {"id": "mock", "name": "Mock", "type": "openai",
     "base_url": "http://127.0.0.1:9/v1", "api_key": "test-key",
@@ -25,7 +25,7 @@ func TestTheCoderIsAskedToAuditGnoCode(t *testing.T) {
   "models": {"large": {"provider": "mock", "model": "mock-model"},
              "small": {"provider": "mock", "model": "mock-model"}}
 }`
-	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "binetic-agent.json"), []byte(binetic_agentJSON), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "crush.json"), []byte(crushJSON), 0o644))
 	coderPrompt := func() string {
 		cfg, err := config.Init(env.workingDir, "", false, config.TrustFolderForSession())
 		require.NoError(t, err)
@@ -49,7 +49,7 @@ func TestTheCoderIsAskedToAuditGnoCode(t *testing.T) {
 	require.NoError(t, os.WriteFile(filepath.Join(env.workingDir, "gnomod.toml"), []byte("module = \"gno.land/r/demo/tipjar\"\ngno = \"0.9\"\n"), 0o644))
 	p := coderPrompt()
 	require.Contains(t, p, "<gno>")
-	require.Contains(t, p, "binetic-agent://skills/gno/references/gno-interrealm-v2.md")
-	require.Contains(t, p, "binetic-agent://skills/gno/references/gno-security-guide.md")
+	require.Contains(t, p, "gnosh://skills/gno/references/gno-interrealm-v2.md")
+	require.Contains(t, p, "gnosh://skills/gno/references/gno-security-guide.md")
 	require.NotContains(t, p, "{{", "the section is a template, not text")
 }

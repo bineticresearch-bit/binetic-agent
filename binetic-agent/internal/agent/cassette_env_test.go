@@ -16,7 +16,7 @@ func TestCassetteEnvSkipsADirectoryItCannotUse(t *testing.T) {
 	if runtime.GOOS == "windows" || os.Geteuid() == 0 {
 		t.Skip("needs a user that directory permissions apply to")
 	}
-	locked := filepath.Join("/tmp/binetic_agent-test/", t.Name())
+	locked := filepath.Join("/tmp/crush-test/", t.Name())
 	require.NoError(t, os.MkdirAll(locked, 0o755))
 	require.NoError(t, os.Chmod(locked, 0o555))
 	t.Cleanup(func() {

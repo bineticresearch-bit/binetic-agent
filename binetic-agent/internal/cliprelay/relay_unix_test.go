@@ -21,7 +21,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// terminal stands in for the terminal binetic-agent ssh runs in: tty is what binetic-agent
+// terminal stands in for the terminal gnosh ssh runs in: tty is what gnosh
 // reads keys from and writes to, the test types on keys, the other side, and
 // screen holds what the terminal was sent.
 type terminal struct {
@@ -53,7 +53,7 @@ func newTerminal(t *testing.T, rows, cols uint16) *terminal {
 		}
 	}()
 	t.Cleanup(func() {
-		// Run leaves a goroutine reading keys, as binetic-agent ssh exits once
+		// Run leaves a goroutine reading keys, as gnosh ssh exits once
 		// Run returns; a line lets it go.
 		_, _ = ptmx.Write([]byte("\n"))
 		tty.Close()
@@ -84,7 +84,7 @@ func (tm *terminal) typeKeys(t *testing.T, keys string) {
 	require.NoError(t, err)
 }
 
-// clipboard records what binetic-agent ssh would put on the clipboard.
+// clipboard records what gnosh ssh would put on the clipboard.
 type clipboard struct {
 	mu     sync.Mutex
 	copied []string
@@ -130,7 +130,7 @@ func exited(t *testing.T, status <-chan int) int {
 	}
 }
 
-// A copy the command makes, written as binetic-agent writes it, goes on the
+// A copy the command makes, written as gnosh writes it, goes on the
 // clipboard, and the terminal is sent the output untouched, the copy
 // included.
 func TestRunCopiesWhatTheCommandCopies(t *testing.T) {

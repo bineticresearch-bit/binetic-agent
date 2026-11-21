@@ -4,12 +4,12 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
-	"github.com/charmbracelet/binetic_agent/internal/question"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/ui/dialog"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/permission"
+	"github.com/charmbracelet/crush/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/question"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/ui/dialog"
 	"github.com/stretchr/testify/require"
 )
 
@@ -38,12 +38,12 @@ func TestProgramStatus(t *testing.T) {
 	}{
 		{
 			name: "idle",
-			want: tea.ProgramStatus{State: tea.ProgramStateIdle, App: "binetic_agent"},
+			want: tea.ProgramStatus{State: tea.ProgramStateIdle, App: "crush"},
 		},
 		{
 			name:  "working",
 			setup: func(u *UI) { u.agentBusyCache.set(true) },
-			want:  tea.ProgramStatus{State: tea.ProgramStateWorking, App: "binetic_agent"},
+			want:  tea.ProgramStatus{State: tea.ProgramStateWorking, App: "crush"},
 		},
 		{
 			name: "question",
@@ -52,7 +52,7 @@ func TestProgramStatus(t *testing.T) {
 				u.activeInline = dialog.NewQuestionForm(u.com.Styles, question.Request{})
 			},
 			want: tea.ProgramStatus{
-				State: tea.ProgramStateBlocked, App: "binetic_agent",
+				State: tea.ProgramStateBlocked, App: "crush",
 				Kind: tea.ProgramStatusKindQuestion, Message: "Questions need your input",
 			},
 		},
@@ -63,7 +63,7 @@ func TestProgramStatus(t *testing.T) {
 				u.dialog.OpenDialogWithGrace(dialog.NewPermissions(u.com, permission.PermissionRequest{ID: "p", ToolName: "bash"}))
 			},
 			want: tea.ProgramStatus{
-				State: tea.ProgramStateBlocked, App: "binetic_agent",
+				State: tea.ProgramStateBlocked, App: "crush",
 				Kind: tea.ProgramStatusKindPermission, Message: "Permission required",
 			},
 		},
@@ -74,7 +74,7 @@ func TestProgramStatus(t *testing.T) {
 				u.dialog.OpenDialog(dlg)
 			},
 			want: tea.ProgramStatus{
-				State: tea.ProgramStateBlocked, App: "binetic_agent",
+				State: tea.ProgramStateBlocked, App: "crush",
 				Kind: tea.ProgramStatusKindAuth, Message: "AWS sign-in required",
 			},
 		},
@@ -84,12 +84,12 @@ func TestProgramStatus(t *testing.T) {
 				u.turnOutcome = tea.ProgramStateDone
 				u.agentBusyCache.set(true)
 			},
-			want: tea.ProgramStatus{State: tea.ProgramStateWorking, App: "binetic_agent"},
+			want: tea.ProgramStatus{State: tea.ProgramStateWorking, App: "crush"},
 		},
 		{
 			name:  "outcome once idle",
 			setup: func(u *UI) { u.turnOutcome = tea.ProgramStateError },
-			want:  tea.ProgramStatus{State: tea.ProgramStateError, App: "binetic_agent"},
+			want:  tea.ProgramStatus{State: tea.ProgramStateError, App: "crush"},
 		},
 	}
 	for _, c := range cases {

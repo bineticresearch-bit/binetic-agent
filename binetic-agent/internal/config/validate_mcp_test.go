@@ -7,10 +7,10 @@ import (
 )
 
 // An MCP server with no type means stdio: that is what the schema
-// documents and what the binetic-agentrc `mcp add` builtin writes, and it is the
+// documents and what the crushrc `mcp add` builtin writes, and it is the
 // shape most MCP snippets are copied in with. Defaulting it keeps those
 // configs working; the alternative (refusing them) would have made the
-// loader disagree with Binetic Agent's own config writer.
+// loader disagree with Crush's own config writer.
 func TestSetMCPDefaultsFillsStdio(t *testing.T) {
 	t.Parallel()
 

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/charmbracelet/binetic_agent/internal/config/config",
+  "$id": "https://github.com/charmbracelet/crush/internal/config/config",
   "$ref": "#/$defs/Config",
   "$defs": {
     "Attribution": {
@@ -22,7 +22,7 @@
         },
         "generated_with": {
           "type": "boolean",
-          "description": "Add Generated with Binetic Agent line to commit messages and issues and PRs",
+          "description": "Add Generated with Gnosh line to commit messages and issues and PRs",
           "default": true
         }
       },
@@ -123,7 +123,7 @@
         },
         "matcher": {
           "type": "string",
-          "description": "Which tools the hook runs for as in Claude Code: empty or * for all; exact names separated by | such as Bash|edit (binetic-agent's or Claude Code's names); anything else is an unanchored regular expression."
+          "description": "Which tools the hook runs for as in Claude Code: empty or * for all; exact names separated by | such as Bash|edit (gnosh's or Claude Code's names); anything else is an unanchored regular expression."
         },
         "command": {
           "type": "string",
@@ -388,7 +388,7 @@
         },
         "sessionless": {
           "type": "boolean",
-          "description": "Mark a sessionless MCP server (no Mcp-Session-Id) so Binetic Agent skips the subscriptions/listen stream it would otherwise reject. Leave unset to auto-detect known sessionless servers (e.g. GitHub MCP)",
+          "description": "Mark a sessionless MCP server (no Mcp-Session-Id) so Gnosh skips the subscriptions/listen stream it would otherwise reject. Leave unset to auto-detect known sessionless servers (e.g. GitHub MCP)",
           "default": false
         },
         "headers": {
@@ -546,7 +546,7 @@
             "type": "string",
             "examples": [
               ".cursorrules",
-              "BINETIC_AGENT.md"
+              "CRUSH.md"
             ]
           },
           "type": "array",
@@ -559,7 +559,7 @@
           "type": "array",
           "description": "Paths to files containing global context information for the AI",
           "default": [
-            "~/.config/binetic_agent/BINETIC_AGENT.md",
+            "~/.config/crush/CRUSH.md",
             "~/.config/AGENTS.md"
           ]
         },
@@ -567,7 +567,7 @@
           "items": {
             "type": "string",
             "examples": [
-              "~/.config/binetic_agent/skills",
+              "~/.config/crush/skills",
               "./skills"
             ]
           },
@@ -614,9 +614,9 @@
         "data_directory": {
           "type": "string",
           "description": "Directory for storing application data. Relative paths are resolved against the working directory; absolute paths are used as-is.",
-          "default": ".binetic-agent",
+          "default": ".crush",
           "examples": [
-            ".binetic-agent"
+            ".crush"
           ]
         },
         "disabled_tools": {
@@ -632,7 +632,7 @@
         },
         "disable_provider_auto_update": {
           "type": "boolean",
-          "description": "Disable fetching the provider catalog from Charm's servers (catwalk.charm.land and hyper.charm.land). Unset it is not fetched and the catalog built into Binetic Agent is used; set false to fetch it",
+          "description": "Disable fetching the provider catalog from Charm's servers (catwalk.charm.land and hyper.charm.land). Unset it is not fetched and the catalog built into Gnosh is used; set false to fetch it",
           "default": true
         },
         "disable_default_providers": {
@@ -655,11 +655,11 @@
         },
         "metrics_key": {
           "type": "string",
-          "description": "Project key sent with metrics to metrics_url; a self-hosted collector may ignore it. Defaults to binetic-agent when metrics_url is set."
+          "description": "Project key sent with metrics to metrics_url; a self-hosted collector may ignore it. Defaults to gnosh when metrics_url is set."
         },
         "update_repo": {
           "type": "string",
-          "description": "GitHub owner/repo whose latest release the update check compares against (e.g. binetic-agent-ai/binetic-agent). Empty disables the check; Charm's repo is never a default."
+          "description": "GitHub owner/repo whose latest release the update check compares against (e.g. gnosh-ai/gnosh). Empty disables the check; Charm's repo is never a default."
         },
         "initialize_as": {
           "type": "string",
@@ -667,7 +667,7 @@
           "default": "AGENTS.md",
           "examples": [
             "AGENTS.md",
-            "BINETIC_AGENT.md",
+            "CRUSH.md",
             "CLAUDE.md",
             "docs/LLMs.md"
           ]
@@ -698,7 +698,7 @@
           "items": {
             "type": "string",
             "examples": [
-              "binetic-agent-config"
+              "gnosh-config"
             ]
           },
           "type": "array",
@@ -995,9 +995,9 @@
         "active_theme": {
           "type": "string",
           "description": "Name of the currently active theme",
-          "default": "binetic-agent-cosmos",
+          "default": "gnosh-cosmos",
           "examples": [
-            "binetic-agent-cosmos",
+            "gnosh-cosmos",
             "charmtone-panther",
             "gruvbox-dark"
           ]
@@ -1033,7 +1033,7 @@
             "compact",
             "none"
           ],
-          "description": "Exit banner style after quitting Binetic Agent",
+          "description": "Exit banner style after quitting Gnosh",
           "default": "default"
         }
       },

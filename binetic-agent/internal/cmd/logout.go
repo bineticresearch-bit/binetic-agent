@@ -8,10 +8,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/charmbracelet/binetic_agent/internal/client"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/logout"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/client"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/logout"
+	"github.com/charmbracelet/crush/internal/version"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/spf13/cobra"
 )
@@ -29,22 +29,22 @@ var logoutCmd = &cobra.Command{
 	Aliases: []string{"signout"},
 	Use:     "logout [platform]",
 	Short:   "Logout " + version.Name + " from a platform",
-	Long: `Logout Binetic Agent from a specified platform, removing stored credentials.
+	Long: `Logout Gnosh from a specified platform, removing stored credentials.
 The platform should be provided as an argument.
 If no argument is given, a list of logged-in platforms will be shown.
 Available platforms are: hyper, copilot, openai (chatgpt), grok (xai).`,
 	Example: `
 # Sign out from Charm Hyper
-binetic-agent logout hyper
+gnosh logout hyper
 
 # Sign out from GitHub Copilot
-binetic-agent logout copilot
+gnosh logout copilot
 
 # Sign out from your ChatGPT (OpenAI) account
-binetic-agent logout openai
+gnosh logout openai
 
 # Sign out from your Grok (xAI) account
-binetic-agent logout grok
+gnosh logout grok
   `,
 	ValidArgs: []cobra.Completion{
 		"hyper",

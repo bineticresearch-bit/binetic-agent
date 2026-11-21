@@ -18,10 +18,10 @@ import (
 	"time"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/gnovm"
-	"github.com/charmbracelet/binetic_agent/internal/message"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/gnovm"
+	"github.com/charmbracelet/crush/internal/message"
 )
 
 // The check of a close (CLOSE-CHECK.md, Jae 2026-11-05). Before mem keeps
@@ -623,7 +623,7 @@ func fileExists(p string) bool {
 
 // findFile is the files under dir whose path ends with file, looking at
 // no more than findFileLimit entries and skipping what no result names:
-// version control, dependencies, binetic-agent's own data.
+// version control, dependencies, gnosh's own data.
 func findFile(dir, file string) []string {
 	var found []string
 	n := 0
@@ -637,7 +637,7 @@ func findFile(dir, file string) []string {
 		}
 		if d.IsDir() {
 			switch d.Name() {
-			case ".git", "node_modules", "vendor", ".binetic-agent", ".binetic-agent":
+			case ".git", "node_modules", "vendor", ".gnosh", ".crush":
 				return filepath.SkipDir
 			}
 			return nil

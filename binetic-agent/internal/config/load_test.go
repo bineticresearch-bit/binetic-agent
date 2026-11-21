@@ -14,12 +14,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/testenv"
+	"github.com/charmbracelet/crush/internal/testenv"
 
 	"charm.land/catwalk/pkg/catwalk"
-	"github.com/charmbracelet/binetic_agent/internal/csync"
-	"github.com/charmbracelet/binetic_agent/internal/env"
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
+	"github.com/charmbracelet/crush/internal/csync"
+	"github.com/charmbracelet/crush/internal/env"
+	"github.com/charmbracelet/crush/internal/oauth"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -50,15 +50,15 @@ func TestLookupConfigs_BoundedByProject(t *testing.T) {
 	// the developer's real config.
 	globalDir := t.TempDir()
 	dataDir := t.TempDir()
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", globalDir)
-	t.Setenv("BINETIC_AGENT_GLOBAL_DATA", dataDir)
+	t.Setenv("CRUSH_GLOBAL_CONFIG", globalDir)
+	t.Setenv("CRUSH_GLOBAL_DATA", dataDir)
 
-	t.Run("does not pick up binetic-agent.json above non-git project", func(t *testing.T) {
+	t.Run("does not pick up crush.json above non-git project", func(t *testing.T) {
 		parent := t.TempDir()
 
-		// binetic-agent.json above the project must not be adopted.
+		// crush.json above the project must not be adopted.
 		require.NoError(t, os.WriteFile(
-			filepath.Join(parent, "binetic-agent.json"),
+			filepath.Join(parent, "crush.json"),
 			[]byte(`{}`),
 			0o644,
 		))
@@ -68,11 +68,11 @@ func TestLookupConfigs_BoundedByProject(t *testing.T) {
 
 		got := lookupConfigs(project)
 		for _, p := range got {
-			require.NotEqual(t, filepath.Join(parent, "binetic-agent.json"), p)
+			require.NotEqual(t, filepath.Join(parent, "crush.json"), p)
 		}
 	})
 
-	t.Run("does not climb out of git worktree to find binetic-agent.json", func(t *testing.T) {
+	t.Run("does not climb out of git worktree to find crush.json", func(t *testing.T) {
 		if _, err := exec.LookPath("git"); err != nil {
 			t.Skip("git not available")
 		}
@@ -80,7 +80,7 @@ func TestLookupConfigs_BoundedByProject(t *testing.T) {
 		parent := t.TempDir()
 
 		require.NoError(t, os.WriteFile(
-			filepath.Join(parent, "binetic-agent.json"),
+			filepath.Join(parent, "crush.json"),
 			[]byte(`{}`),
 			0o644,
 		))
@@ -92,20 +92,20 @@ func TestLookupConfigs_BoundedByProject(t *testing.T) {
 		require.NoError(t, gitInit.Run())
 
 		got := lookupConfigs(worktree)
-		strayEval, err := filepath.EvalSymlinks(filepath.Join(parent, "binetic-agent.json"))
+		strayEval, err := filepath.EvalSymlinks(filepath.Join(parent, "crush.json"))
 		require.NoError(t, err)
 		for _, p := range got {
 			pEval, err := filepath.EvalSymlinks(p)
 			if err != nil {
 				continue
 			}
-			require.NotEqual(t, strayEval, pEval, "must not adopt parent binetic-agent.json")
+			require.NotEqual(t, strayEval, pEval, "must not adopt parent crush.json")
 		}
 	})
 
-	t.Run("picks up binetic-agent.json inside the project", func(t *testing.T) {
+	t.Run("picks up crush.json inside the project", func(t *testing.T) {
 		project := t.TempDir()
-		local := filepath.Join(project, "binetic-agent.json")
+		local := filepath.Join(project, "crush.json")
 		require.NoError(t, os.WriteFile(local, []byte(`{}`), 0o644))
 
 		got := lookupConfigs(project)
@@ -123,7 +123,7 @@ func TestLookupConfigs_BoundedByProject(t *testing.T) {
 				break
 			}
 		}
-		require.True(t, foundLocal, "expected project binetic-agent.json to be in lookup result: %v", got)
+		require.True(t, foundLocal, "expected project crush.json to be in lookup result: %v", got)
 	})
 
 	t.Run("global config is always included regardless of boundary", func(t *testing.T) {
@@ -136,28 +136,28 @@ func TestLookupConfigs_BoundedByProject(t *testing.T) {
 		require.Contains(t, got, GlobalConfigData())
 	})
 
-	t.Run("global shell config (binetic-agentrc) is included", func(t *testing.T) {
+	t.Run("global shell config (crushrc) is included", func(t *testing.T) {
 		project := t.TempDir()
 
 		got := lookupConfigs(project)
-		// A global binetic-agentrc is discovered only beside the user config. The data
-		// directory is machine-owned state and must never execute a binetic-agentrc.
+		// A global crushrc is discovered only beside the user config. The data
+		// directory is machine-owned state and must never execute a crushrc.
 		for _, rc := range shellConfigSiblings(GlobalConfig()) {
-			require.Contains(t, got, rc, "binetic-agentrc and, from before the rename, binetic-agentrc")
+			require.Contains(t, got, rc, "gnoshrc and, from before the rename, crushrc")
 		}
 		for _, rc := range shellConfigSiblings(GlobalConfigData()) {
 			require.NotContains(t, got, rc)
 		}
 	})
 
-	t.Run("project binetic-agentrc and .binetic-agentrc are discovered", func(t *testing.T) {
+	t.Run("project crushrc and .crushrc are discovered", func(t *testing.T) {
 		project := t.TempDir()
-		require.NoError(t, os.WriteFile(filepath.Join(project, "binetic-agentrc"), []byte(""), 0o644))
-		require.NoError(t, os.WriteFile(filepath.Join(project, ".binetic-agentrc"), []byte(""), 0o644))
+		require.NoError(t, os.WriteFile(filepath.Join(project, "crushrc"), []byte(""), 0o644))
+		require.NoError(t, os.WriteFile(filepath.Join(project, ".crushrc"), []byte(""), 0o644))
 
 		got := lookupConfigs(project)
-		require.Contains(t, got, filepath.Join(project, "binetic-agentrc"))
-		require.Contains(t, got, filepath.Join(project, ".binetic-agentrc"))
+		require.Contains(t, got, filepath.Join(project, "crushrc"))
+		require.Contains(t, got, filepath.Join(project, ".crushrc"))
 	})
 
 	t.Run("system config is loaded first", func(t *testing.T) {
@@ -170,7 +170,7 @@ func TestLookupConfigs_BoundedByProject(t *testing.T) {
 		// The system-wide configs must be first so they have the lowest
 		// priority when configs are merged, the ones from before the renames
 		// lowest of all, oldest first.
-		require.Equal(t, []string{"/etc/binetic_agent/binetic-agent.json", "/etc/klash/klash.json", "/etc/binetic-agent/binetic-agent.json"}, got[:3])
+		require.Equal(t, []string{"/etc/crush/crush.json", "/etc/klash/klash.json", "/etc/gnosh/gnosh.json"}, got[:3])
 	})
 }
 
@@ -207,7 +207,7 @@ func TestLoadFromConfigPaths_InvalidJSON(t *testing.T) {
 }
 
 // TestLoadFromConfigPaths_ConflictWarningNamesKeys verifies that when a JSON
-// config and a binetic-agentrc coexist in the same directory, the merge warning names
+// config and a crushrc coexist in the same directory, the merge warning names
 // the overlapping top-level keys so incremental migrations can spot stale
 // duplicates.
 func TestLoadFromConfigPaths_ConflictWarningNamesKeys(t *testing.T) {
@@ -223,28 +223,28 @@ func TestLoadFromConfigPaths_ConflictWarningNamesKeys(t *testing.T) {
 	t.Run("names overlapping keys", func(t *testing.T) {
 		buf := capture(t)
 		tmpDir := t.TempDir()
-		jsonPath := filepath.Join(tmpDir, "binetic-agent.json")
-		rcPath := filepath.Join(tmpDir, "binetic-agentrc")
+		jsonPath := filepath.Join(tmpDir, "crush.json")
+		rcPath := filepath.Join(tmpDir, "crushrc")
 		require.NoError(t, os.WriteFile(jsonPath, []byte(`{"options":{"debug":true},"providers":{}}`), 0o644))
 		require.NoError(t, os.WriteFile(rcPath, []byte("option debug true\n"), 0o644))
 
 		_, _, err := loadFromConfigPaths(context.Background(), []string{jsonPath, rcPath})
 		require.NoError(t, err)
-		require.Contains(t, buf.String(), "binetic-agentrc taking precedence")
+		require.Contains(t, buf.String(), "crushrc taking precedence")
 		require.Contains(t, buf.String(), `"conflicting_keys":"options"`)
 	})
 
 	t.Run("no warning when nothing overlaps", func(t *testing.T) {
 		buf := capture(t)
 		tmpDir := t.TempDir()
-		jsonPath := filepath.Join(tmpDir, "binetic-agent.json")
-		rcPath := filepath.Join(tmpDir, "binetic-agentrc")
+		jsonPath := filepath.Join(tmpDir, "crush.json")
+		rcPath := filepath.Join(tmpDir, "crushrc")
 		require.NoError(t, os.WriteFile(jsonPath, []byte(`{"providers":{}}`), 0o644))
 		require.NoError(t, os.WriteFile(rcPath, []byte("option debug true\n"), 0o644))
 
 		_, _, err := loadFromConfigPaths(context.Background(), []string{jsonPath, rcPath})
 		require.NoError(t, err)
-		require.NotContains(t, buf.String(), "binetic-agentrc taking precedence",
+		require.NotContains(t, buf.String(), "crushrc taking precedence",
 			"disjoint coexistence should not warn")
 	})
 }
@@ -268,7 +268,7 @@ func TestConfig_setDefaults(t *testing.T) {
 		require.NotNil(t, cfg.Models)
 		require.NotNil(t, cfg.LSP)
 		require.NotNil(t, cfg.MCP)
-		require.Equal(t, filepath.Join(workingDir, ".binetic-agent"), cfg.Options.DataDirectory)
+		require.Equal(t, filepath.Join(workingDir, ".gnosh"), cfg.Options.DataDirectory)
 		require.Equal(t, "AGENTS.md", cfg.Options.InitializeAs)
 		// DiffMode is deliberately left empty: the permissions dialog treats
 		// the zero value as "pick split or unified based on terminal width".
@@ -366,10 +366,10 @@ func TestConfig_setDefaults(t *testing.T) {
 		require.Equal(t, filepath.Join(workingDir, "state"), cfg.Options.DataDirectory)
 	})
 
-	t.Run("does not adopt .binetic-agent from a parent project", func(t *testing.T) {
+	t.Run("does not adopt .crush from a parent project", func(t *testing.T) {
 		parent := t.TempDir()
 
-		// .binetic-agent in the parent: it should not be reused by the child
+		// .crush in the parent: it should not be reused by the child
 		// because there is no git context joining them.
 		require.NoError(t, os.Mkdir(filepath.Join(parent, defaultDataDirectory), 0o755))
 
@@ -386,14 +386,14 @@ func TestConfig_setDefaults(t *testing.T) {
 		)
 	})
 
-	t.Run("does not climb out of git worktree to find .binetic-agent", func(t *testing.T) {
+	t.Run("does not climb out of git worktree to find .crush", func(t *testing.T) {
 		if _, err := exec.LookPath("git"); err != nil {
 			t.Skip("git not available")
 		}
 
 		parent := t.TempDir()
 
-		// Stray .binetic-agent above the worktree root.
+		// Stray .crush above the worktree root.
 		require.NoError(t, os.Mkdir(filepath.Join(parent, defaultDataDirectory), 0o755))
 
 		worktree := filepath.Join(parent, "worktree")
@@ -422,20 +422,20 @@ func TestConfig_setDefaults(t *testing.T) {
 
 		strayEval, err := filepath.EvalSymlinks(filepath.Join(parent, defaultDataDirectory))
 		require.NoError(t, err)
-		require.NotEqual(t, strayEval, gotEval, "must not adopt parent .binetic-agent")
+		require.NotEqual(t, strayEval, gotEval, "must not adopt parent .crush")
 
 		subEval, err := filepath.EvalSymlinks(sub)
 		require.NoError(t, err)
 		require.Equal(t, filepath.Join(subEval, defaultDataDirectory), gotEval)
 	})
 
-	t.Run("a closer .binetic-agent beats a .binetic-agent farther up", func(t *testing.T) {
+	t.Run("a closer .crush beats a .gnosh farther up", func(t *testing.T) {
 		if _, err := exec.LookPath("git"); err != nil {
 			t.Skip("git not available")
 		}
 
-		// The sessions live in repo/sub/.binetic-agent; a later run at the
-		// repository root made repo/.binetic-agent. Running in sub must still
+		// The sessions live in repo/sub/.crush; a later run at the
+		// repository root made repo/.gnosh. Running in sub must still
 		// find sub's own sessions.
 		repo := t.TempDir()
 		gitInit := exec.CommandContext(t.Context(), "git", "init", "-q")
@@ -445,22 +445,22 @@ func TestConfig_setDefaults(t *testing.T) {
 
 		sub := filepath.Join(repo, "sub")
 		require.NoError(t, os.Mkdir(sub, 0o755))
-		require.NoError(t, os.Mkdir(filepath.Join(sub, ".binetic-agent"), 0o755))
+		require.NoError(t, os.Mkdir(filepath.Join(sub, ".crush"), 0o755))
 
 		cfg := &Config{}
 		cfg.setDefaults(sub, "")
 
 		got, err := filepath.EvalSymlinks(cfg.Options.DataDirectory)
 		require.NoError(t, err)
-		want, err := filepath.EvalSymlinks(filepath.Join(sub, ".binetic-agent"))
+		want, err := filepath.EvalSymlinks(filepath.Join(sub, ".crush"))
 		require.NoError(t, err)
 		require.Equal(t, want, got)
 	})
 
-	t.Run("a .binetic-agent beats a .binetic-agent in the same directory", func(t *testing.T) {
+	t.Run("a .gnosh beats a .crush in the same directory", func(t *testing.T) {
 		dir := t.TempDir()
 		require.NoError(t, os.Mkdir(filepath.Join(dir, defaultDataDirectory), 0o755))
-		require.NoError(t, os.Mkdir(filepath.Join(dir, ".binetic-agent"), 0o755))
+		require.NoError(t, os.Mkdir(filepath.Join(dir, ".crush"), 0o755))
 
 		cfg := &Config{}
 		cfg.setDefaults(dir, "")
@@ -880,7 +880,7 @@ func TestConfig_setupAgentsWithDisabledTools(t *testing.T) {
 	coderAgent, ok := cfg.Agents[AgentCoder]
 	require.True(t, ok)
 
-	assert.Equal(t, []string{"agent", "artifact", "bash", "gnokey", "binetic-agent_info", "binetic-agent_logs", "job_output", "job_kill", "multiedit", "lsp_diagnostics", "lsp_references", "lsp_restart", "lsp_symbols", "lsp_definition", "lsp_call_hierarchy", "lsp_rename", "lsp_replace_symbol", "fetch", "agentic_fetch", "x402_fetch", "gnovm_run", "gnovm_new", "gnovm_list", "gnovm_drop", "glob", "ls", "question", "sourcegraph", "view", "write", "list_mcp_resources", "read_mcp_resource"}, coderAgent.AllowedTools)
+	assert.Equal(t, []string{"agent", "artifact", "bash", "gnokey", "gnosh_info", "gnosh_logs", "job_output", "job_kill", "multiedit", "lsp_diagnostics", "lsp_references", "lsp_restart", "lsp_symbols", "lsp_definition", "lsp_call_hierarchy", "lsp_rename", "lsp_replace_symbol", "fetch", "agentic_fetch", "x402_fetch", "gnovm_run", "gnovm_new", "gnovm_list", "gnovm_drop", "glob", "ls", "question", "sourcegraph", "view", "write", "list_mcp_resources", "read_mcp_resource"}, coderAgent.AllowedTools)
 
 	taskAgent, ok := cfg.Agents[AgentTask]
 	require.True(t, ok)
@@ -911,7 +911,7 @@ func TestConfig_setupAgentsWithEveryReadOnlyToolDisabled(t *testing.T) {
 	cfg.SetupAgents()
 	coderAgent, ok := cfg.Agents[AgentCoder]
 	require.True(t, ok)
-	assert.Equal(t, []string{"artifact", "bash", "gnokey", "binetic-agent_info", "binetic-agent_logs", "job_output", "job_kill", "download", "edit", "multiedit", "lsp_diagnostics", "lsp_references", "lsp_restart", "lsp_rename", "lsp_replace_symbol", "fetch", "agentic_fetch", "x402_fetch", "gnovm_run", "gnovm_new", "gnovm_list", "gnovm_drop", "question", "write", "list_mcp_resources", "read_mcp_resource"}, coderAgent.AllowedTools)
+	assert.Equal(t, []string{"artifact", "bash", "gnokey", "gnosh_info", "gnosh_logs", "job_output", "job_kill", "download", "edit", "multiedit", "lsp_diagnostics", "lsp_references", "lsp_restart", "lsp_rename", "lsp_replace_symbol", "fetch", "agentic_fetch", "x402_fetch", "gnovm_run", "gnovm_new", "gnovm_list", "gnovm_drop", "question", "write", "list_mcp_resources", "read_mcp_resource"}, coderAgent.AllowedTools)
 
 	taskAgent, ok := cfg.Agents[AgentTask]
 	require.True(t, ok)
@@ -1932,7 +1932,7 @@ func TestConfig_configureProvidersDisableDefaultProviders(t *testing.T) {
 
 func TestConfig_setDefaultsDisableDefaultProvidersEnvVar(t *testing.T) {
 	t.Run("sets option from environment variable", func(t *testing.T) {
-		t.Setenv("BINETIC_AGENT_DISABLE_DEFAULT_PROVIDERS", "true")
+		t.Setenv("CRUSH_DISABLE_DEFAULT_PROVIDERS", "true")
 
 		cfg := &Config{}
 		cfg.setDefaults("/tmp", "")
@@ -1955,7 +1955,7 @@ func TestConfig_setDefaultsDisableDefaultProvidersEnvVar(t *testing.T) {
 func TestConfig_configureSelectedModels(t *testing.T) {
 	t.Run("reload mode should not persist fallback defaults", func(t *testing.T) {
 		dir := t.TempDir()
-		globalPath := filepath.Join(dir, "binetic-agent.json")
+		globalPath := filepath.Join(dir, "crush.json")
 		require.NoError(t, os.WriteFile(globalPath, []byte(`{"models":{"large":{"provider":"ghost","model":"missing"}}}`), 0o600))
 
 		knownProviders := []catwalk.Provider{
@@ -2158,7 +2158,7 @@ func TestConfig_configureSelectedModels(t *testing.T) {
 	})
 	t.Run("resolve and persist fallback under writeMu does not deadlock", func(t *testing.T) {
 		dir := t.TempDir()
-		globalPath := filepath.Join(dir, "binetic-agent.json")
+		globalPath := filepath.Join(dir, "crush.json")
 		require.NoError(t, os.WriteFile(globalPath, []byte(`{}`), 0o600))
 
 		knownProviders := []catwalk.Provider{

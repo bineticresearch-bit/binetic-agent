@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent"
+	"github.com/charmbracelet/crush/internal/agent"
 	"github.com/stretchr/testify/require"
 )
 

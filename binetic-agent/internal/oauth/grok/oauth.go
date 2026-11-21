@@ -22,7 +22,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
+	"github.com/charmbracelet/crush/internal/oauth"
 )
 
 const (
@@ -104,7 +104,7 @@ func AuthorizeURL(redirectURI string, pkce PKCE, state, nonce string) string {
 		"code_challenge_method": {"S256"},
 		"state":                 {state},
 		"nonce":                 {nonce},
-		"referrer":              {"binetic_agent"},
+		"referrer":              {"crush"},
 	}
 	return authorizeEndpoint + "?" + vals.Encode()
 }

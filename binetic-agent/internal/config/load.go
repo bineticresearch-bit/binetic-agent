@@ -22,16 +22,16 @@ import (
 	"time"
 
 	"charm.land/catwalk/pkg/catwalk"
-	"github.com/charmbracelet/binetic_agent/internal/agent/hyper"
-	"github.com/charmbracelet/binetic_agent/internal/csync"
-	"github.com/charmbracelet/binetic_agent/internal/discover"
-	"github.com/charmbracelet/binetic_agent/internal/env"
-	"github.com/charmbracelet/binetic_agent/internal/filepathext"
-	"github.com/charmbracelet/binetic_agent/internal/fsext"
-	"github.com/charmbracelet/binetic_agent/internal/home"
-	"github.com/charmbracelet/binetic_agent/internal/shellconfig"
-	"github.com/charmbracelet/binetic_agent/internal/skills"
-	"github.com/charmbracelet/binetic_agent/internal/tooldefs"
+	"github.com/charmbracelet/crush/internal/agent/hyper"
+	"github.com/charmbracelet/crush/internal/csync"
+	"github.com/charmbracelet/crush/internal/discover"
+	"github.com/charmbracelet/crush/internal/env"
+	"github.com/charmbracelet/crush/internal/filepathext"
+	"github.com/charmbracelet/crush/internal/fsext"
+	"github.com/charmbracelet/crush/internal/home"
+	"github.com/charmbracelet/crush/internal/shellconfig"
+	"github.com/charmbracelet/crush/internal/skills"
+	"github.com/charmbracelet/crush/internal/tooldefs"
 	powernapConfig "github.com/charmbracelet/x/powernap/pkg/config"
 	"github.com/qjebbs/go-jsons"
 	"github.com/tidwall/gjson"
@@ -57,11 +57,11 @@ func TrustFolderForSession() LoadOption {
 
 // LoadFiles loads the configuration files from the default paths, merged
 // and with their defaults, and stops short of the providers: for commands
-// that call no model, as binetic-agent mem and binetic-agent session, which must work on a
+// that call no model, as gnosh mem and gnosh session, which must work on a
 // machine with none configured. Load goes on from here.
 //
 // The project's own settings are used in full only where its folder is
-// trusted (see TrustFolderOf); elsewhere its binetic-agentrc does not run and only
+// trusted (see TrustFolderOf); elsewhere its gnoshrc does not run and only
 // the settings that take something away apply, the rest reported in
 // Config.HeldProject.
 func LoadFiles(workingDir, dataDir string, debug bool, opts ...LoadOption) (*ConfigStore, error) {
@@ -71,7 +71,7 @@ func LoadFiles(workingDir, dataDir string, debug bool, opts ...LoadOption) (*Con
 
 // loadFiles is LoadFiles, with the config paths Load watches for changes:
 // every one it looked at, loaded or not, so a config file created after
-// startup (a binetic-agentrc added mid-session, say) counts as a change.
+// startup (a crushrc added mid-session, say) counts as a change.
 func loadFiles(workingDir, dataDir string, debug bool, opts ...LoadOption) (*ConfigStore, []string, error) {
 	var o loadOptions
 	for _, opt := range opts {
@@ -257,14 +257,14 @@ func mustMarshalConfig(cfg *Config) []byte {
 	return data
 }
 
-// PushPopBinetic AgentEnv lets a BINETIC_AGENT_, KLASH_ or BINETIC_AGENT_ prefixed variable stand in
+// PushPopCrushEnv lets a GNOSH_, KLASH_ or CRUSH_ prefixed variable stand in
 // for the unprefixed one while providers are configured, so that, e.g.,
-// BINETIC_AGENT_OPENAI_API_KEY overrides OPENAI_API_KEY for this program alone. The
-// newer name wins: BINETIC_AGENT_ over KLASH_, KLASH_ over BINETIC_AGENT_. The returned func
+// GNOSH_OPENAI_API_KEY overrides OPENAI_API_KEY for this program alone. The
+// newer name wins: GNOSH_ over KLASH_, KLASH_ over CRUSH_. The returned func
 // restores the previous values.
-func PushPopBinetic AgentEnv() func() {
+func PushPopCrushEnv() func() {
 	overrides := make(map[string]string)
-	for _, prefix := range []string{"BINETIC_AGENT_", "KLASH_", "BINETIC_AGENT_"} { // the later prefix wins
+	for _, prefix := range []string{"CRUSH_", "KLASH_", "GNOSH_"} { // the later prefix wins
 		for _, ev := range os.Environ() {
 			name, value, ok := strings.Cut(ev, "=")
 			if !ok {
@@ -289,7 +289,7 @@ func PushPopBinetic AgentEnv() func() {
 
 func (c *Config) configureProviders(ctx context.Context, store *ConfigStore, env env.Env, resolver VariableResolver, knownProviders []catwalk.Provider) error {
 	knownProviderNames := make(map[string]bool)
-	restore := PushPopBinetic AgentEnv()
+	restore := PushPopCrushEnv()
 	defer restore()
 
 	// When disable_default_providers is enabled, skip all default/embedded
@@ -469,7 +469,7 @@ func (c *Config) configureProviders(ctx context.Context, store *ConfigStore, env
 	// window, has the server fill that in, as a discovered model has, when
 	// its type can (an enricher) and discovery is not turned off: unknown,
 	// the window is taken for 32,768 tokens, and the AI box's Qwen, named
-	// in a binetic-agentrc with no window, was compacted at 26,215 of its 262,144.
+	// in a crushrc with no window, was compacted at 26,215 of its 262,144.
 	type discoveryResult struct {
 		models []catwalk.Model
 		err    error
@@ -602,9 +602,9 @@ func (c *Config) configureProviders(ctx context.Context, store *ConfigStore, env
 	}
 
 	// Providers that were configured but left out (a model server that did
-	// not answer, a missing base_url) do not fail the load: the TUI, binetic-agent
-	// run and binetic-agent doctor then say which and why (SkippedProvidersSummary).
-	// Failing here said none were configured, and binetic-agent doctor could not
+	// not answer, a missing base_url) do not fail the load: the TUI, gnosh
+	// run and gnosh doctor then say which and why (SkippedProvidersSummary).
+	// Failing here said none were configured, and gnosh doctor could not
 	// show which one failed.
 	if c.Providers.Len() == 0 && c.Options.DisableDefaultProviders && len(c.skippedProviders) == 0 {
 		return fmt.Errorf("default providers are disabled and no custom providers are configured")
@@ -635,7 +635,7 @@ func (c *Config) applyEnv(resolver VariableResolver) {
 // NormalizeOptions allocates Options and Options.TUI and fills in the option
 // defaults the UI relies on, so readers can dereference them without guarding.
 // Configs loaded from disk get this via setDefaults; configs arriving over the
-// wire from a Binetic Agent server need the same treatment before the UI reads them.
+// wire from a Crush server need the same treatment before the UI reads them.
 //
 // DiffMode is deliberately left alone: the permissions dialog reads its zero
 // value as "choose split or unified from the terminal width".
@@ -659,9 +659,9 @@ func (c *Config) setDefaults(workingDir, dataDir string) {
 	if len(c.Options.GlobalContextPaths) == 0 {
 		configDir := filepath.Dir(GlobalConfig())
 		c.Options.GlobalContextPaths = []string{
-			filepath.Join(configDir, "BINETIC_AGENT.md"),
+			filepath.Join(configDir, "GNOSH.md"),
 			filepath.Join(configDir, "KLASH.md"),
-			filepath.Join(configDir, "BINETIC_AGENT.md"),
+			filepath.Join(configDir, "CRUSH.md"),
 			filepath.Join(filepath.Dir(configDir), "AGENTS.md"),
 		}
 	}
@@ -687,7 +687,7 @@ func (c *Config) setDefaults(workingDir, dataDir string) {
 		c.MCP = make(map[string]MCPConfig)
 	}
 	// Drop orphaned OAuth token entries left behind when a user removes
-	// an MCP from binetic-agent.json. See MCPConfig.isOrphanedToken.
+	// an MCP from crush.json. See MCPConfig.isOrphanedToken.
 	for name, m := range c.MCP {
 		if m.isOrphanedToken() {
 			delete(c.MCP, name)
@@ -718,24 +718,24 @@ func (c *Config) setDefaults(workingDir, dataDir string) {
 
 	// Only an explicit value counts: unset or empty leaves the catalog fetch
 	// as the config has it, which is off unless asked for.
-	if disable, ok := env.LookupBool("BINETIC_AGENT_DISABLE_PROVIDER_AUTO_UPDATE"); ok {
+	if disable, ok := env.LookupBool("GNOSH_DISABLE_PROVIDER_AUTO_UPDATE"); ok {
 		c.Options.DisableProviderAutoUpdate = new(disable)
 	}
 
-	if str, ok := env.LookupEnv("BINETIC_AGENT_DISABLE_DEFAULT_PROVIDERS"); ok {
+	if str, ok := env.LookupEnv("GNOSH_DISABLE_DEFAULT_PROVIDERS"); ok {
 		c.Options.DisableDefaultProviders, _ = strconv.ParseBool(str)
 	}
 
 	// The fork's own endpoints, replacing Charm's: where metrics go, and
 	// whose releases the update check reads. Each is empty by default, so
 	// nothing is sent or checked until it is set.
-	if v, ok := env.LookupEnv("BINETIC_AGENT_METRICS_URL"); ok {
+	if v, ok := env.LookupEnv("GNOSH_METRICS_URL"); ok {
 		c.Options.MetricsURL = v
 	}
-	if v, ok := env.LookupEnv("BINETIC_AGENT_METRICS_KEY"); ok {
+	if v, ok := env.LookupEnv("GNOSH_METRICS_KEY"); ok {
 		c.Options.MetricsKey = v
 	}
-	if v, ok := env.LookupEnv("BINETIC_AGENT_UPDATE_REPO"); ok {
+	if v, ok := env.LookupEnv("GNOSH_UPDATE_REPO"); ok {
 		c.Options.UpdateRepo = v
 	}
 
@@ -1041,7 +1041,7 @@ func resolveSelectedModels(cfg *Config, knownProviders []catwalk.Provider) (reso
 // lookupConfigs searches config files starting at cwd and walking up
 // through the current project. The upward walk stops at the git
 // working tree root when one can be detected, otherwise at cwd itself,
-// so an unrelated binetic-agent.json placed above the project is never picked
+// so an unrelated crush.json placed above the project is never picked
 // up. Global user-level config locations are always included
 // regardless of the boundary.
 func lookupConfigs(cwd string) []string {
@@ -1062,7 +1062,7 @@ func lookupConfigs(cwd string) []string {
 // globalConfigPaths are the configs every load reads first, whatever the
 // project: the system-wide ones, the user's config and its shell config, and
 // the machine-owned data JSON. Only the user config directory contributes a
-// binetic-agentrc; the data directory is writable machine state and must never be
+// crushrc; the data directory is writable machine state and must never be
 // executed as Bash. Missing files are skipped when loaded.
 func globalConfigPaths() []string {
 	configPaths := append(slices.Clone(systemConfigPaths), GlobalConfig())
@@ -1073,8 +1073,8 @@ func globalConfigPaths() []string {
 // projectConfigNames are the names a project config file can have, in
 // priority order within a directory. LookupBounded returns matches in
 // this order, and the later reverse + merge make the earliest listed
-// name win on conflict. So: .binetic-agentrc beats binetic-agentrc, both beat the JSON
-// configs, and .binetic-agent.json beats binetic-agent.json; each beats its names from
+// name win on conflict. So: .gnoshrc beats gnoshrc, both beat the JSON
+// configs, and .gnosh.json beats gnosh.json; each beats its names from
 // before the renames.
 func projectConfigNames() []string {
 	var names []string
@@ -1088,7 +1088,7 @@ func projectConfigNames() []string {
 // passes over because someone other than the owner of the project
 // directory owns it. The lookup skips such a file so that another user
 // cannot plant settings in a directory they can write to, but it skipped
-// it without a word: a binetic-agent.json written with sudo into your own
+// it without a word: a gnosh.json written with sudo into your own
 // project, say, was ignored, and the settings in it, a disabled tool
 // among them, silently did not apply.
 func checkProjectConfigOwners(cwd string) error {
@@ -1107,7 +1107,7 @@ func checkProjectConfigOwners(cwd string) error {
 		return nil
 	}
 	return fmt.Errorf(
-		"project config %s belongs to %s, but %s belongs to %s. Binetic Agent reads a project config only from the owner of the project directory, so its settings would not apply. If it is meant for this project, give it to %s (chown %s %s); otherwise remove it",
+		"project config %s belongs to %s, but %s belongs to %s. Gnosh reads a project config only from the owner of the project directory, so its settings would not apply. If it is meant for this project, give it to %s (chown %s %s); otherwise remove it",
 		path, userName(fileOwner), cwd, userName(dirOwner), userName(dirOwner), userName(dirOwner), path,
 	)
 }
@@ -1132,7 +1132,7 @@ func loadFromConfigPathsGated(ctx context.Context, configPaths []string, gate *p
 	var configs [][]byte
 	var loaded []string
 
-	// Track directories that have both binetic-agent.json and binetic-agentrc to warn
+	// Track directories that have both crush.json and crushrc to warn
 	// about potential confusion, along with the top-level keys each
 	// defines so we can report conflicts.
 	jsonDirKeys := make(map[string]map[string]bool)
@@ -1194,7 +1194,7 @@ func loadFromConfigPathsGated(ctx context.Context, configPaths []string, gate *p
 		}
 	}
 
-	// Warn if both a JSON config and a binetic-agentrc exist in the same directory
+	// Warn if both a JSON config and a crushrc exist in the same directory
 	// and define overlapping top-level keys. Disjoint coexistence is
 	// intentional and not worth warning about.
 	for dir, jKeys := range jsonDirKeys {
@@ -1210,7 +1210,7 @@ func loadFromConfigPathsGated(ctx context.Context, configPaths []string, gate *p
 		}
 		if len(conflicts) > 0 {
 			slices.Sort(conflicts)
-			slog.Warn("Found both a JSON config and a binetic-agentrc in the same directory; merging with binetic-agentrc taking precedence",
+			slog.Warn("Found both a JSON config and a crushrc in the same directory; merging with crushrc taking precedence",
 				"dir", dir, "conflicting_keys", strings.Join(conflicts, ", "))
 		}
 	}
@@ -1376,10 +1376,10 @@ func migrateDisableNotifications() {
 }
 
 // projectDataDir is the data directory for a project in workingDir: the
-// closest .binetic-agent, .klash or .binetic-agent within the project, so that a .binetic-agent
+// closest .gnosh, .klash or .crush within the project, so that a .gnosh
 // made farther up (by a run at the repository root) cannot hide the
-// sessions in a closer .klash or .binetic-agent. Where there is none, it is a new
-// .binetic-agent in workingDir, or the older one already there: the lookup passes
+// sessions in a closer .klash or .crush. Where there is none, it is a new
+// .gnosh in workingDir, or the older one already there: the lookup passes
 // over the home directory, where they would otherwise be missed.
 func projectDataDir(workingDir string) string {
 	if path, ok := fsext.LookupClosestBounded(workingDir, projectBoundary(workingDir), appPaths("", ".", "")...); ok {
@@ -1389,7 +1389,7 @@ func projectDataDir(workingDir string) string {
 }
 
 // LogFile returns the log file for logDir, a data directory's logs or a
-// server's cache directory: binetic-agent.log, or the klash.log or binetic_agent.log from
+// server's cache directory: gnosh.log, or the klash.log or crush.log from
 // before the renames where only that one exists.
 func LogFile(logDir string) string {
 	return fsext.FirstExisting(appPaths(logDir, "", ".log")...)
@@ -1397,7 +1397,7 @@ func LogFile(logDir string) string {
 
 // GlobalConfig returns the global configuration file path for the application.
 func GlobalConfig() string {
-	if dir := env.Getenv("BINETIC_AGENT_GLOBAL_CONFIG"); dir != "" {
+	if dir := env.Getenv("GNOSH_GLOBAL_CONFIG"); dir != "" {
 		return configFileIn(dir)
 	}
 	return configFileIn(appConfigDir(home.Config()))
@@ -1413,7 +1413,7 @@ func appPaths(base, prefix, suffix string) []string {
 	return paths
 }
 
-// appDir is the program's directory under base: binetic-agent, or klash or binetic_agent
+// appDir is the program's directory under base: gnosh, or klash or crush
 // where only that one exists.
 func appDir(base string) string {
 	return fsext.FirstExisting(appPaths(base, "", "")...)
@@ -1421,9 +1421,9 @@ func appDir(base string) string {
 
 // appConfigDir is appDir for a directory that holds a config file, the
 // global config and global data directories: the one holding a config
-// file wins, binetic-agent before klash before binetic_agent, and only where none does is
-// it appDir's choice. A binetic-agent directory made for anything else (mkdir -p
-// ~/.config/binetic-agent/commands) must not take over from an older one in use:
+// file wins, gnosh before klash before crush, and only where none does is
+// it appDir's choice. A gnosh directory made for anything else (mkdir -p
+// ~/.config/gnosh/commands) must not take over from an older one in use:
 // it would hide its config, and with it the hooks, MCP servers and
 // permissions, its shell config, templates, tools and skills, and in the
 // data directory the OAuth tokens.
@@ -1449,14 +1449,14 @@ func hasConfigFile(dir string) bool {
 	return false
 }
 
-// configFileIn is the JSON config file in dir: binetic-agent.json, or klash.json or
-// binetic-agent.json where only that one exists.
+// configFileIn is the JSON config file in dir: gnosh.json, or klash.json or
+// crush.json where only that one exists.
 func configFileIn(dir string) string {
 	return fsext.FirstExisting(appPaths(dir, "", ".json")...)
 }
 
 // shellConfigSiblings returns the shell config paths that sit alongside a
-// given JSON config path (same directory): binetic-agentrc, klashrc, then binetic-agentrc,
+// given JSON config path (same directory): crushrc, klashrc, then gnoshrc,
 // so that the newest name wins where several exist. All are listed even
 // when missing, so that creating any one is noticed. Used so global config
 // locations pick up a shell config, not just JSON.
@@ -1466,8 +1466,8 @@ func shellConfigSiblings(jsonPath string) []string {
 	return paths
 }
 
-// isShellConfig reports whether a config path is a shell config (binetic-agentrc,
-// klashrc or binetic-agentrc, or a hidden one), as opposed to a JSON config.
+// isShellConfig reports whether a config path is a shell config (gnoshrc,
+// klashrc or crushrc, or a hidden one), as opposed to a JSON config.
 func isShellConfig(path string) bool {
 	base := filepath.Base(path)
 	for _, name := range appNames {
@@ -1481,8 +1481,8 @@ func isShellConfig(path string) bool {
 // GlobalCacheDir returns the path to the global cache directory for the
 // application.
 func GlobalCacheDir() string {
-	if binetic_agentCache := env.Getenv("BINETIC_AGENT_CACHE_DIR"); binetic_agentCache != "" {
-		return binetic_agentCache
+	if crushCache := env.Getenv("GNOSH_CACHE_DIR"); crushCache != "" {
+		return crushCache
 	}
 	if xdgCacheHome := os.Getenv("XDG_CACHE_HOME"); xdgCacheHome != "" {
 		return appDir(xdgCacheHome)
@@ -1505,7 +1505,7 @@ func ProjectConfigs(cwd string) []string {
 // GlobalConfigData returns the path to the main data directory for the application.
 // this config is used when the app overrides configurations instead of updating the global config.
 func GlobalConfigData() string {
-	if dir := env.Getenv("BINETIC_AGENT_GLOBAL_DATA"); dir != "" {
+	if dir := env.Getenv("GNOSH_GLOBAL_DATA"); dir != "" {
 		return configFileIn(dir)
 	}
 	if xdgDataHome := os.Getenv("XDG_DATA_HOME"); xdgDataHome != "" {
@@ -1513,9 +1513,9 @@ func GlobalConfigData() string {
 	}
 
 	// return the path to the main data directory
-	// for windows, it should be in `%LOCALAPPDATA%/binetic-agent/`
-	// for linux and macOS, it should be in `$HOME/.local/share/binetic-agent/`
-	// (or binetic_agent, where only that one exists)
+	// for windows, it should be in `%LOCALAPPDATA%/gnosh/`
+	// for linux and macOS, it should be in `$HOME/.local/share/gnosh/`
+	// (or crush, where only that one exists)
 	if runtime.GOOS == "windows" {
 		localAppData := cmp.Or(
 			os.Getenv("LOCALAPPDATA"),
@@ -1595,7 +1595,7 @@ func computeWorktreeRoot(dir string) string {
 // projectBoundary returns the directory at which an upward configuration
 // search rooted at dir should stop. It is the git working tree root when
 // one can be detected, otherwise dir itself. Returning dir as a
-// fallback keeps Binetic Agent from silently adopting state files placed above
+// fallback keeps Crush from silently adopting state files placed above
 // the current project.
 func projectBoundary(dir string) string {
 	if root := projectRoot(dir); root != "" {
@@ -1626,14 +1626,14 @@ func projectRoot(dir string) string {
 // Skills in these directories are auto-discovered and their files can be read
 // without permission prompts.
 func GlobalSkillsDirs() []string {
-	if binetic_agentSkills := env.Getenv("BINETIC_AGENT_SKILLS_DIR"); binetic_agentSkills != "" {
-		return []string{binetic_agentSkills}
+	if crushSkills := env.Getenv("GNOSH_SKILLS_DIR"); crushSkills != "" {
+		return []string{crushSkills}
 	}
 
 	configDir := appConfigDir(home.Config())
 	paths := []string{filepath.Join(configDir, "skills")}
-	// The skills directory under the other names too, binetic-agent's, klash's or
-	// binetic_agent's, after the one the config is in, so skills kept under any are
+	// The skills directory under the other names too, gnosh's, klash's or
+	// crush's, after the one the config is in, so skills kept under any are
 	// found.
 	for _, name := range appNames {
 		if dir := filepath.Join(home.Config(), name); dir != configDir {
@@ -1647,7 +1647,7 @@ func GlobalSkillsDirs() []string {
 		filepath.Join(home.Dir(), ".claude", "skills"),
 	)
 
-	// On Windows, also load from app data on top of `$HOME/.config/binetic_agent`.
+	// On Windows, also load from app data on top of `$HOME/.config/crush`.
 	// This is here mostly for backwards compatibility.
 	if runtime.GOOS == "windows" {
 		appData := cmp.Or(
@@ -1669,14 +1669,14 @@ func GlobalSkillsDirs() []string {
 // git-root lookups to prevent drift when a new convention is added.
 var projectSkillSubdirs = []string{
 	".agents/skills",
-	".binetic-agent/skills",
+	".gnosh/skills",
 	".klash/skills",
-	".binetic-agent/skills",
+	".crush/skills",
 	".claude/skills",
 	".cursor/skills",
 }
 
-// ProjectSkillsDir returns the default project directories for which Binetic Agent
+// ProjectSkillsDir returns the default project directories for which Crush
 // will look for skills. In addition to the working directory, it also
 // checks the git working tree root so that monorepo-level skills are
 // discovered when the user is inside a subdirectory.
@@ -1717,7 +1717,7 @@ func mergeWorkspaceConfig(cfg *Config, path, workingDir string) (bool, error) {
 
 // mergeWorkspaceConfigGated is mergeWorkspaceConfig with the workspace
 // config passed through gate: one in the project's own data directory, as
-// .binetic-agent/binetic-agent.json is, is the project's, and a repository can carry one,
+// .gnosh/gnosh.json is, is the project's, and a repository can carry one,
 // so where the folder is not trusted it keeps only what untrustedKept
 // lists.
 func mergeWorkspaceConfigGated(cfg *Config, path, workingDir string, gate *projectGate) (bool, error) {
@@ -1756,7 +1756,7 @@ func mergeWorkspaceConfigGated(cfg *Config, path, workingDir string, gate *proje
 // setMCPDefaults applies the stdio default to any MCP server that does
 // not name a connection type.
 //
-// The schema has always documented `default=stdio` and the binetic-agentrc
+// The schema has always documented `default=stdio` and the crushrc
 // `mcp add` builtin already writes it, so a hand-written config omitting
 // the field — the shape most MCP server snippets are copied in — should
 // mean the same thing rather than being refused.
@@ -1770,7 +1770,7 @@ func (c *Config) setMCPDefaults() {
 }
 
 // ValidateMCPs checks that every enabled MCP server names a connection
-// type Binetic Agent can actually open. Without this the mistake surfaces late
+// type Crush can actually open. Without this the mistake surfaces late
 // and obscurely: the server is accepted at load, and the transport layer
 // fails at connect time with "unsupported mcp type: X", long after the
 // line that caused it.
@@ -1800,7 +1800,7 @@ func (c *Config) ValidateMCPs() error {
 }
 
 // ValidateTools checks that every tool named in options.disabled_tools
-// and permissions.allowed_tools is one Binetic Agent can act on.
+// and permissions.allowed_tools is one Crush can act on.
 //
 // Both lists are matched by exact name against the built-in tool set, so
 // a misspelling is not a near miss, it is a no-op: a disabled_tools entry
@@ -1812,8 +1812,8 @@ func (c *Config) ValidateMCPs() error {
 // prefix). Those are discovered when a server connects, so at config
 // time only the shape can be checked.
 func (c *Config) ValidateTools() error {
-	// A tool or skill named as it was before the rename (binetic_agent_logs,
-	// binetic_agent-config) means the one it is now (binetic-agent_logs, binetic-agent-config).
+	// A tool or skill named as it was before the rename (crush_logs,
+	// crush-config) means the one it is now (gnosh_logs, gnosh-config).
 	// Both the load and the reload come through here, so the lists are put
 	// in current names first.
 	if c.Options != nil {
@@ -1840,7 +1840,7 @@ func (c *Config) ValidateTools() error {
 				tool = tooldefs.Canonical(strings.ToLower(rule))
 			}
 			if !IsKnownToolName(tool) {
-				return fmt.Errorf("permissions.deny: %q is neither a built-in tool nor a Bash(...) rule, the deny rules binetic-agent applies", rule)
+				return fmt.Errorf("permissions.deny: %q is neither a built-in tool nor a Bash(...) rule, the deny rules gnosh applies", rule)
 			}
 			// A tool's name takes the tool away, as in Claude Code.
 			if c.Options == nil {
@@ -1871,7 +1871,7 @@ func (c *Config) ValidateTools() error {
 					tool = tooldefs.Canonical(strings.ToLower(name))
 				}
 				if !IsKnownToolName(tool) {
-					return fmt.Errorf("permissions.allow: %q is neither a tool's name nor a Bash(...) rule, the allow rules binetic-agent applies", rule)
+					return fmt.Errorf("permissions.allow: %q is neither a tool's name nor a Bash(...) rule, the allow rules gnosh applies", rule)
 				}
 			}
 			if !slices.Contains(c.Permissions.AllowedTools, tool) {
@@ -1930,8 +1930,8 @@ func (c *Config) Validate() error {
 }
 
 // ValidateModels checks that every key under `models` names a model type
-// Binetic Agent actually selects. An unrecognised key would otherwise sit in the
-// config looking like a configured model while Binetic Agent quietly used its
+// Crush actually selects. An unrecognised key would otherwise sit in the
+// config looking like a configured model while Crush quietly used its
 // default, so it is a load error instead.
 func (c *Config) ValidateModels() error {
 	for _, modelType := range slices.Sorted(maps.Keys(c.Models)) {
@@ -1951,7 +1951,7 @@ func (c *Config) ValidateModels() error {
 }
 
 // ValidateHooks checks that every configured hook is filed under an
-// event Binetic Agent actually fires and has a command, and that any matcher
+// event Crush actually fires and has a command, and that any matcher
 // compiles (see HookMatcher); it logs a warning for a tool event's
 // matcher that names no tool there can be. Event names are matched exactly: an
 // unrecognised name is an error rather than a key nothing ever reads,

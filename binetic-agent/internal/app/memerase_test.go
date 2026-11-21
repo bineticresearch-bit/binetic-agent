@@ -6,16 +6,16 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/db"
-	"github.com/charmbracelet/binetic_agent/internal/gnovm"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
-	"github.com/charmbracelet/binetic_agent/internal/session"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/db"
+	"github.com/charmbracelet/crush/internal/gnovm"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/session"
 	"github.com/stretchr/testify/require"
 )
 
-// What mem erased leaves binetic-agent's own copies of mem's text: the <mem> block
+// What mem erased leaves gnosh's own copies of mem's text: the <mem> block
 // saved after a prompt and what recall gave one, the /goal binding, the
 // pills and the summary. What
 // the user saw stays, and the sessions where it still holds a redacted

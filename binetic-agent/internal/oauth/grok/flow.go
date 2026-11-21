@@ -8,8 +8,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
-	"github.com/charmbracelet/binetic_agent/internal/oauth/callback"
+	"github.com/charmbracelet/crush/internal/oauth"
+	"github.com/charmbracelet/crush/internal/oauth/callback"
 )
 
 const (

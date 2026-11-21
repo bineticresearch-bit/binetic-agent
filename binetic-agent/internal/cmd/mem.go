@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/app"
-	"github.com/charmbracelet/binetic_agent/internal/gnovm"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/app"
+	"github.com/charmbracelet/crush/internal/gnovm"
+	"github.com/charmbracelet/crush/internal/version"
 	"github.com/spf13/cobra"
 )
 
@@ -20,16 +20,16 @@ var memCmd = &cobra.Command{
 		"a search, or its last changes. It only reads; /mem in a session also undoes, forgets, redacts and repairs.",
 	Example: `
 # The outline of this project's mem
-binetic-agent mem
+gnosh mem
 
 # A goal in full, with its steps and notes
-binetic-agent mem show release-v2
+gnosh mem show release-v2
 
 # Search it, by words, and by meaning with mem_embeddings_url set
-binetic-agent mem find staging database
+gnosh mem find staging database
 
 # The last 50 changes, with who made each
-binetic-agent mem log 50
+gnosh mem log 50
   `,
 	RunE: runMem,
 }
@@ -62,7 +62,7 @@ func runMem(cmd *cobra.Command, args []string) error {
 		}
 	}
 	// One read needs no worker: the host runs here, and takes mem's lock
-	// as a worker does, beside any binetic-agent with the project open.
+	// as a worker does, beside any gnosh with the project open.
 	host, err := gnovm.NewHost(opts)
 	if err != nil {
 		return err

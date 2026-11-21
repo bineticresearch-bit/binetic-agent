@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"charm.land/catwalk/pkg/catwalk"
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
+	"github.com/charmbracelet/crush/internal/oauth"
 )
 
 // APIBaseURL is the xAI API the Grok account's access token authorizes.

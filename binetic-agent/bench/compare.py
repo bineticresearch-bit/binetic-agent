@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """compare.py RESULTS.jsonl... : one Markdown table per lane, a row per task
 and harness. Each row shows medians over the runs and how many runs passed.
-Under each task there is a line comparing binetic-agent with every other harness: the
-ratio of binetic-agent's median to theirs (below 1 means binetic-agent used less).
+Under each task there is a line comparing gnosh with every other harness: the
+ratio of gnosh's median to theirs (below 1 means gnosh used less).
 
 Standard library only. Rows come from bench/run.sh.
 """
@@ -63,7 +63,7 @@ def main(paths):
         notes = []
         for task in tasks:
             harnesses = sorted({k[2] for k in by if k[0] == lane and k[1] == task},
-                               key=lambda h: (h != "binetic-agent", h))
+                               key=lambda h: (h != "gnosh", h))
             meds = {}
             for h in harnesses:
                 rs = by[(lane, task, h)]
@@ -72,16 +72,16 @@ def main(paths):
                 cells = [task, h, "%d/%d" % (passed, len(rs))]
                 cells += [fmt(None if meds[h][k] is None else meds[h][k] * s, kind) for k, _, s, kind in METRICS]
                 print("| " + " | ".join(cells) + " |")
-            if "binetic-agent" in meds:
+            if "gnosh" in meds:
                 for h in harnesses:
-                    if h == "binetic-agent":
+                    if h == "gnosh":
                         continue
                     parts = []
                     for k, title, _, _ in METRICS:
-                        a, b = meds["binetic-agent"][k], meds[h][k]
+                        a, b = meds["gnosh"][k], meds[h][k]
                         if a is not None and b:
                             parts.append("%s %.2f" % (title, a / b))
-                    notes.append("%s, binetic-agent/%s: %s" % (task, h, ", ".join(parts)))
+                    notes.append("%s, gnosh/%s: %s" % (task, h, ", ".join(parts)))
         print()
         for n in notes:
             print("- " + n)

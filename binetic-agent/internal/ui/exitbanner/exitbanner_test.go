@@ -4,9 +4,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/version"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/stretchr/testify/require"
 )
@@ -156,5 +156,5 @@ func TestResumeHintUsesTheCommandName(t *testing.T) {
 
 	lines := ansi.Strip(sessionResumeLines(testSession(), 80))
 	require.Contains(t, lines, version.Command+" -s ")
-	require.NotContains(t, lines, "binetic_agent -s")
+	require.NotContains(t, lines, "crush -s")
 }

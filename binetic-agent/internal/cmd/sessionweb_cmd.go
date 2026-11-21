@@ -12,11 +12,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/sessionweb"
-	"github.com/charmbracelet/binetic_agent/internal/workspace"
+	"github.com/charmbracelet/crush/internal/agent"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/sessionweb"
+	"github.com/charmbracelet/crush/internal/workspace"
 )
 
 var sessionWebCmd = &cobra.Command{
@@ -26,7 +26,7 @@ var sessionWebCmd = &cobra.Command{
 message can be edited (its text, thinking, tool calls and results), deleted, or
 a new one added at the end; "What the model gets" shows the prompt template and
 the tool descriptions sent with every turn, with rough token counts. Edits go
-straight into Binetic Agent's database; reopen the session in the TUI to see them.`,
+straight into Crush's database; reopen the session in the TUI to see them.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		port, _ := cmd.Flags().GetInt("port")
 		ws, cleanup, err := setupLocalWorkspace(cmd)
@@ -87,7 +87,7 @@ func listenSessionWeb(ctx context.Context, port int, asked bool) (net.Listener, 
 	return ln, err
 }
 
-// webStore adapts Binetic Agent's services to what the page needs; updates are
+// webStore adapts Crush's services to what the page needs; updates are
 // flushed so they are on disk when the request returns.
 type webStore struct {
 	sessions session.Service

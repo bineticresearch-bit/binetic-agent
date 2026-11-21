@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/shell"
+	"github.com/charmbracelet/crush/internal/shell"
 )
 
 // handleOption implements the `option` builtin.
@@ -27,7 +27,7 @@ import (
 //
 // Examples:
 //
-//	option data-directory .binetic-agent
+//	option data-directory .crush
 //	option context-path .cursorrules
 //	option reset skill-path
 //	option metrics false
@@ -302,7 +302,7 @@ func parseBool(s string) (bool, error) {
 	}
 }
 
-// OptionJSONKeysForTest returns every options key a binetic-agentrc line can set:
+// OptionJSONKeysForTest returns every options key a crushrc line can set:
 // those in optionSpecs, the two handleOption sets itself (ui and
 // attribution), and disabled_tools, which "permissions deny" writes.
 func OptionJSONKeysForTest() []string {

@@ -10,13 +10,13 @@ import (
 	"time"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent"
-	"github.com/charmbracelet/binetic_agent/internal/agent/agenttest"
-	mcptools "github.com/charmbracelet/binetic_agent/internal/agent/tools/mcp"
-	"github.com/charmbracelet/binetic_agent/internal/app"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/session"
+	"github.com/charmbracelet/crush/internal/agent"
+	"github.com/charmbracelet/crush/internal/agent/agenttest"
+	mcptools "github.com/charmbracelet/crush/internal/agent/tools/mcp"
+	"github.com/charmbracelet/crush/internal/app"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/session"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
@@ -189,7 +189,7 @@ func insertChannelWorkspace(t *testing.T, b *Backend, srvName string, enabled bo
 // insertChannelWorkspaceCfg is insertChannelWorkspace with control over both
 // enablement sources: `enabled` opts the server in via the --channels
 // override, `configEnabled` writes channel_enabled: true into the workspace's
-// binetic-agent.json.
+// crush.json.
 func insertChannelWorkspaceCfg(t *testing.T, b *Backend, srvName string, enabled, configEnabled bool, coord agent.Coordinator, sessions session.Service) *Workspace {
 	t.Helper()
 
@@ -202,7 +202,7 @@ func insertChannelWorkspaceCfg(t *testing.T, b *Backend, srvName string, enabled
 		"mcp": map[string]any{srvName: mcpEntry},
 	})
 	require.NoError(t, err)
-	require.NoError(t, os.WriteFile(filepath.Join(wd, "binetic-agent.json"), cfgJSON, 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(wd, "crush.json"), cfgJSON, 0o644))
 
 	cfg, err := config.Init(wd, "", false, config.TrustFolderForSession())
 	require.NoError(t, err)
@@ -299,7 +299,7 @@ func TestRouteChannelMessage_PrefersViewedSession(t *testing.T) {
 }
 
 // TestRouteChannelMessage_ConfigEnabled verifies that a server with
-// channel_enabled: true in binetic-agent.json receives channel pushes without
+// channel_enabled: true in crush.json receives channel pushes without
 // needing --channels on the CLI.
 func TestRouteChannelMessage_ConfigEnabled(t *testing.T) {
 	xdgIsolated(t)

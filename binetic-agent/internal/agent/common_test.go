@@ -15,17 +15,17 @@ import (
 	"charm.land/fantasy"
 	"charm.land/fantasy/providers/openaicompat"
 	"charm.land/x/vcr"
-	"github.com/charmbracelet/binetic_agent/internal/agent/prompt"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/csync"
-	"github.com/charmbracelet/binetic_agent/internal/db"
-	"github.com/charmbracelet/binetic_agent/internal/filetracker"
-	"github.com/charmbracelet/binetic_agent/internal/history"
-	"github.com/charmbracelet/binetic_agent/internal/lsp"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
-	"github.com/charmbracelet/binetic_agent/internal/session"
+	"github.com/charmbracelet/crush/internal/agent/prompt"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/csync"
+	"github.com/charmbracelet/crush/internal/db"
+	"github.com/charmbracelet/crush/internal/filetracker"
+	"github.com/charmbracelet/crush/internal/history"
+	"github.com/charmbracelet/crush/internal/lsp"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/permission"
+	"github.com/charmbracelet/crush/internal/session"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/dnaeon/go-vcr.v4/pkg/cassette"
 
@@ -55,7 +55,7 @@ func hyperBuilder(model string) builderFunc {
 	return func(t *testing.T, r *vcr.Recorder) (fantasy.LanguageModel, error) {
 		provider, err := openaicompat.New(
 			openaicompat.WithBaseURL("https://hyper.charm.land/v1"),
-			openaicompat.WithAPIKey(os.Getenv("BINETIC_AGENT_HYPER_API_KEY")),
+			openaicompat.WithAPIKey(os.Getenv("CRUSH_HYPER_API_KEY")),
 			openaicompat.WithHTTPClient(&http.Client{Transport: failFastOnStaleCassette{r}}),
 		)
 		if err != nil {
@@ -97,7 +97,7 @@ func (f failFastOnStaleCassette) RoundTrip(req *http.Request) (*http.Response, e
 }
 
 // testEnv is the environment for a test, working in a directory of its
-// own. It used a fixed directory under /tmp/binetic_agent-test, shared by every
+// own. It used a fixed directory under /tmp/crush-test, shared by every
 // user and every run: once one user's run of the suite had created it,
 // another user's runs of these tests failed with "permission denied" (the
 // AI box's self-improvement agent hit that in every run, because the
@@ -111,12 +111,12 @@ func testEnv(t *testing.T) fakeEnv {
 // were made in: the working directory is part of every recorded request,
 // so it must be the same when the cassettes are replayed. Another user's
 // run of the suite can own that directory (on the AI box the suite is
-// verified as root, and the self-improvement agent runs it as binetic_agent). The
+// verified as root, and the self-improvement agent runs it as crush). The
 // test is then skipped with the reason, as for stale cassettes, since
 // they can be replayed nowhere else; it failed, and each run spent calls
 // finding out why.
 func cassetteEnv(t *testing.T) fakeEnv {
-	workingDir := filepath.Join("/tmp/binetic_agent-test/", t.Name())
+	workingDir := filepath.Join("/tmp/crush-test/", t.Name())
 	if err := os.RemoveAll(workingDir); err != nil {
 		t.Skipf("cannot use the directory the cassettes were recorded in: %v", err)
 	}
@@ -199,7 +199,7 @@ func coderAgent(r *vcr.Recorder, env fakeEnv, large, small fantasy.LanguageModel
 	}
 
 	// NOTE(@andreynering): Set a fixed config to ensure cassettes match
-	// independently of user config on `$HOME/.config/binetic_agent/binetic-agent.json`.
+	// independently of user config on `$HOME/.config/crush/crush.json`.
 	cfg.Config().Options.Attribution = &config.Attribution{
 		TrailerStyle:  "co-authored-by",
 		GeneratedWith: true,
@@ -207,7 +207,7 @@ func coderAgent(r *vcr.Recorder, env fakeEnv, large, small fantasy.LanguageModel
 
 	// Clear some fields to avoid issues with VCR cassette matching.
 	cfg.Config().Options.SkillsPaths = nil
-	cfg.Config().Options.DisabledSkills = []string{"binetic-agent-config"}
+	cfg.Config().Options.DisabledSkills = []string{"gnosh-config"}
 	cfg.Config().Options.ContextPaths = nil
 	cfg.Config().Options.GlobalContextPaths = nil
 	cfg.Config().LSP = nil

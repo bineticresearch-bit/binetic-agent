@@ -9,7 +9,7 @@ import (
 // A tool name that matches nothing used to be written straight into the
 // config, where it silently failed to pre-approve anything. Since the
 // loader now refuses such a config outright, writing it would hand the
-// user a Binetic Agent that will not start.
+// user a Crush that will not start.
 func TestPermissionsAllowRejectsUnknownTool(t *testing.T) {
 	t.Parallel()
 

@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -22,14 +22,14 @@ import (
 	"time"
 )
 
-// WorkerMain is `binetic-agent gnovm-worker`: the child process that runs the VMs of
-// one binetic-agent process, speaking the protocol on fds 3 and 4. It does nothing
-// without a valid handshake from a binetic-agent client of the same build, so a
+// WorkerMain is `gnosh gnovm-worker`: the child process that runs the VMs of
+// one gnosh process, speaking the protocol on fds 3 and 4. It does nothing
+// without a valid handshake from a gnosh client of the same build, so a
 // stray run (or a test binary given the argument) exits at once. It returns
 // the exit code.
 func WorkerMain() int {
-	// Ctrl-C in binetic-agent must not kill the worker in the middle of an append;
-	// binetic-agent stops it by closing its request pipe.
+	// Ctrl-C in gnosh must not kill the worker in the middle of an append;
+	// gnosh stops it by closing its request pipe.
 	signal.Ignore(syscall.SIGINT, syscall.SIGHUP)
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 	log.SetPrefix("gnovm-worker: ")

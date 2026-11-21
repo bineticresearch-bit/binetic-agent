@@ -9,7 +9,7 @@ import (
 
 	"charm.land/catwalk/pkg/catwalk"
 	"charm.land/lipgloss/v2/tree"
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 )
@@ -19,10 +19,10 @@ var modelsCmd = &cobra.Command{
 	Short: "List all available models from known providers",
 	Long:  `List all available models from known providers. Shows provider name and model IDs. Unconfigured providers are marked with (not configured).`,
 	Example: `# List all available models
-binetic-agent models
+gnosh models
 
 # Search models
-binetic-agent models gpt5`,
+gnosh models gpt5`,
 	Args: cobra.ArbitraryArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cwd, err := ResolveCwd(cmd)

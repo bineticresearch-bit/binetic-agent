@@ -7,12 +7,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/shell"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/shell"
 )
 
-// jobEndGrace is how long after a background job ends binetic-agent waits before
+// jobEndGrace is how long after a background job ends gnosh waits before
 // telling the agent. A job_output already waiting on the job returns at
 // once and takes the job's end first, so the agent is not told twice. It
 // is a var so tests can shorten it.
@@ -23,13 +23,13 @@ var jobEndGrace = 2 * time.Second
 // between its tool calls while it works, or in a turn of its own once it
 // has replied. It tells only of an end nothing else took first
 // (shell.BackgroundShell.ClaimEnd): not one the agent read with
-// job_output, stopped with job_kill, or one binetic-agent stopped as it exited.
+// job_output, stopped with job_kill, or one gnosh stopped as it exited.
 type jobWatcher struct {
 	// run sends the notice to the session as a hidden prompt the chat
 	// shows as a notice, which the running turn takes at its next step
 	// or which starts a turn.
 	run func(ctx context.Context, sessionID, prompt string) error
-	// closing is set as binetic-agent shuts down; then no job's end starts a turn.
+	// closing is set as gnosh shuts down; then no job's end starts a turn.
 	closing atomic.Bool
 }
 

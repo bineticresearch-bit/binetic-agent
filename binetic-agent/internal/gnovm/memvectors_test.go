@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -353,7 +353,7 @@ func TestMemVectorsFollowAnErasure(t *testing.T) {
 }
 
 // newRecallHost is a host whose mem finds by meaning with f, and a Lazy, as
-// binetic-agent's main process holds one, recalling from the same directory.
+// gnosh's main process holds one, recalling from the same directory.
 func newRecallHost(t *testing.T, f *fakeEmbedder) (*Host, *Lazy, func(code string)) {
 	t.Helper()
 	dir := t.TempDir()

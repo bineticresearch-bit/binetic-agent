@@ -12,12 +12,12 @@ import (
 	"time"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent"
-	"github.com/charmbracelet/binetic_agent/internal/agent/agenttest"
-	"github.com/charmbracelet/binetic_agent/internal/app"
-	"github.com/charmbracelet/binetic_agent/internal/backend"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/proto"
+	"github.com/charmbracelet/crush/internal/agent"
+	"github.com/charmbracelet/crush/internal/agent/agenttest"
+	"github.com/charmbracelet/crush/internal/app"
+	"github.com/charmbracelet/crush/internal/backend"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/proto"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
@@ -159,7 +159,7 @@ func TestPostAgent_ReturnsOKOnContextCanceled(t *testing.T) {
 	// Wait for the dispatched run to fully return. Backend.runAgent
 	// swallows context.Canceled, so it must not publish a
 	// notify.TypeAgentError. Publishing would dereference the synthetic
-	// workspace's nil notification broker and binetic-agent this goroutine,
+	// workspace's nil notification broker and gnosh this goroutine,
 	// which is the explicit guard that a cancel produces no top-level
 	// error event.
 	require.Eventually(t, func() bool {

@@ -11,10 +11,10 @@ import (
 	"time"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/db"
-	"github.com/charmbracelet/binetic_agent/internal/filetracker"
-	"github.com/charmbracelet/binetic_agent/internal/session"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/db"
+	"github.com/charmbracelet/crush/internal/filetracker"
+	"github.com/charmbracelet/crush/internal/session"
 	"github.com/stretchr/testify/require"
 )
 
@@ -200,7 +200,7 @@ func TestChangedReadFilesNotNamedWhenRewrittenUnchanged(t *testing.T) {
 	require.Equal(t, "done", resp)
 }
 
-// A session resumed in a later run of Binetic Agent, which kept no hash of the
+// A session resumed in a later run of Gnosh, which kept no hash of the
 // earlier reads, is not told that every file it read changed: only a
 // file modified after its read is named.
 func TestChangedReadFilesInALaterRun(t *testing.T) {

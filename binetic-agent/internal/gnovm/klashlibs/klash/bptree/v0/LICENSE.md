@@ -1,4 +1,4 @@
-The files doc.gno, node.gno and tree.gno in binetic-agent's
+The files doc.gno, node.gno and tree.gno in gnosh's
 internal/gnovm/klashlibs/klash/bptree/v0 are gno's bptree package
 (examples/gno.land/p/nt/bptree/v0) from github.com/gnolang/gno
 v1.5.1-0.20260928125126-5cdbc25fcde0, copied unchanged (see SOURCE there).

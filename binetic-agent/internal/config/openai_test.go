@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"charm.land/catwalk/pkg/catwalk"
-	"github.com/charmbracelet/binetic_agent/internal/csync"
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
+	"github.com/charmbracelet/crush/internal/csync"
+	"github.com/charmbracelet/crush/internal/oauth"
 	"github.com/stretchr/testify/require"
 )
 
@@ -58,7 +58,7 @@ func TestTokenFields(t *testing.T) {
 func TestTokenAccountIDRoundTrip(t *testing.T) {
 	t.Parallel()
 
-	// The account ID is persisted with the token in binetic-agent.json; verify
+	// The account ID is persisted with the token in crush.json; verify
 	// it survives the JSON round trip loadTokenFromDisk performs.
 	token := &oauth.Token{
 		AccessToken:  "at",
@@ -121,9 +121,9 @@ func TestSetProviderAPIKeyOpenAIIsEitherOr(t *testing.T) {
 
 	// Point config discovery at the test sandbox: the write below
 	// triggers an auto-reload, which must not pick up the developer's
-	// real binetic-agent.json.
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", t.TempDir())
-	t.Setenv("BINETIC_AGENT_GLOBAL_DATA", t.TempDir())
+	// real crush.json.
+	t.Setenv("CRUSH_GLOBAL_CONFIG", t.TempDir())
+	t.Setenv("CRUSH_GLOBAL_DATA", t.TempDir())
 	t.Setenv("XDG_DATA_HOME", t.TempDir())
 
 	token := &oauth.Token{
@@ -136,7 +136,7 @@ func TestSetProviderAPIKeyOpenAIIsEitherOr(t *testing.T) {
 	newStore := func(t *testing.T, providerID string, initialConfig string) *ConfigStore {
 		t.Helper()
 		dir := t.TempDir()
-		configPath := filepath.Join(dir, "binetic-agent.json")
+		configPath := filepath.Join(dir, "crush.json")
 		require.NoError(t, os.WriteFile(configPath, []byte(initialConfig), 0o600))
 
 		// The in-memory config mirrors what a real load would produce.
@@ -232,7 +232,7 @@ func TestSetProviderAPIKeyOpenAIIsEitherOr(t *testing.T) {
 func TestRefetchOpenAIModelsRefreshesExpiredToken(t *testing.T) {
 	// Not parallel: swaps the fetchOpenAIModels package variable.
 	dir := t.TempDir()
-	configPath := filepath.Join(dir, "binetic-agent.json")
+	configPath := filepath.Join(dir, "crush.json")
 
 	expired := &oauth.Token{
 		AccessToken:  "expired-at",
@@ -337,7 +337,7 @@ func newCatwalkStub(t *testing.T, status int, catalog []catwalk.Provider) {
 	// TestMain keeps tests off Charm's servers by turning the catalog
 	// fetch off; a test of the fetch, against this local server, asks for
 	// it explicitly, as a user has to.
-	t.Setenv("BINETIC_AGENT_DISABLE_PROVIDER_AUTO_UPDATE", "0")
+	t.Setenv("GNOSH_DISABLE_PROVIDER_AUTO_UPDATE", "0")
 
 	t.Setenv("CATWALK_URL", server.URL)
 	t.Setenv("HYPER_URL", server.URL)
@@ -351,8 +351,8 @@ func isolateLoadEnv(t *testing.T) (workDir, dataDir string) {
 	t.Setenv("HOME", isolated)
 	t.Setenv("XDG_CONFIG_HOME", filepath.Join(isolated, ".config"))
 	t.Setenv("XDG_DATA_HOME", filepath.Join(isolated, ".local", "share"))
-	t.Setenv("BINETIC_AGENT_GLOBAL_CONFIG", filepath.Join(isolated, ".config", "binetic_agent"))
-	t.Setenv("BINETIC_AGENT_GLOBAL_DATA", filepath.Join(isolated, ".local", "share", "binetic_agent"))
+	t.Setenv("CRUSH_GLOBAL_CONFIG", filepath.Join(isolated, ".config", "crush"))
+	t.Setenv("CRUSH_GLOBAL_DATA", filepath.Join(isolated, ".local", "share", "crush"))
 	return t.TempDir(), t.TempDir()
 }
 
@@ -395,7 +395,7 @@ func TestLoadRefreshesChatGPTModelsWhenCatwalkUpdates(t *testing.T) {
 	t.Cleanup(resetProviderState)
 
 	require.NoError(t, os.WriteFile(
-		filepath.Join(workDir, "binetic-agent.json"),
+		filepath.Join(workDir, "crush.json"),
 		[]byte(chatGPTLoginConfig(chatGPTLoginToken())),
 		0o600,
 	))
@@ -429,7 +429,7 @@ func TestLoadKeepsChatGPTModelsWhenCatwalkNotModified(t *testing.T) {
 	t.Cleanup(resetProviderState)
 
 	require.NoError(t, os.WriteFile(
-		filepath.Join(workDir, "binetic-agent.json"),
+		filepath.Join(workDir, "crush.json"),
 		[]byte(chatGPTLoginConfig(chatGPTLoginToken())),
 		0o600,
 	))

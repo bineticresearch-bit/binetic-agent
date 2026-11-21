@@ -10,13 +10,13 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/csync"
-	"github.com/charmbracelet/binetic_agent/internal/gnovm"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
-	"github.com/charmbracelet/binetic_agent/internal/session"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/csync"
+	"github.com/charmbracelet/crush/internal/gnovm"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/session"
 )
 
 // Goal is a session's goal, as /goal sets one: a condition the agent keeps
@@ -428,7 +428,7 @@ func parseGoalCheck(answer string) (met bool, reason string, err error) {
 		return false, "", errors.New("its answer was not a verdict: " + compactReason(answer))
 	}
 	reason = strings.TrimSpace(verdict.Reason)
-	// A goal met on the user's word says so in binetic-agent's words: told to begin
+	// A goal met on the user's word says so in gnosh's words: told to begin
 	// its reason so, the judge did when the user's word covered the whole
 	// goal, and not when it covered the last step (QA, 2026-10-30).
 	if *verdict.OK && verdict.Basis == "user" {

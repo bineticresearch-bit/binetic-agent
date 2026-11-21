@@ -7,7 +7,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/fsext"
+	"github.com/charmbracelet/crush/internal/fsext"
 )
 
 const (

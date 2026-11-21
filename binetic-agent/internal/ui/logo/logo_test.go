@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"charm.land/lipgloss/v2"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/version"
 	uv "github.com/charmbracelet/ultraviolet"
 	"github.com/charmbracelet/x/ansi"
 )
@@ -90,7 +90,7 @@ func TestWideLogoRightEdgeIsStraight(t *testing.T) {
 }
 
 // The sidebar's small logo fades its lines from hot pink beside the name to
-// purple in Binetic Agent's theme, as the compact header does, and keeps them one
+// purple in Gnosh's theme, as the compact header does, and keeps them one
 // color in Charmtone.
 func TestSmallLogoLinesFade(t *testing.T) {
 	linesOf := func(st *styles.Styles) []color.Color {
@@ -109,10 +109,10 @@ func TestSmallLogoLinesFade(t *testing.T) {
 		return fg
 	}
 
-	k := styles.Binetic AgentCosmos()
+	k := styles.GnoshCosmos()
 	fg := linesOf(&k)
 	if !colorEqual(fg[0], k.Logo.FieldColorB) || !colorEqual(fg[len(fg)-1], k.Logo.FieldColor) {
-		t.Errorf("Binetic Agent's lines run %v to %v, want %v to %v", fg[0], fg[len(fg)-1], k.Logo.FieldColorB, k.Logo.FieldColor)
+		t.Errorf("Gnosh's lines run %v to %v, want %v to %v", fg[0], fg[len(fg)-1], k.Logo.FieldColorB, k.Logo.FieldColor)
 	}
 
 	c := styles.CharmtonePantera()

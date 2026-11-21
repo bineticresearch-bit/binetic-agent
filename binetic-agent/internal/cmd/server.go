@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	binetic_agentlog "github.com/charmbracelet/binetic_agent/internal/log"
-	"github.com/charmbracelet/binetic_agent/internal/server"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/config"
+	crushlog "github.com/charmbracelet/crush/internal/log"
+	"github.com/charmbracelet/crush/internal/server"
+	"github.com/charmbracelet/crush/internal/version"
 	"github.com/charmbracelet/x/term"
 	"github.com/spf13/cobra"
 )
@@ -51,9 +51,9 @@ var serverCmd = &cobra.Command{
 		logFile := config.LogFile(filepath.Join(config.GlobalCacheDir(), "server-"+safeHostName(hostURL)))
 
 		if term.IsTerminal(os.Stderr.Fd()) {
-			binetic_agentlog.Setup(logFile, debug, os.Stderr)
+			crushlog.Setup(logFile, debug, os.Stderr)
 		} else {
-			binetic_agentlog.Setup(logFile, debug)
+			crushlog.Setup(logFile, debug)
 		}
 
 		srv := server.NewServer(cfg, hostURL.Scheme, hostURL.Host)

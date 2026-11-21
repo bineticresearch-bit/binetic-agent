@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -35,7 +35,7 @@ import (
 // as well as by words. They live in vectors-<generation>.db beside the
 // index, each under the hash of the text it was made from, so a vector is
 // never stale, a rebuilt index finds its rows' vectors again, and an
-// erasure, which starts a new generation, starts them afresh. binetic-agent's main
+// erasure, which starts a new generation, starts them afresh. gnosh's main
 // process makes them in the background after mem changes. With no
 // embedding server set, or with it down, mem finds by words alone.
 

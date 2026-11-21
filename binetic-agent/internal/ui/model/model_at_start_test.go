@@ -5,11 +5,11 @@ import (
 	"testing"
 
 	"charm.land/catwalk/pkg/catwalk"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/csync"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/workspace"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/csync"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/workspace"
 	"github.com/stretchr/testify/require"
 )
 
@@ -31,7 +31,7 @@ func newRestoreWorkspace() *restoreWorkspace {
 			config.SelectedModelTypeLarge: {Provider: "standin", Model: "qwen-a"},
 			config.SelectedModelTypeSmall: {Provider: "standin", Model: "qwen-a"},
 		},
-		Options: &config.Options{TUI: &config.TUIOptions{ActiveTheme: "binetic-agent-cosmos"}},
+		Options: &config.Options{TUI: &config.TUIOptions{ActiveTheme: "gnosh-cosmos"}},
 	}}
 }
 

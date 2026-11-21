@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/ui/styles"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/stretchr/testify/require"
 )
@@ -15,7 +15,7 @@ import (
 func TestGnoVMRunToolIsHeadedByItsCode(t *testing.T) {
 	t.Parallel()
 
-	sty := styles.Binetic AgentCosmos()
+	sty := styles.GnoshCosmos()
 	render := func(input string) string {
 		return (&GnoVMRunToolRenderContext{}).RenderTool(&sty, 120, &ToolRenderOpts{
 			ToolCall: message.ToolCall{ID: "g1", Name: "gnovm_run", Input: input, Finished: true},
@@ -50,7 +50,7 @@ func TestGnoVMRunToolIsHeadedByItsCode(t *testing.T) {
 func TestGnoVMRunToolShowsItsCodeWhileItStreams(t *testing.T) {
 	t.Parallel()
 
-	sty := styles.Binetic AgentCosmos()
+	sty := styles.GnoshCosmos()
 	render := func(input string) string {
 		return ansi.Strip((&GnoVMRunToolRenderContext{}).RenderTool(&sty, 120, &ToolRenderOpts{
 			ToolCall: message.ToolCall{ID: "g1", Name: "gnovm_run", Input: input},

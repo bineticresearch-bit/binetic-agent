@@ -10,17 +10,17 @@ import (
 )
 
 // prefixes are the environment variable prefixes the program is configured
-// through: BINETIC_AGENT_*, and KLASH_* and BINETIC_AGENT_* from before the renames.
-var prefixes = []string{"BINETIC_AGENT_", "KLASH_", "BINETIC_AGENT_"}
+// through: GNOSH_*, and KLASH_* and CRUSH_* from before the renames.
+var prefixes = []string{"GNOSH_", "KLASH_", "CRUSH_"}
 
-// ClearConfigVars unsets every BINETIC_AGENT_*, KLASH_* and BINETIC_AGENT_* variable in the
+// ClearConfigVars unsets every GNOSH_*, KLASH_* and CRUSH_* variable in the
 // process environment. Run calls it; a package's TestMain should call Run.
 //
 // The program is configured through these variables, and everything it runs
 // inherits them — including `go test`, run from inside it by an agent
 // working on its own code. Tests that assert on default behaviour then fail
 // for reasons that have nothing to do with the code: the AI box's wrapper
-// exports BINETIC_AGENT_DISABLE_DEFAULT_PROVIDERS=1, and under it a dozen provider
+// exports CRUSH_DISABLE_DEFAULT_PROVIDERS=1, and under it a dozen provider
 // tests failed while passing from a clean shell. Tests that need a
 // variable set it themselves with t.Setenv, as before.
 //
@@ -28,7 +28,7 @@ var prefixes = []string{"BINETIC_AGENT_", "KLASH_", "BINETIC_AGENT_"}
 // the catalog from Charm's servers (catwalk and Hyper): the network is no
 // part of a unit test, and Jae runs the program with that fetch off. A test
 // of the fetch itself opts back in with
-// t.Setenv("BINETIC_AGENT_DISABLE_PROVIDER_AUTO_UPDATE", "0") and points it at a
+// t.Setenv("GNOSH_DISABLE_PROVIDER_AUTO_UPDATE", "0") and points it at a
 // local server.
 func ClearConfigVars() {
 	for _, kv := range os.Environ() {
@@ -40,7 +40,7 @@ func ClearConfigVars() {
 			}
 		}
 	}
-	os.Setenv("BINETIC_AGENT_DISABLE_PROVIDER_AUTO_UPDATE", "1")
+	os.Setenv("GNOSH_DISABLE_PROVIDER_AUTO_UPDATE", "1")
 }
 
 // Run runs a package's tests, as its TestMain, os.Exit(testenv.Run(m)):
@@ -49,20 +49,20 @@ func ClearConfigVars() {
 //
 // Without that, a test reads the user's own config directory: the coder
 // prompt template a user keeps there, their tool descriptions, their
-// binetic-agent.json. The AI box's self-improvement runs work as a user with its
+// gnosh.json. The AI box's self-improvement runs work as a user with its
 // own coder.md.tpl, and under it TestCoderPromptNamesTheAddedDirs failed,
 // though it passed as root; the run was then held at its Stop hook by a
 // test it never touched.
 //
 // The directories go in the XDG variables, which every other way of
 // naming them wins over: a test's own XDG_CONFIG_HOME or XDG_DATA_HOME
-// (the tests that set HOME set these too), and BINETIC_AGENT_GLOBAL_* or
-// BINETIC_AGENT_GLOBAL_*. Set in BINETIC_AGENT_GLOBAL_* at first, they won over a test's
+// (the tests that set HOME set these too), and GNOSH_GLOBAL_* or
+// CRUSH_GLOBAL_*. Set in CRUSH_GLOBAL_* at first, they won over a test's
 // own XDG_DATA_HOME, and tests that isolated that way shared one
 // directory.
 func Run(m *testing.M) int {
 	ClearConfigVars()
-	home, err := os.MkdirTemp("", "binetic-agent-test")
+	home, err := os.MkdirTemp("", "gnosh-test")
 	if err != nil {
 		panic(err)
 	}

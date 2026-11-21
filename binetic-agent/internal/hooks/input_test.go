@@ -7,13 +7,13 @@ import (
 )
 
 // Every hook is told where the project's mem keeps its status.json, under
-// each of a hook variable's names, while binetic-agent's GnoVM machines are on;
+// each of a hook variable's names, while gnosh's GnoVM machines are on;
 // nothing, while they are off. (Not parallel: it sets what BuildEnv reads.)
 func TestBuildEnvNamesMemStatus(t *testing.T) {
 	SetMemStatusPath(func(projectDir string) string { return projectDir + "/mem/status.json" })
 	t.Cleanup(func() { SetMemStatusPath(nil) })
 	env := BuildEnv(EventStop, "", "s1", "/proj/sub", "/proj", "")
-	for _, prefix := range []string{"BINETIC_AGENT_", "KLASH_", "BINETIC_AGENT_"} {
+	for _, prefix := range []string{"GNOSH_", "KLASH_", "CRUSH_"} {
 		require.Contains(t, env, prefix+"MEM_STATUS=/proj/mem/status.json")
 	}
 	SetMemStatusPath(nil)

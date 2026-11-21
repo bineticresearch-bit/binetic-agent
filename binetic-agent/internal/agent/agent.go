@@ -1,4 +1,4 @@
-// Package agent is the core orchestration layer for Binetic Agent AI agents.
+// Package agent is the core orchestration layer for Crush AI agents.
 //
 // It provides session-based AI agent functionality for managing
 // conversations, tool execution, and message handling. It coordinates
@@ -38,22 +38,22 @@ import (
 	"charm.land/fantasy/providers/openrouter"
 	"charm.land/fantasy/providers/vercel"
 	"charm.land/lipgloss/v2"
-	"github.com/charmbracelet/binetic_agent/internal/agent/hyper"
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools/mcp"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/csync"
-	"github.com/charmbracelet/binetic_agent/internal/env"
-	"github.com/charmbracelet/binetic_agent/internal/filetracker"
-	"github.com/charmbracelet/binetic_agent/internal/hooks"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
-	"github.com/charmbracelet/binetic_agent/internal/session"
-	"github.com/charmbracelet/binetic_agent/internal/shell"
-	"github.com/charmbracelet/binetic_agent/internal/skills"
-	"github.com/charmbracelet/binetic_agent/internal/stringext"
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/agent/hyper"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/agent/tools/mcp"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/csync"
+	"github.com/charmbracelet/crush/internal/env"
+	"github.com/charmbracelet/crush/internal/filetracker"
+	"github.com/charmbracelet/crush/internal/hooks"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/session"
+	"github.com/charmbracelet/crush/internal/shell"
+	"github.com/charmbracelet/crush/internal/skills"
+	"github.com/charmbracelet/crush/internal/stringext"
+	"github.com/charmbracelet/crush/internal/version"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/charmbracelet/x/exp/charmtone"
 )
@@ -91,7 +91,7 @@ func autoSummarize(cw, window, tokens int64, disabled, overrides bool) bool {
 	return !disabled && tokens >= compactAt(cw, window, overrides)
 }
 
-var userAgent = fmt.Sprintf("Charm-Binetic Agent/%s (https://charm.land/binetic_agent)", version.Version)
+var userAgent = fmt.Sprintf("Charm-Crush/%s (https://charm.land/crush)", version.Version)
 
 //go:embed templates/title.md
 var titlePrompt []byte
@@ -112,7 +112,7 @@ type SessionAgentCall struct {
 	// this turn. It is preserved when the call is enqueued behind a
 	// busy session so the queued turn's terminal event is still
 	// recognisable to the original caller. Callers that need a
-	// reliable completion contract (e.g. `binetic_agent run` against a
+	// reliable completion contract (e.g. `crush run` against a
 	// session that may be busy) MUST set it; SessionID alone is
 	// ambiguous when concurrent turns share the same session.
 	RunID             string
@@ -136,7 +136,7 @@ type SessionAgentCall struct {
 	// callback instead of emitting it on the RunComplete broker. The
 	// coordinator uses this hook to coalesce the unauthorized →
 	// re-auth → retry chain into a single user-visible terminal
-	// event, so non-interactive clients (e.g. `binetic_agent run`) don't
+	// event, so non-interactive clients (e.g. `crush run`) don't
 	// exit on a stale failed-attempt RunComplete before the
 	// successful retry. It is intentionally stripped when queueing
 	// a busy-session call (see Run): the originating
@@ -703,7 +703,7 @@ func (a *sessionAgent) enqueueCall(call SessionAgentCall) {
 // Calls covered by a pending cancel are dropped; the dropped ones that
 // carry a RunID are returned in canceledWithRunID so the caller can
 // publish their terminal cancelled RunComplete (a caller waiting on that
-// RunID, e.g. `binetic_agent run`, would otherwise hang). Uncanceled calls without
+// RunID, e.g. `crush run`, would otherwise hang). Uncanceled calls without
 // a RunID are returned in fold to be folded into the active turn,
 // preserving the existing follow-up behavior. Uncanceled calls that carry
 // a RunID are left in the queue so each runs as its own turn via the
@@ -742,7 +742,7 @@ func (a *sessionAgent) drainQueueForStep(sessionID string) (fold, canceledWithRu
 // every dropped queued call that carries a RunID. A queued prompt removed
 // from the queue without ever running — covered by a pending cancel, or
 // cleared by Cancel/ClearQueue — would otherwise leave a caller blocked on
-// that RunID: `binetic_agent run` ignores live message events and exits only on a
+// that RunID: `crush run` ignores live message events and exits only on a
 // RunComplete whose RunID matches. Calls without a RunID had no such waiter
 // and are dropped silently as before. A detached, bounded context keeps the
 // must-deliver publish alive even when the run context that triggered the
@@ -774,7 +774,7 @@ func (a *sessionAgent) publishCanceledQueueDrops(drops []SessionAgentCall) {
 
 // clearQueueAndNotify removes all queued prompts for the session and
 // publishes a terminal cancelled RunComplete for any that carried a RunID,
-// so callers waiting on those RunIDs (e.g. `binetic_agent run`) are not left
+// so callers waiting on those RunIDs (e.g. `crush run`) are not left
 // hanging when their queued prompt is discarded without running.
 func (a *sessionAgent) clearQueueAndNotify(sessionID string) {
 	queued, ok := a.messageQueue.Get(sessionID)
@@ -848,7 +848,7 @@ func (a *sessionAgent) persistCanceledTurn(ctx context.Context, call SessionAgen
 // ctx is used only for the bounded-blocking must-deliver publish; the
 // terminal payload is supplied by the caller. This is the single emit path
 // shared by the streaming defer and the cancel-on-entry early return so a
-// caller waiting on RunComplete (e.g. `binetic_agent run` with a RunID) always
+// caller waiting on RunComplete (e.g. `crush run` with a RunID) always
 // observes exactly one terminal event regardless of which Run branch ends
 // the turn.
 func (a *sessionAgent) publishRunComplete(ctx context.Context, call SessionAgentCall, complete notify.RunComplete) {
@@ -881,7 +881,7 @@ func ValidateCall(call SessionAgentCall) error {
 func (a *sessionAgent) Run(ctx context.Context, call SessionAgentCall) (result *fantasy.AgentResult, retErr error) {
 	// The model reads the prompt trimmed whenever the conversation is
 	// rebuilt (ToAIMessage), so it is sent trimmed now too. Sent as typed,
-	// a prompt with a trailing newline, as `binetic-agent run` makes from piped
+	// a prompt with a trailing newline, as `gnosh run` makes from piped
 	// stdin, differed from its rebuilt copy, and the local server's prompt
 	// cache missed from that message on.
 	call.Prompt = strings.TrimSpace(call.Prompt)
@@ -1025,7 +1025,7 @@ func (a *sessionAgent) Run(ctx context.Context, call SessionAgentCall) (result *
 		// This path returns before the streaming defer that publishes
 		// RunComplete is installed, so emit the terminal event explicitly.
 		// Without it, a caller waiting on RunComplete for this RunID (e.g.
-		// `binetic_agent run`, which ignores message events and blocks on
+		// `crush run`, which ignores message events and blocks on
 		// RunComplete) would hang on an immediately-canceled accepted run.
 		call.Accepted.Close()
 		sessMu.Unlock()
@@ -1098,7 +1098,7 @@ func (a *sessionAgent) Run(ctx context.Context, call SessionAgentCall) (result *
 	// return at the end, or the handoff deferred below), while this hold
 	// stands, and shares it; released last, after that handoff, so there is
 	// no gap between them. Waiting for the lock (the session open in another
-	// binetic-agent process, busy there) ends with Esc, which cancels genCtx.
+	// gnosh process, busy there) ends with Esc, which cancels genCtx.
 	if a.holdTurn != nil {
 		defer a.holdTurn(genCtx, call.SessionID)()
 	}
@@ -1251,7 +1251,7 @@ func (a *sessionAgent) Run(ctx context.Context, call SessionAgentCall) (result *
 	if !hasUserTextMessage(msgs) && currentSession.ParentSessionID == "" {
 		titleCtx := context.WithoutCancel(ctx)
 		provisional := a.nameAfterPrompt(ctx, call.SessionID, call.Prompt)
-		// A non-interactive run (binetic-agent run) ends with its turn: the name
+		// A non-interactive run (gnosh run) ends with its turn: the name
 		// from its prompt stands.
 		if !call.NonInteractive {
 			defer func() { go a.generateTitle(titleCtx, call.SessionID, call.Prompt, provisional) }()
@@ -2587,7 +2587,7 @@ func (unrunnableTool) Run(context.Context, fantasy.ToolCall) (fantasy.ToolRespon
 }
 
 func (a *sessionAgent) getCacheControlOptions() fantasy.ProviderOptions {
-	if t, _ := strconv.ParseBool(env.Getenv("BINETIC_AGENT_DISABLE_ANTHROPIC_CACHE")); t {
+	if t, _ := strconv.ParseBool(env.Getenv("GNOSH_DISABLE_ANTHROPIC_CACHE")); t {
 		return fantasy.ProviderOptions{}
 	}
 	return fantasy.ProviderOptions{
@@ -3173,15 +3173,15 @@ func (a *sessionAgent) generateTitle(ctx context.Context, sessionID, userPrompt,
 	// (/rename, the sessions dialog) is kept instead of the one made here.
 	sess, getErr := a.sessions.Get(context.WithoutCancel(ctx), sessionID)
 	if getErr != nil {
-		// Asked for after the turn, a title may come as binetic-agent shuts down.
+		// Asked for after the turn, a title may come as gnosh shuts down.
 		if strings.Contains(getErr.Error(), "database is closed") {
-			slog.Debug("Not titling the session: binetic-agent is closing", "error", getErr)
+			slog.Debug("Not titling the session: gnosh is closing", "error", getErr)
 		} else {
 			slog.Error("Failed to read the session to title", "error", getErr)
 		}
 		return
 	}
-	// A name the session was given before its first prompt (binetic-agent -n) is
+	// A name the session was given before its first prompt (gnosh -n) is
 	// kept, as Claude Code keeps a --name: only an untitled one is titled.
 	if !session.Untitled(sess.Title) && (provisional == "" || sess.Title != provisional) {
 		return
@@ -3837,7 +3837,7 @@ func (a *sessionAgent) QueuedPromptsList(sessionID string) []string {
 // queue, oldest first, along with the attachments that came with each, and
 // leaves everything else queued:
 //   - hidden continuations, for the turn-end handoff to pick up;
-//   - prompts that carry a RunID: a caller such as `binetic-agent run` is waiting
+//   - prompts that carry a RunID: a caller such as `gnosh run` is waiting
 //     for their RunComplete and would hang;
 //   - channel messages (a Signal message, say): the user did not write
 //     them, and in the editor they would lose the channel their reply

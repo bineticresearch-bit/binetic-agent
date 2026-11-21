@@ -22,11 +22,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// TestNoNodeInBinetic Agent keeps the client off the node's code and the keybase:
+// TestNoNodeInGnosh keeps the client off the node's code and the keybase:
 // gnoclient (and mdbx, a C database, behind it), tm2's RPC client and
 // gno.land's vm package (consensus, p2p, the RPC server), and gno's keybase
 // package (Ledger support in C, golang.org/x/crypto/openpgp).
-func TestNoNodeInBinetic Agent(t *testing.T) {
+func TestNoNodeInGnosh(t *testing.T) {
 	out, err := exec.CommandContext(t.Context(), "go", "list", "-deps", ".").Output()
 	require.NoError(t, err)
 	for _, dep := range strings.Fields(string(out)) {
@@ -230,7 +230,7 @@ func (n *fakeNode) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	default:
 		result = nil
 	}
-	_ = json.NewEncoder(w).Encode(map[string]any{"jsonrpc": "2.0", "id": "binetic-agent", "result": result})
+	_ = json.NewEncoder(w).Encode(map[string]any{"jsonrpc": "2.0", "id": "gnosh", "result": result})
 }
 
 // The client reads the chain, evaluates a realm's expression and calls a

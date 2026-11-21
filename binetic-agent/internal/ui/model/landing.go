@@ -4,8 +4,8 @@ import (
 	"image"
 
 	"charm.land/lipgloss/v2"
-	"github.com/charmbracelet/binetic_agent/internal/ui/common"
-	"github.com/charmbracelet/binetic_agent/internal/workspace"
+	"github.com/charmbracelet/crush/internal/ui/common"
+	"github.com/charmbracelet/crush/internal/workspace"
 	"github.com/charmbracelet/ultraviolet/layout"
 )
 
@@ -59,11 +59,11 @@ func (m *UI) landingView() string {
 		)
 }
 
-// attributionLine is the notice the GnoVM's licence and that of binetic-agent's
+// attributionLine is the notice the GnoVM's licence and that of gnosh's
 // GnoVM machines ask for (internal/gnovm/LICENSE.md), with links.
 func (m *UI) attributionLine(width int) string {
 	link := m.com.Styles.Dialog.OAuth.Link
 	return lipgloss.NewStyle().Width(width).Render(
 		"Built on " + link.Hyperlink("https://gno.land", "id=gnoland").Render("gno.land") +
-			" · GnoVM machines built on " + link.Hyperlink("https://binetic-agent.local", "id=binetic-agentpro").Render("binetic-agent"))
+			" · GnoVM machines built on " + link.Hyperlink("https://gnosh.ai", "id=gnoshpro").Render("gnosh"))
 }

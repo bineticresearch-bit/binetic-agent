@@ -6,11 +6,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/stretchr/testify/require"
 )
 
-// isolatedConfig writes binetic-agent.json into a fresh working directory with
+// isolatedConfig writes crush.json into a fresh working directory with
 // HOME and the XDG dirs pointed at a temp tree, so the developer's own
 // global config can't leak into the result.
 func isolatedConfig(t *testing.T, cfgJSON string) (workDir, dataDir, configPath string) {
@@ -22,7 +22,7 @@ func isolatedConfig(t *testing.T, cfgJSON string) (workDir, dataDir, configPath 
 
 	workDir = t.TempDir()
 	dataDir = t.TempDir()
-	configPath = filepath.Join(workDir, "binetic-agent.json")
+	configPath = filepath.Join(workDir, "crush.json")
 	require.NoError(t, os.WriteFile(configPath, []byte(cfgJSON), 0o600))
 	return workDir, dataDir, configPath
 }
@@ -54,7 +54,7 @@ func TestLoad_RejectsInvalidConfig(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			workDir, dataDir, _ := isolatedConfig(t, tt.cfgJSON)
 			_, err := config.Load(workDir, dataDir, false, config.TrustFolderForSession())
-			require.Error(t, err, "a config Binetic Agent can't honour must not load")
+			require.Error(t, err, "a config Crush can't honour must not load")
 			require.Contains(t, err.Error(), tt.wantErr)
 		})
 	}
@@ -62,7 +62,7 @@ func TestLoad_RejectsInvalidConfig(t *testing.T) {
 
 // ...and at the reload seam, or a config that could never have been
 // loaded from cold could still be installed into a running session by
-// editing the file while Binetic Agent is up.
+// editing the file while Crush is up.
 func TestReloadFromDisk_RejectsInvalidConfig(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -80,7 +80,7 @@ func TestReloadFromDisk_RejectsInvalidConfig(t *testing.T) {
 			require.NoError(t, err)
 			require.Len(t, store.Config().Hooks["PreToolUse"], 1)
 
-			// Someone edits the file badly while Binetic Agent is running.
+			// Someone edits the file badly while Crush is running.
 			require.NoError(t, os.WriteFile(configPath, []byte(tt.badJSON), 0o600))
 
 			err = store.ReloadFromDisk(context.Background())

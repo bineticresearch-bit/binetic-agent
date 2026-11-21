@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -80,7 +80,7 @@ func memBlock(st memStatus, now time.Time) string {
 			b.WriteString("- `" + r.Name + "` (" + by + ", " + time.Unix(r.Changed, 0).Format(time.DateOnly) + "): " + memEscape(r.Text) + "\n")
 		}
 	}
-	b.WriteString("From your memory (mem), kept by binetic-agent for this project: what you found and were told in earlier sessions. `mem.Show()` shows the outline; `mem.Find(\"words\")` searches everything.\n")
+	b.WriteString("From your memory (mem), kept by gnosh for this project: what you found and were told in earlier sessions. `mem.Show()` shows the outline; `mem.Find(\"words\")` searches everything.\n")
 	start := b.Len()
 	head := []string{memPlural(m.Counts.Open, "todo") + " open"}
 	if m.Counts.ForUser > 0 {
@@ -256,7 +256,7 @@ func MemBlock(dir, project string) string {
 }
 
 // MemStatusPath is where the status.json of project's mem is under dir,
-// for hooks (BINETIC_AGENT_MEM_STATUS), which read mem without opening it: mem.JSON()
+// for hooks (GNOSH_MEM_STATUS), which read mem without opening it: mem.JSON()
 // with when and for what it was computed (memStatus). It names the file,
 // which is there once mem first changes, and makes nothing.
 func MemStatusPath(dir, project string) string {
@@ -266,7 +266,7 @@ func MemStatusPath(dir, project string) string {
 // MemStatusPath is MemStatusPath for this Lazy's directory.
 func (l *Lazy) MemStatusPath(project string) string { return MemStatusPath(l.opts.Dir, project) }
 
-// MemNotice is what the user is told at a session's start, by binetic-agent itself
+// MemNotice is what the user is told at a session's start, by gnosh itself
 // rather than the model, which may not raise it: what in mem is due today,
 // and what waits on the user. "" when nothing is.
 func MemNotice(dir, project string) string {

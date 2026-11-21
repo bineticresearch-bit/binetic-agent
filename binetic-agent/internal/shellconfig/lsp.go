@@ -6,7 +6,7 @@ import (
 	"io"
 	"log/slog"
 
-	"github.com/charmbracelet/binetic_agent/internal/shell"
+	"github.com/charmbracelet/crush/internal/shell"
 )
 
 // handleLSP implements the `lsp` builtin.

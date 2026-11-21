@@ -6,14 +6,14 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/version"
 
 	"github.com/charmbracelet/x/ansi"
 
 	tea "charm.land/bubbletea/v2"
 )
 
-const osc99QueryID = "binetic_agent-osc99-query"
+const osc99QueryID = "crush-osc99-query"
 
 // DetectOSC99Support parses an OSC response sequence and returns true if it
 // indicates OSC 99 notification support. This function should be called from
@@ -110,10 +110,10 @@ func (b *OSCBackend) sendOSC99(n Notification) tea.Cmd {
 
 	var sb strings.Builder
 	b.notifySeq++
-	id := fmt.Sprintf("binetic_agent-%d", b.notifySeq)
+	id := fmt.Sprintf("crush-%d", b.notifySeq)
 
 	appName := version.Name
-	notificationType := "binetic_agent-notification"
+	notificationType := "crush-notification"
 
 	sb.WriteString(ansi.DesktopNotification(n.Title, "i="+id, "d=0", "p=title", "a="+appName, "t="+notificationType))
 	if n.Message != "" {

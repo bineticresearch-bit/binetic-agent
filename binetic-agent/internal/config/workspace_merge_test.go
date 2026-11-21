@@ -27,7 +27,7 @@ func TestMergeWorkspaceConfig_MissingFileIsNotAnError(t *testing.T) {
 func TestMergeWorkspaceConfig_EmptyFileIsNotAnError(t *testing.T) {
 	t.Parallel()
 
-	path := filepath.Join(t.TempDir(), "binetic-agent.json")
+	path := filepath.Join(t.TempDir(), "crush.json")
 	require.NoError(t, os.WriteFile(path, nil, 0o600))
 
 	merged, err := mergeWorkspaceConfig(baseConfig(t), path, t.TempDir())
@@ -38,7 +38,7 @@ func TestMergeWorkspaceConfig_EmptyFileIsNotAnError(t *testing.T) {
 func TestMergeWorkspaceConfig_MergesAndReports(t *testing.T) {
 	t.Parallel()
 
-	path := filepath.Join(t.TempDir(), "binetic-agent.json")
+	path := filepath.Join(t.TempDir(), "crush.json")
 	require.NoError(t, os.WriteFile(path,
 		[]byte(`{"hooks":{"Stop":[{"command":"exit 0"}]}}`), 0o600))
 
@@ -52,7 +52,7 @@ func TestMergeWorkspaceConfig_MergesAndReports(t *testing.T) {
 func TestMergeWorkspaceConfig_MalformedJSON(t *testing.T) {
 	t.Parallel()
 
-	path := filepath.Join(t.TempDir(), "binetic-agent.json")
+	path := filepath.Join(t.TempDir(), "crush.json")
 	require.NoError(t, os.WriteFile(path, []byte(`{"hooks": `), 0o600))
 
 	_, err := mergeWorkspaceConfig(baseConfig(t), path, t.TempDir())
@@ -73,13 +73,13 @@ func TestMergeWorkspaceConfig_UnmergeableShapeIsLoud(t *testing.T) {
 	} {
 		t.Run(body, func(t *testing.T) {
 			t.Parallel()
-			path := filepath.Join(t.TempDir(), "binetic-agent.json")
+			path := filepath.Join(t.TempDir(), "crush.json")
 			require.NoError(t, os.WriteFile(path, []byte(body), 0o600))
 
 			cfg := baseConfig(t)
 			merged, err := mergeWorkspaceConfig(cfg, path, t.TempDir())
 			require.False(t, merged)
-			require.Error(t, err, "a workspace config Binetic Agent cannot apply must not be dropped in silence")
+			require.Error(t, err, "a workspace config Crush cannot apply must not be dropped in silence")
 			require.ErrorContains(t, err, path, "the error must name the file to fix")
 		})
 	}
@@ -93,7 +93,7 @@ func TestMergeWorkspaceConfig_UnreadableFileIsLoud(t *testing.T) {
 	}
 	t.Parallel()
 
-	path := filepath.Join(t.TempDir(), "binetic-agent.json")
+	path := filepath.Join(t.TempDir(), "crush.json")
 	require.NoError(t, os.WriteFile(path, []byte(`{}`), 0o600))
 	require.NoError(t, os.Chmod(path, 0o000))
 	t.Cleanup(func() { _ = os.Chmod(path, 0o600) })
@@ -106,7 +106,7 @@ func TestMergeWorkspaceConfig_UnreadableFileIsLoud(t *testing.T) {
 func TestMergeWorkspaceConfig_FailureLeavesConfigUntouched(t *testing.T) {
 	t.Parallel()
 
-	path := filepath.Join(t.TempDir(), "binetic-agent.json")
+	path := filepath.Join(t.TempDir(), "crush.json")
 	require.NoError(t, os.WriteFile(path, []byte(`{"hooks": "not-an-object"}`), 0o600))
 
 	cfg := baseConfig(t)

@@ -1,6 +1,6 @@
 package tools
 
-import "github.com/charmbracelet/binetic_agent/internal/session"
+import "github.com/charmbracelet/crush/internal/session"
 
 // The todos tool is retired: mem is the one task list, and a session's todos
 // show the goal a call to mem changed (internal/gnovm/tools). What stays

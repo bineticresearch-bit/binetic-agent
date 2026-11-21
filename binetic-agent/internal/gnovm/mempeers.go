@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -23,7 +23,7 @@ import (
 )
 
 // The host's side of peers, many sessions working one plan in mem at once
-// (PARALLEL.md, in the binetic_agenttest notes). The realm decides whether a Next
+// (PARALLEL.md, in the crushtest notes). The realm decides whether a Next
 // waits; the host says who is working, keeps what each session's last call
 // left in its peers record, refuses a wait that would close a loop, and
 // rings the pipes that wake waiting Nexts on every change; the client does
@@ -42,7 +42,7 @@ func sessionKey(session string) string {
 	return hex.EncodeToString(sum[:12])
 }
 
-// turnLockPath is session's turn lock, under binetic-agent's gnovm data directory
+// turnLockPath is session's turn lock, under gnosh's gnovm data directory
 // dir: the agent holds it from when the session gets busy until it goes
 // idle, and the kernel drops it if the process dies.
 func turnLockPath(dir, session string) string {

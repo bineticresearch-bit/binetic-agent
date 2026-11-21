@@ -6,5 +6,5 @@ import (
 	_ "embed"
 )
 
-//go:embed binetic_agent-icon-solo.png
+//go:embed crush-icon-solo.png
 var Icon []byte

@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-// Hook event names. These are the only keys Binetic Agent recognises under the
-// `hooks` object in binetic-agent.json. An unrecognised key is a config error,
+// Hook event names. These are the only keys Crush recognises under the
+// `hooks` object in crush.json. An unrecognised key is a config error,
 // not a silently ignored entry: a hook filed under a name nothing fires
 // would look configured and never run.
 const (
@@ -75,14 +75,14 @@ const (
 	EventPreCompact = "PreCompact"
 	// EventPostCompact fires once a session's conversation has been
 	// summarized, with the summary, as in Claude Code: to log it, or to
-	// update something outside Binetic Agent. It cannot change the summary; a
+	// update something outside Gnosh. It cannot change the summary; a
 	// hook that blocks or fails is shown as a warning. Its Matcher is
 	// tested against the trigger, as PreCompact's is.
 	EventPostCompact = "PostCompact"
 	// EventSessionEnd fires when a session ends: when the user starts a
 	// new one ("clear"), switches to another ("other"), or the process
 	// exits with the session open ("prompt_input_exit" for the TUI,
-	// "other" for binetic-agent run). As in Claude Code, a hook cannot stop
+	// "other" for gnosh run). As in Claude Code, a hook cannot stop
 	// the exit and what it prints is ignored; a hook that fails is
 	// logged. Its Matcher is tested against the reason, as a
 	// SessionStart's is tested against the source.
@@ -101,7 +101,7 @@ const (
 	// Claude Code a hook can allow or deny the call in the user's place,
 	// and the dialog does not show; with no answer the user is asked.
 	EventPermissionRequest = "PermissionRequest"
-	// EventNotification fires when Binetic Agent sends a notification the user
+	// EventNotification fires when Gnosh sends a notification the user
 	// should see: a permission prompt that has waited for the user
 	// (notification_type "permission_prompt"), or a turn that finished a
 	// while ago with no reply (notification_type "idle_prompt"). As in
@@ -122,7 +122,7 @@ func KnownHookEvents() []string {
 	return slices.Clone(knownHookEvents)
 }
 
-// IsKnownHookEvent reports whether name is an event Binetic Agent actually fires.
+// IsKnownHookEvent reports whether name is an event Crush actually fires.
 func IsKnownHookEvent(name string) bool {
 	return slices.Contains(knownHookEvents, name)
 }

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Draws Binetic Agent's brand images into docs/brand/.
+"""Draws Gnosh's brand images into docs/brand/.
 
 The wordmark is the TUI's own: the half-block letterforms in
 internal/ui/logo/letterforms.go, where each terminal cell holds two square
 pixels. Drawing the same strings here keeps the banner on GitHub and the
-logo in the terminal the same shape. The colors are the TUI's too: Binetic Agent's
+logo in the terminal the same shape. The colors are the TUI's too: Crush's
 purple and hot pink, with green and gold at the ends of every fade.
 
     python3 scripts/brand.py
@@ -31,7 +31,7 @@ from string import Template
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "docs", "brand")
 
 # ── Palette ──────────────────────────────────────────────────────────────
-# Deep space under a purple haze, Binetic Agent's purple and hot pink (Charmtone's
+# Deep space under a purple haze, Crush's purple and hot pink (Charmtone's
 # Charple and Dolly) in the word, and gold and mint only as starlight.
 VOID = "#07060D"
 NIGHT = "#0D0A1A"
@@ -46,7 +46,7 @@ GOLD = "#FED835"
 AMBER = "#FEA408"
 MINT = "#68FFD6"
 GREEN = "#00FFB2"
-# Every fade, as in the TUI: green, then Binetic Agent's purple and hot pink, then
+# Every fade, as in the TUI: green, then Crush's purple and hot pink, then
 # gold. Purple and pink hold the middle; green and gold only the ends.
 NEBULA = (GREEN, PURPLE, PINK, GOLD)
 # Deeper versions of the gradient that read on a white page.
@@ -55,15 +55,15 @@ INK_MAGENTA = "#B02DCB"
 
 MONO = "SFMono-Regular,Menlo,Consolas,'Liberation Mono','DejaVu Sans Mono',monospace"
 
-# The line beside binetic-agent.local on the banner and the sign-off.
+# The line beside gnosh.ai on the banner and the sign-off.
 LINE = "an AI harness that thinks in Gno"
 
 
 def line_size(width, gap=2.3):
-    """The font size at which binetic-agent.local, then LINE, fill width with a little
+    """The font size at which gnosh.ai, then LINE, fill width with a little
     more than two spaces between them (Jae, 2026-10-30). A cell of MONO's
     fonts is 0.6 em."""
-    return width / ((len("binetic-agent.local") + gap + len(LINE)) * 0.6)
+    return width / ((len("gnosh.ai") + gap + len(LINE)) * 0.6)
 
 # ── Letterforms ──────────────────────────────────────────────────────────
 # Three rows of half-block text per letter, as in letterforms.go. A
@@ -87,7 +87,7 @@ def letter_rows(ch, stretch=None):
     return [left[r] + middle[r] * n + (right[r] if right else "") for r in range(3)]
 
 
-def word_rows(word="BINETIC_AGENT", spacing=1):
+def word_rows(word="GNOSH", spacing=1):
     """The word as three rows of half-block text, one cell between letters."""
     parts = [letter_rows(c) for c in word]
     rows = ["", "", ""]
@@ -284,7 +284,7 @@ def banner(W=1280, H=520, p=24):
     left = diagonals(lx0, x0 - cw, y0, 4, cw, ch)
     right = diagonals(x0 + word_w + cw, W + cw, y0, 4, cw, ch)
 
-    o = [svg_open(W, H, f"Binetic Agent, {LINE}")]
+    o = [svg_open(W, H, f"Gnosh, {LINE}")]
     o.append(anim())
     o.append("<defs>")
     o.append(sky_defs())
@@ -297,7 +297,7 @@ def banner(W=1280, H=520, p=24):
     o.append(f'<path d="{left}{right}" stroke="url(#field)" stroke-width="2" fill="none"/>')
     ty = meta_y + ch * 0.66
     size = fmt(line_size(word_w))
-    o.append(f'<text x="{x0}" y="{fmt(ty)}" font-family="{MONO}" font-size="{size}" fill="{GOLD}">binetic-agent.local</text>')
+    o.append(f'<text x="{x0}" y="{fmt(ty)}" font-family="{MONO}" font-size="{size}" fill="{GOLD}">gnosh.ai</text>')
     o.append(f'<text x="{x0 + word_w}" y="{fmt(ty)}" text-anchor="end" font-family="{MONO}" font-size="{size}" fill="{HAZE}">{LINE}</text>')
     o.append(layers)
     o.append("</g>")
@@ -338,7 +338,7 @@ def signoff(W=1280, H=260, p=14):
     keep = (x0 - 30, top - 10, x0 + word_w + 30, meta_y + 2 * ch + 10)
     fields = diagonals(x0, x0 + word_w, top, 2, cw, ch) + diagonals(x0, x0 + word_w, meta_y + ch, 1, cw, ch)
 
-    o = [svg_open(W, H, f"Binetic Agent, {LINE}")]
+    o = [svg_open(W, H, f"Gnosh, {LINE}")]
     o.append(anim())
     o.append("<defs>")
     o.append(sky_defs())
@@ -350,7 +350,7 @@ def signoff(W=1280, H=260, p=14):
     o.append(sky(rng, W, H, keep, 90, twinkle=True))
     o.append(f'<path d="{fields}" stroke="url(#field)" stroke-width="1.4" fill="none"/>')
     size = fmt(line_size(word_w))
-    o.append(f'<text x="{x0}" y="{fmt(meta_y + ch * base)}" font-family="{MONO}" font-size="{size}" fill="{GOLD}">binetic-agent.local</text>')
+    o.append(f'<text x="{x0}" y="{fmt(meta_y + ch * base)}" font-family="{MONO}" font-size="{size}" fill="{GOLD}">gnosh.ai</text>')
     o.append(f'<text x="{x0 + word_w}" y="{fmt(meta_y + ch * base)}" text-anchor="end" font-family="{MONO}" font-size="{size}" fill="{HAZE}">{LINE}</text>')
     o.append(word_layers(on, x0, y0, p))
     o.append("</g>")
@@ -369,7 +369,7 @@ def avatar(S=512, p=60):
     y0 = round((S - word_h) / 2) - 22
     keep = (x0 - 30, y0 - 30, x0 + word_w + 30, y0 + word_h + 30)
 
-    o = [svg_open(S, S, "Binetic Agent")]
+    o = [svg_open(S, S, "Gnosh")]
     o.append("<defs>")
     o.append(sky_defs())
     o.append(word_defs(x0, y0, word_w, word_h))
@@ -385,7 +385,7 @@ def favicon(S=64, p=10):
     """The tab icon: the G on a dark rounded square, readable on light tabs too."""
     on = pixels(letter_rows("G"))
     x0, y0 = (S - 5 * p) / 2, (S - 5 * p) / 2
-    o = [svg_open(S, S, "Binetic Agent")]
+    o = [svg_open(S, S, "Gnosh")]
     o.append("<defs>" + word_defs(x0, y0, 5 * p, 5 * p) + "</defs>")
     o.append(f'<rect width="{S}" height="{S}" rx="{S * 0.22:g}" fill="{NIGHT}"/>')
     o.append(f'<path d="{runs_path(on, x0, y0, p)}" fill="url(#word)"/>')
@@ -436,7 +436,7 @@ def og_svg(W=1280, H=640, p=28):
     left = diagonals(lx0, x0 - cw, y0, 4, cw, ch)
     right = diagonals(x0 + word_w + cw, W + cw, y0, 4, cw, ch)
 
-    o = [svg_open(W, H, "Binetic Agent")]
+    o = [svg_open(W, H, "Gnosh")]
     o.append("<defs>")
     o.append(sky_defs())
     o.append(word_defs(x0, y0, word_w, word_h))
@@ -445,8 +445,8 @@ def og_svg(W=1280, H=640, p=28):
     o.append(sky(rng, W, H, keep, 145, twinkle=False))
     o.append(f'<path d="{left}{right}" stroke="url(#field)" stroke-width="2.2" fill="none"/>')
     ty = meta_y + ch * 0.66
-    o.append(f'<text x="{x0}" y="{fmt(ty)}" font-family="JetBrains Mono,{MONO}" font-weight="500" font-size="24" fill="{GOLD}">binetic-agent.local</text>')
-    o.append(f'<text x="{x0 + word_w}" y="{fmt(ty)}" text-anchor="end" font-family="JetBrains Mono,{MONO}" font-size="24" fill="{HAZE}">github.com/binetic-agent-ai/binetic-agent</text>')
+    o.append(f'<text x="{x0}" y="{fmt(ty)}" font-family="JetBrains Mono,{MONO}" font-weight="500" font-size="24" fill="{GOLD}">gnosh.ai</text>')
+    o.append(f'<text x="{x0 + word_w}" y="{fmt(ty)}" text-anchor="end" font-family="JetBrains Mono,{MONO}" font-size="24" fill="{HAZE}">github.com/gnosh-ai/gnosh</text>')
     o.append(word_layers(on, x0, y0, p))
     o.append("</svg>")
     return "\n".join(o)

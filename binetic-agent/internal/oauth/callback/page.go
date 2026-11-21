@@ -20,7 +20,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/version"
+	"github.com/charmbracelet/crush/internal/version"
 )
 
 //go:embed page.html page.css page.js heartbit.svg heartbit-grumpy.svg charm.svg

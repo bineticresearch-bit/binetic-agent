@@ -9,11 +9,11 @@ import (
 	"syscall"
 
 	"charm.land/lipgloss/v2"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/login"
-	"github.com/charmbracelet/binetic_agent/internal/oauth/copilot"
-	"github.com/charmbracelet/binetic_agent/internal/version"
-	"github.com/charmbracelet/binetic_agent/internal/workspace"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/login"
+	"github.com/charmbracelet/crush/internal/oauth/copilot"
+	"github.com/charmbracelet/crush/internal/version"
+	"github.com/charmbracelet/crush/internal/workspace"
 	"github.com/spf13/cobra"
 )
 
@@ -21,24 +21,24 @@ var loginCmd = &cobra.Command{
 	Aliases: []string{"auth"},
 	Use:     "login [platform]",
 	Short:   "Login " + version.Name + " to a platform",
-	Long: `Login Binetic Agent to a specified platform.
+	Long: `Login Gnosh to a specified platform.
 	The platform should be provided as an argument.
 	Available platforms are: hyper, copilot, openai (chatgpt), grok (xai).`,
 	Example: `
 	# Authenticate with Charm Hyper
-	binetic-agent login
+	gnosh login
 
 	# Authenticate with GitHub Copilot
-	binetic-agent login copilot
+	gnosh login copilot
 
 	# Authenticate with a ChatGPT (OpenAI) account
-	binetic-agent login openai
+	gnosh login openai
 
 	# Authenticate with a Grok (xAI) account
-	binetic-agent login grok
+	gnosh login grok
 
 	# Force re-authentication even if already logged in
-	binetic-agent login -f copilot
+	gnosh login -f copilot
 	`,
 	ValidArgs: []cobra.Completion{
 		"hyper",

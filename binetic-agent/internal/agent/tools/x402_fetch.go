@@ -22,8 +22,8 @@ import (
 	"time"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/permission"
-	"github.com/charmbracelet/binetic_agent/internal/question"
+	"github.com/charmbracelet/crush/internal/permission"
+	"github.com/charmbracelet/crush/internal/question"
 	"github.com/gnolang/gno/tm2/pkg/amino"
 	"github.com/gnolang/gno/tm2/pkg/crypto"
 	"github.com/gnolang/gno/tm2/pkg/sdk/bank"
@@ -65,7 +65,7 @@ type X402FetchPermissionsParams struct {
 // paying anything larger. The network fee is paid on top.
 const x402MaxPrice = 1_000_000
 
-// x402Asset is the one denomination binetic-agent pays in, gno.land's own coin.
+// x402Asset is the one denomination gnosh pays in, gno.land's own coin.
 const x402Asset = "ugnot"
 
 // x402SignTimeout bounds gnokey's signing, which reads no network but may wait
@@ -77,7 +77,7 @@ const x402SignTimeout = 2 * time.Minute
 // costs nothing.
 var x402ChainReadTimeout = 15 * time.Second
 
-// x402Remotes are the public RPC endpoints of the chains binetic-agent pays on, for a
+// x402Remotes are the public RPC endpoints of the chains gnosh pays on, for a
 // call that names no remote.
 var x402Remotes = map[string]string{
 	"dev":     "127.0.0.1:26657",
@@ -85,7 +85,7 @@ var x402Remotes = map[string]string{
 	"onyx-1":  "https://rpc.onyx.testnets.gno.land:443",
 }
 
-// x402ChainAllowed reports whether binetic-agent pays on chain: a local dev chain or
+// x402ChainAllowed reports whether gnosh pays on chain: a local dev chain or
 // a test network. x402 on gno.land is unaudited and meant for testnets only,
 // so mainnet, and any chain not known to be a test chain, is refused before a
 // payment exists, the way gno-mcp confines its writes.
@@ -101,7 +101,7 @@ func x402ChainAllowed(chain string) bool {
 // Every payment is the user's: the permission dialog names the resource and
 // the key, and the password prompt names the price, the payee and the fee.
 // The password goes to gnokey's standard input and nowhere else, gnokey signs
-// one bank send of exactly the price, and binetic-agent checks the signature before it
+// one bank send of exactly the price, and gnosh checks the signature before it
 // hands the payment to the seller. questions is nil when there is no user to
 // ask, as in a non-interactive run; the tool then pays nothing.
 func NewX402FetchTool(permissions permission.Service, questions question.Service, workingDir string, client *http.Client) fantasy.AgentTool {
@@ -181,7 +181,7 @@ func NewX402FetchTool(permissions permission.Service, questions question.Service
 			codec := x402http.Newx402HTTPClient(x402.Newx402Client())
 			required, err := codec.GetPaymentRequiredResponse(headerMap(unpaid.Header), body)
 			if err != nil {
-				return fantasy.NewTextErrorResponse("The seller answered 402 Payment Required without x402 terms binetic-agent can read: " + err.Error()), nil
+				return fantasy.NewTextErrorResponse("The seller answered 402 Payment Required without x402 terms gnosh can read: " + err.Error()), nil
 			}
 			offer, chain, err := chooseGnoOffer(required.Accepts)
 			if err != nil {
@@ -189,7 +189,7 @@ func NewX402FetchTool(permissions permission.Service, questions question.Service
 			}
 			remote := cmp.Or(strings.TrimSpace(params.Remote), x402Remotes[chain])
 			if remote == "" {
-				return fantasy.NewTextErrorResponse(fmt.Sprintf("the seller charges on chain %s, which has no public node binetic-agent knows; pass remote, a node on %s", chain, chain)), nil
+				return fantasy.NewTextErrorResponse(fmt.Sprintf("the seller charges on chain %s, which has no public node gnosh knows; pass remote, a node on %s", chain, chain)), nil
 			}
 			node, err := exact.NewRPCNode(remote)
 			if err != nil {
@@ -213,7 +213,7 @@ func NewX402FetchTool(permissions permission.Service, questions question.Service
 						msg += ". If the key is a session key, call again with master, the address of the account that registered it, which pays"
 					}
 				case errors.Is(err, exact.ErrExcessiveFee):
-					// The node, which the call named or binetic-agent knows, is the one
+					// The node, which the call named or gnosh knows, is the one
 					// that reported the price; it may be wrong, or not honest.
 					msg += fmt.Sprintf(". The node at %s reported that price; nothing was paid. Tell the user rather than trying another node", remote)
 				}
@@ -288,7 +288,7 @@ func x402Get(ctx context.Context, client *http.Client, target string, headers ma
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("User-Agent", "binetic_agent/1.0")
+	req.Header.Set("User-Agent", "crush/1.0")
 	for name, value := range headers {
 		req.Header.Set(name, value)
 	}
@@ -313,8 +313,8 @@ func headerMap(h http.Header) map[string]string {
 	return m
 }
 
-// chooseGnoOffer picks the first offer binetic-agent pays, and its chain id: the
-// exact scheme, on a gno.land chain binetic-agent pays on, in ugnot, within
+// chooseGnoOffer picks the first offer gnosh pays, and its chain id: the
+// exact scheme, on a gno.land chain gnosh pays on, in ugnot, within
 // x402MaxPrice. When none qualifies, the error says why of each.
 func chooseGnoOffer(accepts []types.PaymentRequirements) (types.PaymentRequirements, string, error) {
 	var why []string
@@ -325,13 +325,13 @@ func chooseGnoOffer(accepts []types.PaymentRequirements) (types.PaymentRequireme
 		case !isGno:
 			why = append(why, label+": not a gno.land chain")
 		case offer.Scheme != "exact":
-			why = append(why, label+": binetic-agent pays only the exact scheme")
+			why = append(why, label+": gnosh pays only the exact scheme")
 		case !x402ChainAllowed(chain):
-			why = append(why, label+": binetic-agent pays only on dev and test chains (dev, staging, onyx-*, test*), never mainnet; x402 on gno.land is unaudited, testnet-only work")
+			why = append(why, label+": gnosh pays only on dev and test chains (dev, staging, onyx-*, test*), never mainnet; x402 on gno.land is unaudited, testnet-only work")
 		case offer.Asset != x402Asset:
-			why = append(why, label+": binetic-agent pays only in ugnot")
+			why = append(why, label+": gnosh pays only in ugnot")
 		case !withinX402Max(offer.Amount):
-			why = append(why, fmt.Sprintf("%s: more than the %d ugnot (1 GNOT) binetic-agent pays in one payment", label, x402MaxPrice))
+			why = append(why, fmt.Sprintf("%s: more than the %d ugnot (1 GNOT) gnosh pays in one payment", label, x402MaxPrice))
 		default:
 			return offer, chain, nil
 		}
@@ -339,7 +339,7 @@ func chooseGnoOffer(accepts []types.PaymentRequirements) (types.PaymentRequireme
 	if len(why) == 0 {
 		return types.PaymentRequirements{}, "", errors.New("the seller's 402 lists no way to pay")
 	}
-	return types.PaymentRequirements{}, "", errors.New("binetic-agent cannot pay any of the seller's offers:\n- " + strings.Join(why, "\n- "))
+	return types.PaymentRequirements{}, "", errors.New("gnosh cannot pay any of the seller's offers:\n- " + strings.Join(why, "\n- "))
 }
 
 // withinX402Max reports whether amount, a whole number of ugnot, is at most
@@ -455,7 +455,7 @@ func gnotAmount(coin std.Coin) string {
 // signature alone to a second file, and the directory holding both is removed
 // afterwards. Neither file holds a secret.
 func gnokeySignPayment(ctx context.Context, home, name, password string, payment *exact.Payment) ([]byte, error) {
-	dir, err := os.MkdirTemp("", "binetic-agent-x402-")
+	dir, err := os.MkdirTemp("", "gnosh-x402-")
 	if err != nil {
 		return nil, err
 	}

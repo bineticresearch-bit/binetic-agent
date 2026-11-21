@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""What the model did in a bench run: tool calls by name, and for binetic-agent the
+"""What the model did in a bench run: tool calls by name, and for gnosh the
 mem statements it ran (pushes, pops, todos, facts) and the messages it popped.
 
 Usage: analyze.py <run dir>...   -> one JSON line per run
 
 Reads the harness's own session store in the run directory:
-  binetic-agent  data/binetic-agent.db    (messages.parts JSON; messages.popped)
-  binetic_agent  data/binetic_agent.db
+  gnosh  data/gnosh.db    (messages.parts JSON; messages.popped)
+  crush  data/crush.db
   codex  home/.codex/sessions/**/rollout-*.jsonl
 """
 import collections
@@ -76,18 +76,18 @@ def from_codex(home):
     return out
 
 
-def binetic-agent_log(d):
-    """Slides binetic-agent logged, over every data dir of run d."""
+def gnosh_log(d):
+    """Slides gnosh logged, over every data dir of run d."""
     out = {}
     for data in sorted(glob.glob(os.path.join(d, "data*"))):
-        merge(out, binetic-agent_log_dir(data))
+        merge(out, gnosh_log_dir(data))
     return out
 
 
-def binetic-agent_log_dir(data):
-    """Slides and compactions binetic-agent logged in one data dir (logs/binetic-agent.log)."""
+def gnosh_log_dir(data):
+    """Slides and compactions gnosh logged in one data dir (logs/gnosh.log)."""
     out = {}
-    path = os.path.join(data, "logs", "binetic-agent.log")
+    path = os.path.join(data, "logs", "gnosh.log")
     if not os.path.exists(path):
         return out
     slides = slid_tokens = 0
@@ -118,13 +118,13 @@ def merge(total, part):
 def analyze(d):
     """What the model did in run d; a swarm's stores (data-1, data-2, ...) add up."""
     res = {"dir": d}
-    for name in ("binetic-agent.db", "binetic_agent.db"):
+    for name in ("gnosh.db", "crush.db"):
         dbs = sorted(glob.glob(os.path.join(d, "data*", name)))
         if dbs:
             total = {}
             for db in dbs:
                 merge(total, from_db(db))
-            merge(total, binetic-agent_log(d))
+            merge(total, gnosh_log(d))
             res.update(total)
             return res
     if os.path.isdir(os.path.join(d, "home", ".codex")):

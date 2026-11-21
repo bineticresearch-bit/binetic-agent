@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -121,7 +121,7 @@ var turnWatches struct {
 	m map[string]chan struct{}
 }
 
-// turnEnded is closed when session's turn, in binetic-agent's gnovm data directory
+// turnEnded is closed when session's turn, in gnosh's gnovm data directory
 // dir, ends; at once when the session has no turn lock.
 func turnEnded(dir, session string) <-chan struct{} {
 	path := turnLockPath(dir, session)

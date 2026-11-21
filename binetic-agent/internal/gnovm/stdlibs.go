@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, or any later version
 // that the Licensor has publicly accepted as the proxy under section 14 of
 // that License, with the Additional Terms (Strong Attribution); see
@@ -25,14 +25,14 @@ import (
 //go:generate go run ./internal/syncstdlibs
 
 // stdlibFS holds the Gno standard library sources, copied from the gno
-// version in go.mod by internal/syncstdlibs. A deployed binetic-agent has no GNOROOT,
+// version in go.mod by internal/syncstdlibs. A deployed gnosh has no GNOROOT,
 // and go:embed cannot reach the module cache.
 //
 //go:embed stdlibs
 var stdlibFS embed.FS
 
-// klashlibFS holds the libraries binetic-agent adds for its VMs: fmt, since gno has
-// none (formatted natively, with Go's fmt: fmtnative.go), binetic-agent's own
+// klashlibFS holds the libraries gnosh adds for its VMs: fmt, since gno has
+// none (formatted natively, with Go's fmt: fmtnative.go), gnosh's own
 // klash/gnomem/v2, and klash/bptree/v0, a copy of gno's p/nt/bptree/v0 under
 // gno's notices (its LICENSE.md).
 //
@@ -56,7 +56,7 @@ func stdlibMemPackage(pkgPath string) (*std.MemPackage, error) {
 	return embeddedMemPackage(stdlibFS, "stdlibs", pkgPath)
 }
 
-// libraryMemPackage is stdlibMemPackage over both the libraries binetic-agent adds
+// libraryMemPackage is stdlibMemPackage over both the libraries gnosh adds
 // (klashlibs) and the standard library; klashlibs come first.
 func libraryMemPackage(pkgPath string) (*std.MemPackage, error) {
 	mpkg, err := embeddedMemPackage(klashlibFS, "klashlibs", pkgPath)
@@ -130,7 +130,7 @@ func libraryPaths() []string {
 
 // ImportablePackages lists the packages a VM may import, besides fmt: the
 // standard library less what VMs refuse (see unavailablePackage) and the
-// internal packages, and the packages binetic-agent adds for models (klash/bptree/v0,
+// internal packages, and the packages gnosh adds for models (klash/bptree/v0,
 // a copy of gno's p/nt/bptree/v0; klash/gnomem/v2 is mem's realm's alone).
 func ImportablePackages() []string {
 	var out []string

@@ -1,4 +1,4 @@
-// Package shellconfig implements the Bash-powered config format for Binetic Agent.
+// Package shellconfig implements the Bash-powered config format for Crush.
 //
 // It provides shell builtins (provider, model, mcp, lsp, host, permissions,
 // hook, option) that populate config by mutating a ConfigBuilder
@@ -7,7 +7,7 @@
 // they are no-ops during normal bash tool execution.
 //
 // This package sits between shell and config: it imports shell (for
-// RegisterBuiltin and Run), and config imports shellconfig to run binetic-agentrc
+// RegisterBuiltin and Run), and config imports shellconfig to run crushrc
 // files.
 package shellconfig
 
@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/charmbracelet/binetic_agent/internal/shell"
+	"github.com/charmbracelet/crush/internal/shell"
 )
 
 func init() {

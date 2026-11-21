@@ -6,14 +6,14 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent"
-	"github.com/charmbracelet/binetic_agent/internal/agent/notify"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/doctor"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/proto"
-	"github.com/charmbracelet/binetic_agent/internal/pubsub"
-	"github.com/charmbracelet/binetic_agent/internal/shell"
+	"github.com/charmbracelet/crush/internal/agent"
+	"github.com/charmbracelet/crush/internal/agent/notify"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/doctor"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/proto"
+	"github.com/charmbracelet/crush/internal/pubsub"
+	"github.com/charmbracelet/crush/internal/shell"
 )
 
 // SendMessage validates and accepts a prompt for the workspace's agent,
@@ -71,7 +71,7 @@ func (b *Backend) SendMessage(workspaceID string, msg proto.AgentMessage) error 
 // On a non-cancel error it surfaces the failure to observers via a
 // notify.TypeAgentError notification (lossy, best-effort). That alone is
 // not a reliable terminal signal: the agent-event fan-in uses lossy
-// subscribers, so a `binetic_agent run` caller blocking on its RunID could hang
+// subscribers, so a `crush run` caller blocking on its RunID could hang
 // if the event is dropped. To guarantee termination, when msg.RunID is
 // non-empty and the coordinator did not already publish the run's
 // authoritative terminal RunComplete (e.g. the error was returned before
@@ -257,7 +257,7 @@ func (b *Backend) KillBackgroundJob(workspaceID, jobID string) error {
 	return shell.GetBackgroundShellManager().KillIn(ws.Path, jobID)
 }
 
-// DoctorReport is the check of the workspace's setup that binetic-agent doctor
+// DoctorReport is the check of the workspace's setup that gnosh doctor
 // prints, as the Markdown /doctor shows.
 func (b *Backend) DoctorReport(workspaceID string) (string, error) {
 	ws, err := b.GetWorkspace(workspaceID)

@@ -5,7 +5,7 @@ import (
 	"slices"
 
 	"charm.land/fantasy"
-	gnovmtools "github.com/charmbracelet/binetic_agent/internal/gnovm/tools"
+	gnovmtools "github.com/charmbracelet/crush/internal/gnovm/tools"
 )
 
 // memLine goes last on every prompt the user sends a session whose model

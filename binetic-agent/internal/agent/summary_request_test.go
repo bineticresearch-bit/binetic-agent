@@ -16,11 +16,11 @@ import (
 
 	"charm.land/catwalk/pkg/catwalk"
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/agent/tools"
-	"github.com/charmbracelet/binetic_agent/internal/config"
-	"github.com/charmbracelet/binetic_agent/internal/message"
-	"github.com/charmbracelet/binetic_agent/internal/shell"
-	"github.com/charmbracelet/binetic_agent/internal/skills"
+	"github.com/charmbracelet/crush/internal/agent/tools"
+	"github.com/charmbracelet/crush/internal/config"
+	"github.com/charmbracelet/crush/internal/message"
+	"github.com/charmbracelet/crush/internal/shell"
+	"github.com/charmbracelet/crush/internal/skills"
 	"github.com/stretchr/testify/require"
 )
 
@@ -472,7 +472,7 @@ func TestSummaryGivesTheLoadedSkillsAgain(t *testing.T) {
 		usage:   fantasy.Usage{InputTokens: 190000, OutputTokens: 10},
 	}
 	a, sessionID, _ := summaryRequestAgent(t, llm)
-	for _, name := range []string{"binetic-agent-hooks", "jq"} {
+	for _, name := range []string{"gnosh-hooks", "jq"} {
 		path := skills.BuiltinPrefix + name + "/SKILL.md"
 		meta, err := json.Marshal(tools.ViewResponseMetadata{FilePath: path, ResourceType: tools.ViewResourceSkill, ResourceName: name})
 		require.NoError(t, err)
@@ -490,11 +490,11 @@ func TestSummaryGivesTheLoadedSkillsAgain(t *testing.T) {
 		require.NoError(t, err)
 		return string(data)
 	}
-	hooks := skillMD("binetic-agent-hooks")
-	require.Greater(t, len(hooks), restoredSkillChars, "binetic-agent-hooks is long enough to be cut")
+	hooks := skillMD("gnosh-hooks")
+	require.Greater(t, len(hooks), restoredSkillChars, "gnosh-hooks is long enough to be cut")
 	want := skillsGivenAgain +
-		"### Skill: jq\nPath: binetic-agent://skills/jq/SKILL.md\n\n" + skillMD("jq") + "\n\n---\n\n" +
-		"### Skill: binetic-agent-hooks\nPath: binetic-agent://skills/binetic-agent-hooks/SKILL.md\n\n" + hooks[:restoredSkillChars-len(skillCut)] + skillCut
+		"### Skill: jq\nPath: gnosh://skills/jq/SKILL.md\n\n" + skillMD("jq") + "\n\n---\n\n" +
+		"### Skill: gnosh-hooks\nPath: gnosh://skills/gnosh-hooks/SKILL.md\n\n" + hooks[:restoredSkillChars-len(skillCut)] + skillCut
 	given := func(req fantasy.Call) string {
 		for _, text := range userTexts(req.Prompt) {
 			if strings.HasPrefix(text, skillsGivenAgain) {

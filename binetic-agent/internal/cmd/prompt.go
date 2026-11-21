@@ -12,16 +12,16 @@ import (
 	"charm.land/fantasy"
 	"github.com/spf13/cobra"
 
-	"github.com/charmbracelet/binetic_agent/internal/agent"
-	"github.com/charmbracelet/binetic_agent/internal/version"
-	"github.com/charmbracelet/binetic_agent/internal/workspace"
+	"github.com/charmbracelet/crush/internal/agent"
+	"github.com/charmbracelet/crush/internal/version"
+	"github.com/charmbracelet/crush/internal/workspace"
 )
 
 var promptCmd = &cobra.Command{
 	Use:   "prompt",
 	Short: "The system prompt templates, as files you can edit",
-	Long: `Binetic Agent builds its system prompt from a template. Export the built-in one to
-the templates directory (binetic-agent prompt path prints it), edit it, and Binetic Agent uses
+	Long: `Gnosh builds its system prompt from a template. Export the built-in one to
+the templates directory (gnosh prompt path prints it), edit it, and Gnosh uses
 your file from then on.
 Names: coder.md.tpl (the default agent), plan.md.tpl, task.md.tpl, initialize.md.tpl.`,
 }
@@ -148,7 +148,7 @@ exact objects.`,
 			fmt.Fprintln(out)
 		}
 		fmt.Fprintf(out, "%d tools, %d bytes of JSON (roughly %d tokens)\n", len(infos), total, total/4)
-		fmt.Fprintf(out, "Descriptions can be edited as %s/<name>.md and tools left out via %s (binetic-agent prompt tools --export writes them).\n", agent.UserToolsDir(), agent.DisabledToolsFile())
+		fmt.Fprintf(out, "Descriptions can be edited as %s/<name>.md and tools left out via %s (gnosh prompt tools --export writes them).\n", agent.UserToolsDir(), agent.DisabledToolsFile())
 		return nil
 	},
 }
@@ -173,7 +173,7 @@ func exportToolDescriptions(cmd *cobra.Command, infos []fantasy.ToolInfo) error 
 	}
 	disabled := agent.DisabledToolsFile()
 	if _, err := os.Stat(disabled); err != nil {
-		header := "# One tool name per line; these are not offered to the model. Names: binetic-agent prompt tools\n"
+		header := "# One tool name per line; these are not offered to the model. Names: gnosh prompt tools\n"
 		if err := os.WriteFile(disabled, []byte(header), 0o644); err != nil {
 			return err
 		}
@@ -227,7 +227,7 @@ Tokens are estimated at four characters each.`,
 func init() {
 	promptExportCmd.Flags().Bool("force", false, "Overwrite an existing file")
 	promptToolsCmd.Flags().Bool("json", false, "Print the exact JSON objects")
-	promptToolsCmd.Flags().Bool("export", false, "Write each description to ~/.config/binetic_agent/tools/<name>.md for editing")
+	promptToolsCmd.Flags().Bool("export", false, "Write each description to ~/.config/crush/tools/<name>.md for editing")
 	promptContextCmd.Flags().StringP("session", "s", "", "The session whose conversation to count, by ID, hash or name")
 	promptContextCmd.Flags().BoolP("continue", "C", false, "Count the most recent session's conversation")
 	promptContextCmd.MarkFlagsMutuallyExclusive("session", "continue")

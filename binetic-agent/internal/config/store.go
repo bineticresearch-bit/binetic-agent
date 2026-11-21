@@ -13,14 +13,14 @@ import (
 	"time"
 
 	"charm.land/catwalk/pkg/catwalk"
-	hyperp "github.com/charmbracelet/binetic_agent/internal/agent/hyper"
-	"github.com/charmbracelet/binetic_agent/internal/env"
-	"github.com/charmbracelet/binetic_agent/internal/lock"
-	"github.com/charmbracelet/binetic_agent/internal/oauth"
-	"github.com/charmbracelet/binetic_agent/internal/oauth/copilot"
-	"github.com/charmbracelet/binetic_agent/internal/oauth/grok"
-	"github.com/charmbracelet/binetic_agent/internal/oauth/hyper"
-	"github.com/charmbracelet/binetic_agent/internal/oauth/openai"
+	hyperp "github.com/charmbracelet/crush/internal/agent/hyper"
+	"github.com/charmbracelet/crush/internal/env"
+	"github.com/charmbracelet/crush/internal/lock"
+	"github.com/charmbracelet/crush/internal/oauth"
+	"github.com/charmbracelet/crush/internal/oauth/copilot"
+	"github.com/charmbracelet/crush/internal/oauth/grok"
+	"github.com/charmbracelet/crush/internal/oauth/hyper"
+	"github.com/charmbracelet/crush/internal/oauth/openai"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 	"golang.org/x/sync/singleflight"
@@ -97,7 +97,7 @@ type RuntimeOverrides struct {
 	// without asking, and hooks are told the mode.
 	AcceptEdits bool
 	// DontAsk is set by Claude Code's --permission-mode dontAsk: a request
-	// that would be put to the user is denied instead, and a binetic-agent run
+	// that would be put to the user is denied instead, and a gnosh run
 	// does not grant its session's requests.
 	DontAsk bool
 	// AddedDirs are the directories added with --add-dir, as absolute
@@ -134,8 +134,8 @@ type ConfigStore struct {
 	config             *Config
 	workingDir         string
 	resolver           VariableResolver
-	globalDataPath     string   // ~/.local/share/binetic_agent/binetic-agent.json
-	workspacePath      string   // .binetic-agent/binetic-agent.json
+	globalDataPath     string   // ~/.local/share/crush/crush.json
+	workspacePath      string   // .crush/crush.json
 	loadedPaths        []string // config files that were successfully loaded
 	knownProviders     []catwalk.Provider
 	overrides          RuntimeOverrides
@@ -213,7 +213,7 @@ func (s *ConfigStore) ProjectTrust() ProjectTrust {
 }
 
 // DatabaseHeld reports whether the sessions database is the project's own
-// (in its .binetic-agent, say) in a folder not trusted: then the MCP servers it
+// (in its .gnosh, say) in a folder not trusted: then the MCP servers it
 // turns on, which startup would start even where the user's config turns
 // them off, are not started, since a downloaded repository can carry a
 // database of its own.
@@ -637,7 +637,7 @@ func (s *ConfigStore) OverridePreferredModel(modelType SelectedModelType, model 
 
 // pinPreferredModelLocked records a model choice made in this instance so
 // that a later config reload cannot replace it with a choice made
-// somewhere else. Several Binetic Agent instances share one global config file, so
+// somewhere else. Several Crush instances share one global config file, so
 // a reload triggered by an unrelated write (a token refresh, say) would
 // otherwise import whichever model a sibling instance last selected and
 // switch models out from under the user mid-session.
@@ -994,7 +994,7 @@ func (s *ConfigStore) RefetchGrokModels(ctx context.Context) {
 //
 // Providers like Hyper rotate refresh tokens: each exchange consumes the
 // caller's refresh token, issues a new pair, and revokes the old one. If
-// two binetic_agent instances (or two goroutines) refresh concurrently with the
+// two crush instances (or two goroutines) refresh concurrently with the
 // same stored refresh token, the second exchange reuses an already-revoked
 // token, trips the provider's reuse detection, and revokes the entire
 // token family — leaving both with dead tokens even though each refresh

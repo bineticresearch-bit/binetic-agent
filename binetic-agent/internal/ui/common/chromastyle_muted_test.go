@@ -6,14 +6,14 @@ import (
 
 	"charm.land/lipgloss/v2"
 	"github.com/alecthomas/chroma/v2"
-	"github.com/charmbracelet/binetic_agent/internal/ui/styles"
+	"github.com/charmbracelet/crush/internal/ui/styles"
 	"github.com/stretchr/testify/require"
 )
 
 // MutedChromaStyle takes each token colour halfway to the one given, sets
 // no background, and leaves the style as it is for no colour.
 func TestMutedChromaStyleMixesHalfway(t *testing.T) {
-	sty := styles.Binetic AgentCosmos()
+	sty := styles.GnoshCosmos()
 	base := ChromaStyle(&sty, nil)
 	gray := color.RGBA{R: 0x80, G: 0x80, B: 0x80, A: 0xff}
 	muted := MutedChromaStyle(&sty, gray)

@@ -1,53 +1,53 @@
 ---
-name: binetic-agent-config
-description: Use when the user needs help configuring Binetic Agent — writing binetic-agentrc (the Bash config format) or binetic-agent.json, setting up providers, models, LSPs, MCP servers, hooks, skills, permissions, or changing Binetic Agent behavior.
+name: gnosh-config
+description: Use when the user needs help configuring Gnosh — writing gnoshrc (the Bash config format) or gnosh.json, setting up providers, models, LSPs, MCP servers, hooks, skills, permissions, or changing Gnosh behavior.
 ---
 
-# Binetic Agent Configuration
+# Gnosh Configuration
 
-Binetic Agent supports two config formats:
+Gnosh supports two config formats:
 
-- **`binetic-agentrc`** — a Bash script that builds config by calling Binetic Agent builtins.
+- **`gnoshrc`** — a Bash script that builds config by calling Gnosh builtins.
   **Preferred.** Because it is real Bash you get includes, secrets,
   conditionals, and variables for free.
-- **`binetic-agent.json`** — static JSON. Fully supported; see
+- **`gnosh.json`** — static JSON. Fully supported; see
   [Legacy JSON format](#legacy-json-format).
 
 Both are discovered together and deep-merged. Priority (highest to lowest):
 
-1. `.binetic-agentrc` / `binetic-agentrc` / `.binetic-agent.json` / `binetic-agent.json` (project-local,
-   closer-to-cwd wins; Windows uses `.\.binetic-agentrc` / `.\binetic-agentrc`)
-2. `$XDG_CONFIG_HOME/binetic-agent/binetic-agentrc` or `~/.config/binetic-agent/binetic-agentrc`
-   (`%XDG_CONFIG_HOME%\binetic-agent\binetic-agentrc` or
-   `%USERPROFILE%\.config\binetic-agent\binetic-agentrc` on Windows)
+1. `.gnoshrc` / `gnoshrc` / `.gnosh.json` / `gnosh.json` (project-local,
+   closer-to-cwd wins; Windows uses `.\.gnoshrc` / `.\gnoshrc`)
+2. `$XDG_CONFIG_HOME/gnosh/gnoshrc` or `~/.config/gnosh/gnoshrc`
+   (`%XDG_CONFIG_HOME%\gnosh\gnoshrc` or
+   `%USERPROFILE%\.config\gnosh\gnoshrc` on Windows)
 
-A project's own files (1, and the `binetic-agent.json` in its `.binetic-agent/` folder) are
-used only once the user trusts its folder: until then its `binetic-agentrc` does not
+A project's own files (1, and the `gnosh.json` in its `.gnosh/` folder) are
+used only once the user trusts its folder: until then its `gnoshrc` does not
 run, and of its JSON only `permissions.deny`, `options.disabled_tools` and
 `options.disabled_skills` apply (hooks, MCP and LSP servers, allowed tools,
 providers, `env`, hosts and every other option wait). The TUI asks the first
-time it starts in such a folder; `binetic-agent trust [folder]` trusts one from the
-command line, and `binetic-agent run --trust-folder` for one run; `binetic-agent doctor` says
+time it starts in such a folder; `gnosh trust [folder]` trusts one from the
+command line, and `gnosh run --trust-folder` for one run; `gnosh doctor` says
 whether the folder is trusted. A setting the user wants in a folder they have
-not trusted goes in the global `binetic-agentrc` (2).
+not trusted goes in the global `gnoshrc` (2).
 
-Data directories (`~/.local/share/binetic-agent` and `%LOCALAPPDATA%\binetic-agent`) contain
-machine-owned JSON state only; Binetic Agent does not discover or execute a `binetic-agentrc`
+Data directories (`~/.local/share/gnosh` and `%LOCALAPPDATA%\gnosh`) contain
+machine-owned JSON state only; Gnosh does not discover or execute a `gnoshrc`
 from those locations.
 
-If a directory has both `binetic-agentrc` and `binetic-agent.json`, they merge (`binetic-agentrc` wins
-on conflicts) and Binetic Agent logs a warning.
+If a directory has both `gnoshrc` and `gnosh.json`, they merge (`gnoshrc` wins
+on conflicts) and Gnosh logs a warning.
 
-Binetic Agent was called Klash, and before that Binetic Agent, and every klash and binetic_agent name
-still works: `klashrc` and `binetic-agentrc`, `klash.json` and `binetic-agent.json`,
-`~/.config/klash` and `~/.config/binetic_agent`, a project's `.klash/` or `.binetic-agent/`,
-`KLASH_*` and `BINETIC_AGENT_*` variables. Where several exist, the newest name wins;
-`~/.config/binetic-agent` takes over from an older one only once it holds a config
+Gnosh was called Klash, and before that Crush, and every klash and crush name
+still works: `klashrc` and `crushrc`, `klash.json` and `crush.json`,
+`~/.config/klash` and `~/.config/crush`, a project's `.klash/` or `.crush/`,
+`KLASH_*` and `CRUSH_*` variables. Where several exist, the newest name wins;
+`~/.config/gnosh` takes over from an older one only once it holds a config
 file.
 
-## binetic-agentrc at a glance
+## gnoshrc at a glance
 
-A `binetic-agentrc` is a plain Bash script executed at load time with the same embedded
+A `gnoshrc` is a plain Bash script executed at load time with the same embedded
 shell the `bash` tool uses. It builds config by calling builtins (`provider`,
 `model`, `mcp`, `lsp`, `hook`, `permissions`, `option`). Statements run top to
 bottom; later statements win, and `remove`/`reset` operate on anything defined
@@ -56,7 +56,7 @@ earlier or pulled in via `source`.
 ```bash
 #!/usr/bin/env bash
 # Includes and secrets are just Bash.
-source ~/.config/binetic-agent/shared.sh
+source ~/.config/gnosh/shared.sh
 
 provider add anthropic --api-key "$ANTHROPIC_API_KEY"
 
@@ -70,11 +70,11 @@ permissions allow view ls grep edit
 Values are ordinary Bash — quote and expand normally (`"$VAR"`, `$(cmd)`,
 `${VAR:?required}`). A failing `$(command)` aborts the load.
 
-`BINETIC_AGENT_VERSION` is exported into the script so you can feature-detect the
-running Binetic Agent (it is the literal `devel` for local builds):
+`GNOSH_VERSION` is exported into the script so you can feature-detect the
+running Gnosh (it is the literal `devel` for local builds):
 
 ```bash
-[[ "$BINETIC_AGENT_VERSION" != devel ]] && lsp add gopls --command gopls
+[[ "$GNOSH_VERSION" != devel ]] && lsp add gopls --command gopls
 ```
 
 ## Commands
@@ -111,7 +111,7 @@ model large [<provider>/<id>] [flags]  # set the large slot; no arg prints it
 model small [<provider>/<id>] [flags]  # set the small slot; no arg prints it
 ```
 
-- `<provider>/<id>` is the same form `binetic-agent models` prints. A missing slash is
+- `<provider>/<id>` is the same form `gnosh models` prints. A missing slash is
   an error. `model add` requires the provider to already exist.
 - `model add` flags: `--name`, `--context-window N`, `--default-max-tokens N`,
   `--can-reason BOOL`, `--supports-images BOOL`, `--price-input F`,
@@ -174,7 +174,7 @@ intend to remove it later. See [Hooks runtime](#hooks-runtime) for how hooks
 execute (stdin payload, env vars, decisions).
 
 ```bash
-hook add PreToolUse --matcher "^bash$" --command ".binetic-agent/hooks/no-haskell.sh" --name no-haskell
+hook add PreToolUse --matcher "^bash$" --command ".gnosh/hooks/no-haskell.sh" --name no-haskell
 ```
 
 ### permissions
@@ -222,7 +222,7 @@ option reset <list-key>    # clear a list option back to empty
 ```bash
 option progress false
 option skill-path ./skills
-option disable-skill binetic-agent-config
+option disable-skill gnosh-config
 option attribution-trailer-style assisted-by
 option attribution-generated-with true
 option ui compact true
@@ -231,7 +231,7 @@ option ui exit-banner compact
 ```
 
 > [!IMPORTANT] These skill paths are loaded by default and do NOT need
-> `skill-path`: `.agents/skills`, `.binetic-agent/skills`, `.claude/skills`,
+> `skill-path`: `.agents/skills`, `.gnosh/skills`, `.claude/skills`,
 > `.cursor/skills`.
 
 ## Hooks runtime
@@ -240,7 +240,7 @@ Hooks are user-defined shell commands that fire on agent events: `PreToolUse`
 before a tool runs, `PostToolUse` after one succeeds, `PostToolUseFailure` after
 one fails, `UserPromptSubmit` when the user sends a prompt, and `Stop` when the
 agent is about to finish its turn. This behavior is the same however the hook is
-defined (`hook add` or JSON). The binetic-agent-hooks skill has the full reference.
+defined (`hook add` or JSON). The gnosh-hooks skill has the full reference.
 
 ### How hooks work
 
@@ -251,7 +251,7 @@ defined (`hook add` or JSON). The binetic-agent-hooks skill has the full referen
    variables**.
 
 Event names are matched exactly: `pretooluse` or `pre_tool_use` is a config
-error, not a spelling of `PreToolUse`, and Binetic Agent refuses to start on it.
+error, not a spelling of `PreToolUse`, and Gnosh refuses to start on it.
 
 ### Hook input (stdin)
 
@@ -269,16 +269,16 @@ error, not a spelling of `PreToolUse`, and Binetic Agent refuses to start on it.
 
 | Variable                     | Description                                       |
 | ---------------------------- | ------------------------------------------------- |
-| `BINETIC_AGENT_EVENT`                | Event name (e.g. `PreToolUse`)                    |
-| `BINETIC_AGENT_TOOL_NAME`            | Name of the tool being called                     |
-| `BINETIC_AGENT_SESSION_ID`           | Current session ID                                |
-| `BINETIC_AGENT_CWD`                  | Current working directory                         |
-| `BINETIC_AGENT_PROJECT_DIR`          | Project root directory                            |
-| `BINETIC_AGENT_TOOL_INPUT_COMMAND`   | Value of `command` from tool input (if present)   |
-| `BINETIC_AGENT_TOOL_INPUT_FILE_PATH` | Value of `file_path` from tool input (if present) |
+| `GNOSH_EVENT`                | Event name (e.g. `PreToolUse`)                    |
+| `GNOSH_TOOL_NAME`            | Name of the tool being called                     |
+| `GNOSH_SESSION_ID`           | Current session ID                                |
+| `GNOSH_CWD`                  | Current working directory                         |
+| `GNOSH_PROJECT_DIR`          | Project root directory                            |
+| `GNOSH_TOOL_INPUT_COMMAND`   | Value of `command` from tool input (if present)   |
+| `GNOSH_TOOL_INPUT_FILE_PATH` | Value of `file_path` from tool input (if present) |
 
-Each is also set under its `KLASH_` and `BINETIC_AGENT_` names (`KLASH_EVENT`,
-`BINETIC_AGENT_EVENT`, ...), from before the renames; any of them works.
+Each is also set under its `KLASH_` and `CRUSH_` names (`KLASH_EVENT`,
+`CRUSH_EVENT`, ...), from before the renames; any of them works.
 
 ### Hook output
 
@@ -307,7 +307,7 @@ Each is also set under its `KLASH_` and `BINETIC_AGENT_` names (`KLASH_EVENT`,
 
 ### Claude Code compatibility
 
-Binetic Agent also accepts the Claude Code hook output format, so existing hooks work
+Gnosh also accepts the Claude Code hook output format, so existing hooks work
 unchanged:
 
 ```json
@@ -340,20 +340,20 @@ user-invocable: true
 
 ## Environment variables
 
-- `BINETIC_AGENT_VERSION` — exported into `binetic-agentrc` at load; the running version (or
+- `GNOSH_VERSION` — exported into `gnoshrc` at load; the running version (or
   `devel` for local builds).
-- `BINETIC_AGENT_GLOBAL_CONFIG` — override global config location.
-- `BINETIC_AGENT_GLOBAL_DATA` — override data directory location.
-- `BINETIC_AGENT_SKILLS_DIR` — override default skills directory.
+- `GNOSH_GLOBAL_CONFIG` — override global config location.
+- `GNOSH_GLOBAL_DATA` — override data directory location.
+- `GNOSH_SKILLS_DIR` — override default skills directory.
 
 ## Legacy JSON format
 
-`binetic-agent.json` is the original static format. It still works and merges with
-`binetic-agentrc`. Basic structure:
+`gnosh.json` is the original static format. It still works and merges with
+`gnoshrc`. Basic structure:
 
 ```json
 {
-  "$schema": "https://charm.land/binetic-agent.json",
+  "$schema": "https://charm.land/crush.json",
   "models": {},
   "providers": {},
   "mcp": {},
@@ -366,9 +366,9 @@ user-invocable: true
 
 The `$schema` property enables IDE autocomplete but is optional.
 
-### binetic-agentrc ↔ binetic-agent.json mapping
+### gnoshrc ↔ gnosh.json mapping
 
-| binetic-agentrc                             | binetic-agent.json                                             |
+| gnoshrc                             | gnosh.json                                             |
 | ------------------------------------ | ------------------------------------------------------ |
 | `provider add openai --api-key "$K"` | `providers.openai = {"api_key": "$K"}`                 |
 | `model add openai/gpt-x --name X`    | append to `providers.openai.models[]`                  |
@@ -385,10 +385,10 @@ The `$schema` property enables IDE autocomplete but is optional.
 | `option attribution-trailer-style none` | `options.attribution.trailer_style = "none"`        |
 | `option attribution-generated-with false` | `options.attribution.generated_with = false`       |
 
-### Shell expansion in binetic-agent.json
+### Shell expansion in gnosh.json
 
 In JSON, only selected string fields are run through the embedded shell at load
-time (in `binetic-agentrc`, everything is native Bash so this table does not apply):
+time (in `gnoshrc`, everything is native Bash so this table does not apply):
 
 | Surface                                                         | Expansion                          |
 | --------------------------------------------------------------- | ---------------------------------- |
@@ -405,7 +405,7 @@ the request.
 
 ### Security note
 
-Both formats are trusted code. `binetic-agentrc` runs entirely, and any `$(...)` in
-`binetic-agent.json` runs at load time, with the invoking user's shell privileges,
-before the UI appears. Don't launch Binetic Agent in a directory whose config you
+Both formats are trusted code. `gnoshrc` runs entirely, and any `$(...)` in
+`gnosh.json` runs at load time, with the invoking user's shell privileges,
+before the UI appears. Don't launch Gnosh in a directory whose config you
 haven't reviewed.

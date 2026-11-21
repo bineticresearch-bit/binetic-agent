@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Jae Kwon
 //
-// This file is part of binetic-agent's GnoVM machine subsystem. It is licensed under
+// This file is part of gnosh's GnoVM machine subsystem. It is licensed under
 // the GNO Network General Public License, version 6, as published by
 // NewTendermint, LLC or its successor, or any later version of that License
 // that the Licensor accepts as the proxy under its section 14, by a statement
@@ -24,7 +24,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/binetic_agent/internal/lock"
+	"github.com/charmbracelet/crush/internal/lock"
 )
 
 const (
@@ -55,7 +55,7 @@ type ClientOptions struct {
 	Binary string
 }
 
-// Client is a binetic-agent process's way to its VMs: a worker it spawns on first
+// Client is a gnosh process's way to its VMs: a worker it spawns on first
 // use (and again if the worker dies), or a host of its own in-process. It
 // is shared by the process (server mode has one App per workspace) and
 // counted: the last Release closes it.
@@ -315,7 +315,7 @@ func (c *Client) Repair(ctx context.Context, project, name string) (int, int, er
 }
 
 // MemCommand runs /mem (see Host.MemCommand), and says what it erased, if
-// anything, for binetic-agent's own copies of mem's text.
+// anything, for gnosh's own copies of mem's text.
 func (c *Client) MemCommand(ctx context.Context, project, session, args string, titles map[string]string) (string, *MemErasure, error) {
 	defer c.memChanged(project)
 	if h, err := c.inProcess(); h != nil || err != nil {
@@ -472,7 +472,7 @@ func spawnWorker(opts ClientOptions) (*workerConn, error) {
 	// The worker outlives any one call; Close ends it.
 	cmd := exec.CommandContext(context.Background(), bin, "gnovm-worker")
 	cmd.ExtraFiles = []*os.File{reqR, repW} // fds 3 and 4
-	// Not the project directory: binetic-agent loads a .env from its working
+	// Not the project directory: gnosh loads a .env from its working
 	// directory before main runs, and the project's is agent-writable.
 	cmd.Dir = opts.Dir
 	cmd.Env = workerEnv()
@@ -592,7 +592,7 @@ func workerEnv() []string {
 	var env []string
 	for _, kv := range os.Environ() {
 		switch name, _, _ := strings.Cut(kv, "="); name {
-		case "BINETIC_AGENT_PROFILE", "KLASH_PROFILE", "BINETIC_AGENT_PROFILE":
+		case "GNOSH_PROFILE", "KLASH_PROFILE", "CRUSH_PROFILE":
 			continue
 		}
 		env = append(env, kv)
@@ -745,11 +745,11 @@ func (c *workerConn) verdict(now time.Time) string {
 		return ""
 	}
 	if silent := now.Sub(time.Unix(0, c.last.Load())); silent > silenceKill {
-		return fmt.Sprintf("killed by binetic-agent: no heartbeat for %s", silent.Round(time.Second))
+		return fmt.Sprintf("killed by gnosh: no heartbeat for %s", silent.Round(time.Second))
 	}
 	for _, p := range c.pending {
 		if now.After(p.deadline.Add(overdueKill)) {
-			return "killed by binetic-agent: a request ran past its deadline"
+			return "killed by gnosh: a request ran past its deadline"
 		}
 	}
 	return ""
@@ -776,7 +776,7 @@ func (c *workerConn) close() {
 	select {
 	case <-c.dead:
 	case <-time.After(3 * time.Second):
-		c.kill("killed by binetic-agent at close: did not exit in 3 s")
+		c.kill("killed by gnosh at close: did not exit in 3 s")
 		<-c.dead
 	}
 }

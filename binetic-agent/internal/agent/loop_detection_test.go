@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"charm.land/fantasy"
-	gnovmtools "github.com/charmbracelet/binetic_agent/internal/gnovm/tools"
+	gnovmtools "github.com/charmbracelet/crush/internal/gnovm/tools"
 )
 
 // makeStep creates a StepResult with the given tool calls and results in its Content.

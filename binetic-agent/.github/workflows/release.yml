@@ -119,10 +119,10 @@ jobs:
         uses: jdx/packslip@0e9bde4ea49070555a79cac1f040f1dafe60acd6 # v1.8.0
         with:
           packslip-sha256: 82a1064adb98517bd2f1a88957b7ca9bcfe071b2725ccec725f2db47a98a24eb
-          artifacts: dist/binetic_agent_*.tar.gz dist/binetic_agent_*.zip
-          bin: binetic_agent
+          artifacts: dist/crush_*.tar.gz dist/crush_*.zip
+          bin: crush
           resources: |
-            completion/bash,zsh,fish=exec:binetic_agent completion {shell}
+            completion/bash,zsh,fish=exec:crush completion {shell}
           # The build does not currently produce GitHub build attestations.
           attest: "false"
           upload: "false"

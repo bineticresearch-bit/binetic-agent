@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	"charm.land/fantasy"
-	"github.com/charmbracelet/binetic_agent/internal/config"
+	"github.com/charmbracelet/crush/internal/config"
 	"github.com/stretchr/testify/require"
 )
 
@@ -101,31 +101,31 @@ func mkfiles(t *testing.T, root string, rels ...string) {
 	}
 }
 
-// An agent on the AI box globbed "/usr/local/bin/binetic_agent*" and
-// "/home/binetic_agent/.local/bin/*", and glob looked for those directories inside
+// An agent on the AI box globbed "/usr/local/bin/crush*" and
+// "/home/crush/.local/bin/*", and glob looked for those directories inside
 // the project, failing each time. An absolute pattern searches where it
 // points, whatever the path, in a directory named bin too.
 func TestGlobAbsolutePatternSearchesWhereItPoints(t *testing.T) {
 	t.Parallel()
 
 	elsewhere := t.TempDir()
-	mkfiles(t, elsewhere, "bin/binetic-agent", "bin/binetic-agent-bin", "bin/other")
+	mkfiles(t, elsewhere, "bin/gnosh", "bin/gnosh-bin", "bin/other")
 	project := t.TempDir()
-	mkfiles(t, project, "bin/binetic-agent-not-this")
+	mkfiles(t, project, "bin/gnosh-not-this")
 
 	for _, params := range []GlobParams{
-		{Pattern: filepath.Join(elsewhere, "bin", "binetic-agent*")},
-		{Pattern: filepath.Join(elsewhere, "bin", "binetic-agent*"), Path: "bin"},
+		{Pattern: filepath.Join(elsewhere, "bin", "gnosh*")},
+		{Pattern: filepath.Join(elsewhere, "bin", "gnosh*"), Path: "bin"},
 	} {
 		out, isErr := runGlob(t, project, params)
 		require.False(t, isErr, out)
 		got := strings.Split(out, "\n")
 		sort.Strings(got)
-		require.Equal(t, []string{filepath.ToSlash(filepath.Join(elsewhere, "bin", "binetic-agent")), filepath.ToSlash(filepath.Join(elsewhere, "bin", "binetic-agent-bin"))}, got)
+		require.Equal(t, []string{filepath.ToSlash(filepath.Join(elsewhere, "bin", "gnosh")), filepath.ToSlash(filepath.Join(elsewhere, "bin", "gnosh-bin"))}, got)
 	}
-	out, isErr := runGlob(t, project, GlobParams{Pattern: filepath.Join(elsewhere, "bin", "binetic-agent")})
+	out, isErr := runGlob(t, project, GlobParams{Pattern: filepath.Join(elsewhere, "bin", "gnosh")})
 	require.False(t, isErr, out)
-	require.Equal(t, filepath.ToSlash(filepath.Join(elsewhere, "bin", "binetic-agent")), out, "a plain absolute path")
+	require.Equal(t, filepath.ToSlash(filepath.Join(elsewhere, "bin", "gnosh")), out, "a plain absolute path")
 }
 
 // A path to search that is not there is said plainly, in Claude Code's
