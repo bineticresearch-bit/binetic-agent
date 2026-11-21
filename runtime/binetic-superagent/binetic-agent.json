@@ -1,0 +1,109 @@
+{
+  "$schema": "https://charm.land/crush.json",
+  "_creator_note": "Private creator config for Binetic Agent. Keep this repository private.",
+  "options": {
+    "tui": {
+      "active_theme": "binetic-cosmos",
+      "compact_mode": false,
+      "diff_mode": "unified",
+      "scrollbar": "always",
+      "mouse": true,
+      "exit_banner": "compact"
+    },
+    "progress": true,
+    "notifications": "native",
+    "disabled_skills": []
+  },
+  "env": {
+    "PATH": "/root/agent-workspace/bin:${PATH}",
+    "BINETIC_MAIN_INTERFACE": "binetic-agent-tui",
+    "GNOSH_REQUIRE_VERIFY": "0",
+    "BINETIC_AGENT_PRIVATE": "1"
+  },
+  "providers": {
+    "binetic-local": {
+      "id": "binetic-local",
+      "name": "Binetic Local Router",
+      "type": "openai-compat",
+      "base_url": "http://127.0.0.1:8645/v1",
+      "api_key": "local",
+      "discover_models": false,
+      "models": [
+        {
+          "id": "tencent/hy4-flash:free",
+          "name": "Tencent: Hy4 flash free (Hermes)",
+          "context_window": 1048576,
+          "max_tokens": 65536
+        }
+      ]
+    }
+  },
+  "models": {
+    "large": {
+      "model": "tencent/hy4-flash:free",
+      "provider": "binetic-local"
+    },
+    "small": {
+      "model": "tencent/hy4-flash:free",
+      "provider": "binetic-local"
+    }
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "name": "binetic-control-room",
+        "command": "python3 /root/agent-workspace/binetic-superagent/binetic-cockpit.py --hook SessionStart",
+        "timeout": 30
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "name": "binetic-live-dashboard",
+        "command": "python3 /root/agent-workspace/binetic-superagent/binetic-cockpit.py --hook UserPromptSubmit",
+        "timeout": 30
+      }
+    ],
+    "PreToolUse": [
+      {
+        "name": "binetic-receipted-tools",
+        "command": "python3 /root/agent-workspace/binetic-superagent/binetic-cockpit.py --hook PreToolUse",
+        "timeout": 20
+      }
+    ],
+    "PostToolUse": [
+      {
+        "name": "binetic-posttool-receipt",
+        "command": "python3 /root/agent-workspace/binetic-superagent/binetic-cockpit.py --hook PostToolUse",
+        "timeout": 20
+      }
+    ],
+    "Stop": [
+      {
+        "name": "binetic-goal-monitor",
+        "command": "python3 /root/agent-workspace/binetic-superagent/binetic-cockpit.py --hook Stop",
+        "timeout": 60
+      }
+    ],
+    "SessionEnd": [
+      {
+        "name": "binetic-session-receipt",
+        "command": "python3 /root/agent-workspace/binetic-superagent/binetic-cockpit.py --hook SessionEnd",
+        "timeout": 20
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(bash /root/my-agent/start.sh)",
+      "Bash(python3 /root/agent-workspace/binetic-superagent/binetic-cockpit.py *)",
+      "Bash(/root/agent-workspace/bin/binetic-cockpit *)",
+      "Bash(/root/agent-workspace/bin/binetic-superagent status)",
+      "Bash(/root/agent-workspace/bin/binetic-cognition *)",
+      "Bash(/root/agent-workspace/bin/binetic-receipt-append *)",
+      "Bash(/root/agent-workspace/bin/binetic-verify-receipts *)",
+      "Bash(gnosh mem *)",
+      "Bash(cat /root/agent-workspace/binetic-superagent/bpcm_state/views/*)",
+      "Bash(head /root/agent-workspace/binetic-superagent/bpcm_state/views/*)"
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+# Binetic Superagent Gnosh configuration.
+# Security defaults: no telemetry, no provider catalog fetch, no update check.
+option metrics false
+option provider-auto-update false
+option notifications native
+option auto-compact-window 180000
+
+# Model provider is configured in gnosh.json so it can declare an explicit
+# model catalog without relying on a live /v1/models endpoint.

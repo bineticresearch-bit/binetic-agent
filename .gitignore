@@ -1,0 +1,31 @@
+# Build artifacts
+/release/*
+!/release/.gitkeep
+/bin/binetic-agent-*
+/bin/*.exe
+
+# Runtime volatile state
+runtime/binetic-superagent/live_view/
+runtime/binetic-superagent/.gnosh/
+runtime/binetic-superagent/.binetic-agent/
+runtime/binetic-superagent/agi_state/*.lock
+runtime/binetic-superagent/state/*.lock
+runtime/binetic-superagent/__pycache__/
+**/__pycache__/
+**/.pytest_cache/
+
+# Secrets and personal state
+.env
+*.key
+*.pem
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+*identity_seed*.json
+*human_dna*
+who_i_am.md
+
+# Large binaries/models
+models/
+*.gguf
+*.bin

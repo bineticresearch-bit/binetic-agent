@@ -1,0 +1,5 @@
+# Binetic Agent creator runtime config.
+option metrics false
+option provider-auto-update false
+option notifications native
+option auto-compact-window 180000

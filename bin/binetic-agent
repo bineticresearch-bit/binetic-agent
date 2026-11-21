@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+HERE="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "$HERE/.." && pwd)"
+BIN="$ROOT/release/binetic-agent-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m)"
+case "$(uname -m)" in arm64|aarch64) BIN="$ROOT/release/binetic-agent-darwin-arm64" ;; x86_64|amd64) BIN="$ROOT/release/binetic-agent-linux-amd64" ;; esac
+export PATH="$ROOT/bin:$PATH"
+export BINETIC_MAIN_INTERFACE="binetic-agent-tui"
+exec "$BIN" --cwd "$ROOT/runtime/binetic-superagent" \
+  --append-system-prompt-file "$ROOT/runtime/binetic-superagent/BINETIC_SYSTEM_PROMPT.md" "$@"
